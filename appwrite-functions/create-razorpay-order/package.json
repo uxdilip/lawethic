@@ -1,0 +1,13 @@
+{
+    "name": "create-razorpay-order",
+    "version": "1.0.0",
+    "description": "Creates a Razorpay order for payment",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "node-appwrite": "^11.0.0",
+        "razorpay": "^2.9.2"
+    }
+}

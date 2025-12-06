@@ -1,0 +1,16 @@
+{
+    "name": "@lawethic/appwrite",
+    "version": "1.0.0",
+    "private": true,
+    "main": "./index.ts",
+    "types": "./index.ts",
+    "scripts": {
+        "clean": "rm -rf .turbo node_modules"
+    },
+    "dependencies": {
+        "appwrite": "^14.0.1"
+    },
+    "devDependencies": {
+        "typescript": "^5.3.3"
+    }
+}

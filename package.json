@@ -1,0 +1,39 @@
+{
+    "name": "lawethic",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Traditional compliance services platform",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "dev": "npm run dev --workspaces --if-present",
+        "dev:web": "npm run dev --workspace=apps/web",
+        "build": "npm run build --workspaces --if-present",
+        "build:web": "npm run build --workspace=apps/web",
+        "lint": "npm run lint --workspaces --if-present",
+        "clean": "npm run clean --workspaces --if-present && rm -rf node_modules",
+        "update-permissions": "tsx scripts/update-permissions.ts",
+        "seed": "tsx scripts/seed.ts",
+        "fix-attributes": "tsx scripts/fix-attributes.ts",
+        "check-collections": "tsx scripts/check-collections.ts",
+        "test-document": "tsx scripts/test-document.ts",
+        "test-order": "tsx scripts/test-order.ts"
+    },
+    "keywords": [
+        "compliance",
+        "legal",
+        "appwrite"
+    ],
+    "author": "",
+    "license": "MIT",
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=8.0.0"
+    },
+    "devDependencies": {
+        "node-appwrite": "^20.3.0",
+        "tsx": "^4.21.0"
+    }
+}
