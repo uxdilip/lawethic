@@ -34,6 +34,7 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
     const [order, setOrder] = useState<any>(null);
     const [service, setService] = useState<any>(null);
     const [documents, setDocuments] = useState<any[]>([]);
+    const [certificates, setCertificates] = useState<any[]>([]);
     const [timeline, setTimeline] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>(null);
@@ -103,8 +104,30 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
             );
             setTimeline(timelineResponse.documents);
 
+            // Load certificates
+            await loadCertificates();
+
         } catch (error) {
             console.error('Failed to load order details:', error);
+        }
+    };
+
+    const loadCertificates = async () => {
+        try {
+            const response = await fetch(`/api/certificates?orderId=${params.id}`);
+            const data = await response.json();
+
+            if (!response.ok) {
+                console.error('[Customer] Certificate API error:', response.status, data);
+                return;
+            }
+
+            if (data.success) {
+                setCertificates(data.certificates);
+                console.log('[Customer] Loaded certificates:', data.certificates.length);
+            }
+        } catch (error) {
+            console.error('[Customer] Failed to load certificates:', error);
         }
     };
 
@@ -396,26 +419,44 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                                     )}
                                 </div>
 
-                                {/* Certificate */}
-                                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                                    <div className="flex items-center space-x-3">
-                                        <FileText className="h-8 w-8 text-gray-400" />
-                                        <div>
-                                            <p className="font-medium text-gray-900">Certificate</p>
-                                            <p className="text-sm text-gray-500">Registration/completion certificate</p>
+                                {/* Certificates - Dynamic list */}
+                                {certificates.length > 0 ? (
+                                    certificates.map((cert) => (
+                                        <div key={cert.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                                            <div className="flex items-center space-x-3">
+                                                <FileText className="h-8 w-8 text-blue-600" />
+                                                <div>
+                                                    <p className="font-medium text-gray-900">{cert.documentName}</p>
+                                                    <p className="text-sm text-gray-500">
+                                                        {cert.documentType.replace(/_/g, ' ')} • {new Date(cert.uploadedAt).toLocaleDateString()}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <a
+                                                href={cert.downloadUrl}
+                                                className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
+                                            >
+                                                <Download className="h-4 w-4" />
+                                                <span className="text-sm font-medium">Download</span>
+                                            </a>
                                         </div>
+                                    ))
+                                ) : (
+                                    <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                                        <div className="flex items-center space-x-3">
+                                            <FileText className="h-8 w-8 text-gray-400" />
+                                            <div>
+                                                <p className="font-medium text-gray-900">Certificate</p>
+                                                <p className="text-sm text-gray-500">Registration/completion certificate</p>
+                                            </div>
+                                        </div>
+                                        {order.status === 'completed' ? (
+                                            <span className="text-sm text-yellow-600">Processing</span>
+                                        ) : (
+                                            <span className="text-sm text-gray-500">Pending</span>
+                                        )}
                                     </div>
-                                    {order.certificateFileId ? (
-                                        <button className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 px-3 py-2 rounded-lg hover:bg-blue-50">
-                                            <Download className="h-4 w-4" />
-                                            <span className="text-sm font-medium">Download</span>
-                                        </button>
-                                    ) : order.status === 'completed' ? (
-                                        <span className="text-sm text-yellow-600">Processing</span>
-                                    ) : (
-                                        <span className="text-sm text-gray-500">Pending</span>
-                                    )}
-                                </div>
+                                )}
                             </div>
                         </div>
 
