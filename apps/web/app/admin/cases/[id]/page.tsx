@@ -8,6 +8,7 @@ import { Query } from 'appwrite';
 import AdminLayout from '@/components/AdminLayout';
 import { StaffOnly } from '@/components/RoleGuard';
 import Link from 'next/link';
+import CertificateUpload, { CertificateList } from '@/components/admin/CertificateUpload';
 
 interface CaseDetailProps {
     params: {
@@ -20,6 +21,8 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
     const [order, setOrder] = useState<any>(null);
     const [service, setService] = useState<any>(null);
     const [documents, setDocuments] = useState<any[]>([]);
+    const [certificates, setCertificates] = useState<any[]>([]);
+    const [showCertificateUpload, setShowCertificateUpload] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [statusNote, setStatusNote] = useState('');
@@ -64,11 +67,38 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
             );
             setDocuments(docsResponse.documents);
 
+            // Load certificates
+            await loadCertificates();
+
         } catch (error) {
             console.error('Failed to load case details:', error);
         } finally {
             setLoading(false);
         }
+    };
+
+    const loadCertificates = async () => {
+        try {
+            const response = await fetch(`/api/certificates?orderId=${params.id}`);
+            const data = await response.json();
+
+            if (!response.ok) {
+                console.error('[Admin] Certificate API error:', response.status, data);
+                return;
+            }
+
+            if (data.success) {
+                setCertificates(data.certificates);
+                console.log('[Admin] Loaded certificates:', data.certificates.length);
+            }
+        } catch (error) {
+            console.error('[Admin] Failed to load certificates:', error);
+        }
+    };
+
+    const handleCertificateUploadSuccess = () => {
+        setShowCertificateUpload(false);
+        loadCertificates();
     };
 
     const handleStatusUpdate = async () => {
@@ -383,6 +413,31 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
 
                         {/* Right Column - Status Management */}
                         <div className="space-y-6">
+                            {/* Certificates Section */}
+                            <div className="bg-white shadow rounded-lg p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h2 className="text-xl font-bold text-gray-900">Certificates</h2>
+                                    <button
+                                        onClick={() => setShowCertificateUpload(!showCertificateUpload)}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                                    >
+                                        {showCertificateUpload ? 'Cancel' : '+ Upload'}
+                                    </button>
+                                </div>
+
+                                {showCertificateUpload ? (
+                                    <CertificateUpload
+                                        orderId={params.id}
+                                        onUploadSuccess={handleCertificateUploadSuccess}
+                                    />
+                                ) : (
+                                    <CertificateList
+                                        orderId={params.id}
+                                        certificates={certificates}
+                                    />
+                                )}
+                            </div>
+
                             {/* Status Management */}
                             <div className="bg-white shadow rounded-lg p-6">
                                 <h2 className="text-xl font-bold text-gray-900 mb-4">Update Status</h2>
