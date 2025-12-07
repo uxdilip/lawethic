@@ -22,6 +22,7 @@ import {
     Mail,
     Phone
 } from 'lucide-react';
+import FloatingChatButton from '@/components/chat/FloatingChatButton';
 
 interface OrderDetailProps {
     params: {
@@ -565,6 +566,14 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                     </div>
                 </div>
             </div>
+
+            {/* Floating Chat Button */}
+            {order && (
+                <FloatingChatButton
+                    orderId={order.$id}
+                    orderNumber={order.orderNumber || order.$id}
+                />
+            )}
         </div>
     );
 }

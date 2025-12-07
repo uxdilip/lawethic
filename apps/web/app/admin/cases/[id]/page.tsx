@@ -9,6 +9,7 @@ import AdminLayout from '@/components/AdminLayout';
 import { StaffOnly } from '@/components/RoleGuard';
 import Link from 'next/link';
 import CertificateUpload, { CertificateList } from '@/components/admin/CertificateUpload';
+import FloatingChatButton from '@/components/chat/FloatingChatButton';
 
 interface CaseDetailProps {
     params: {
@@ -514,9 +515,6 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                                         📧 Send Email to Customer
                                     </button>
                                     <button className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-left">
-                                        💬 Open Chat
-                                    </button>
-                                    <button className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-left">
                                         📄 Upload Certificate
                                     </button>
                                     <button className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-left">
@@ -524,6 +522,14 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                                     </button>
                                 </div>
                             </div>
+
+                            {/* Chat Section - Floating Button */}
+                            {order && (
+                                <FloatingChatButton
+                                    orderId={order.$id}
+                                    orderNumber={order.orderNumber || order.$id}
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
