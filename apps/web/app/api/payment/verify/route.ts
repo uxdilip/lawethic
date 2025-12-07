@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyPaymentSignature } from '@/lib/razorpay';
 import { serverDatabases, appwriteConfig } from '@lawethic/appwrite';
 import { ID, Query } from 'appwrite';
+import { generateInvoice } from '@/lib/invoice/invoice-generator';
+import { sendPaymentConfirmationEmail } from '@/lib/email/email-service';
 
 export async function POST(request: NextRequest) {
     try {
@@ -78,6 +80,42 @@ export async function POST(request: NextRequest) {
                     method: 'razorpay',
                 }
             );
+
+            // Generate invoice after successful payment
+            try {
+                console.log(`[Payment] Generating invoice for order ${order.$id}...`);
+                const invoice = await generateInvoice(order.$id);
+                console.log(`[Payment] Invoice generated successfully: ${invoice.invoiceNumber}`);
+                // Email is sent automatically by generateInvoice
+            } catch (invoiceError) {
+                console.error('[Payment] Failed to generate invoice:', invoiceError);
+                // Don't fail the payment if invoice generation fails
+                // Admin can regenerate it manually
+
+                // Send payment confirmation email without invoice
+                try {
+                    const formData = typeof order.formData === 'string'
+                        ? JSON.parse(order.formData)
+                        : order.formData;
+
+                    const service = await serverDatabases.getDocument(
+                        appwriteConfig.databaseId,
+                        appwriteConfig.collections.services,
+                        order.serviceId
+                    );
+
+                    await sendPaymentConfirmationEmail(
+                        formData.email,
+                        formData.fullName || formData.businessName || 'Customer',
+                        order.orderNumber,
+                        service.name,
+                        order.amount,
+                        razorpay_payment_id
+                    );
+                } catch (emailError) {
+                    console.error('[Payment] Failed to send confirmation email:', emailError);
+                }
+            }
 
             // TODO: Create order timeline entry
             // TODO: Send confirmation email

@@ -70,6 +70,14 @@ function CheckoutContent() {
             // Create order
             const orderNum = `ORD-${Date.now()}`;
             setOrderNumber(orderNum);
+
+            // Add user email to formData
+            const formDataWithEmail = {
+                ...formData,
+                email: user.email, // Include logged-in user's email
+                fullName: user.name || formData.businessName, // Use name if available
+            };
+
             const orderData = {
                 orderNumber: orderNum,
                 customerId: user.$id,
@@ -77,7 +85,7 @@ function CheckoutContent() {
                 status: 'new',
                 paymentStatus: 'pending',
                 amount: service!.price,
-                formData: JSON.stringify(formData),
+                formData: JSON.stringify(formDataWithEmail),
             };
 
             const order = await databases.createDocument(
@@ -227,6 +235,20 @@ function CheckoutContent() {
 
                             <form onSubmit={handleStep1Submit}>
                                 <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Email Address *
+                                        </label>
+                                        <input
+                                            type="email"
+                                            required
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
+                                            value={user?.email || ''}
+                                            readOnly
+                                            title="Email from your account"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">Using email from your account</p>
+                                    </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
                                             Business Name *

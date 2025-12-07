@@ -2,8 +2,8 @@
 
 ## Status Overview
 - **Phase Status:** In Progress
-- **Completed:** 2/8 modules
-- **Last Updated:** December 2, 2025
+- **Completed:** 7/11 modules
+- **Last Updated:** December 7, 2025
 
 ---
 
@@ -48,10 +48,10 @@
 
 ### ⏳ Pending Tasks
 - [ ] Razorpay webhook integration for payment confirmations
-- [ ] Invoice generation after successful payment
-- [ ] Invoice PDF generation (pdfkit/puppeteer)
-- [ ] Email invoice to customer
-- [ ] Payment receipt generation
+- [x] ~~Invoice generation after successful payment~~ ✅ DONE
+- [x] ~~Invoice PDF generation~~ ✅ DONE (using @react-pdf/renderer)
+- [x] ~~Email invoice to customer~~ ✅ DONE (Resend integration)
+- [ ] Payment receipt generation (separate from invoice)
 - [ ] Refund processing capability
 
 ---
@@ -147,7 +147,7 @@
 ### ⏳ Pending Tasks
 
 #### Advanced Features
-- [ ] **Certificate Upload:** Functional upload (UI placeholder exists)
+- [x] **Certificate Upload:** ✅ COMPLETED - Full implementation with email notifications
 - [ ] **Assignment Section:** Assign to team members, set priority, due dates
 - [ ] **Internal Notes:** Persistent notes visible only to operations team
 - [ ] **Bulk Actions:** Assign multiple cases, export to CSV
@@ -159,51 +159,534 @@
 - [ ] **Notifications:** Auto-notify customers on status changes
 ---
 
-## 3. Real-Time Chat System 📝 **[PENDING]**
+## 3. Customer Order Detail Page ✅ **[COMPLETED]**
 
-### Customer Side Features
-- [ ] Chat icon in dashboard (bottom-right floating button)
-- [ ] Click opens chat panel/modal
-- [ ] See conversation history for each order
-- [ ] Send text messages
-- [ ] Typing indicator (when ops team is typing)
-- [ ] Unread message count badge
-- [ ] Message timestamps
-- [ ] Auto-scroll to latest message
+### ✅ Completed Tasks
 
-### Admin/Operations Side Features
-- [ ] Chat panel in case detail page
-- [ ] See all messages for specific order
-- [ ] Reply to customer messages
-- [ ] Send proactive messages ("We need your PAN card")
-- [ ] Mark conversation as resolved
-- [ ] Quick replies/templates
-- [ ] See customer typing indicator
+#### Page Implementation
+- ✅ `/orders/[id]` route with dynamic order ID
+- ✅ Server-side rendering with proper authentication
+- ✅ Protected route (customers can only see their own orders)
+- ✅ Mobile-responsive design with Tailwind CSS
 
-### Technical Implementation
-- [ ] Use Appwrite Realtime subscriptions
-- [ ] Subscribe to order-specific message changes
-- [ ] Message collection structure:
-  ```json
-  {
-    "orderId": "...",
-    "senderId": "...",
-    "senderType": "customer" | "operations",
-    "senderName": "...",
-    "message": "Text content",
-    "createdAt": "...",
-    "read": false,
-    "readAt": null
-  }
-  ```
-- [ ] Message read receipts
-- [ ] Message delivery status
-- [ ] Handle connection/disconnection gracefully
-- [ ] Offline message queue
+#### Information Sections
+- ✅ **Order Header:**
+  - Order number display
+  - Status badge with color coding
+  - Creation date and time
+  
+- ✅ **Service Information:**
+  - Service name and icon
+  - Full service description
+  - Features list
+  - Estimated delivery time
+  - Amount paid
+  
+- ✅ **Payment Details:**
+  - Payment status with badge
+  - Amount display (formatted INR)
+  - Payment method
+  - Transaction/Payment ID
+  - Payment timestamp
+  
+- ✅ **Documents Section:**
+  - List all uploaded documents
+  - Document names and types
+  - Upload timestamps
+  - Download buttons for each document
+  - Empty state when no documents
+  
+- ✅ **Invoice Section:**
+  - Conditional display (only if invoice exists)
+  - Invoice number display
+  - Generation timestamp
+  - Download invoice button
+  - Direct download via API route
+  - "Pending" state when invoice not yet generated
+  
+- ✅ **Timeline/Activity Log:**
+  - Chronological list of order activities
+  - Activity icons and descriptions
+  - Timestamps for each event
+  - User/system attribution
+  - Empty state handling
+
+#### Download Functionality
+- ✅ Document download with proper authentication
+- ✅ Invoice download via `/api/invoices/download/[fileId]`
+- ✅ Server-side file streaming from Appwrite Storage
+- ✅ Proper content-type headers
+- ✅ Error handling for missing files
+
+#### UI/UX Features
+- ✅ Status badges with color coding (pending, success, completed, etc.)
+- ✅ Loading states for async operations
+- ✅ Error handling and user feedback
+- ✅ Breadcrumb navigation
+- ✅ Back to dashboard link
+- ✅ Professional card-based layout
+- ✅ Responsive grid system
+
+### ⏳ Pending Tasks
+- [ ] Real-time updates using Appwrite Realtime
+- [ ] Chat interface on order page
+- [ ] Re-upload rejected documents
+- [ ] Certificate download (when available)
+- [ ] Print order details option
+- [ ] Share order link functionality
 
 ---
 
-## 4. Notifications System 🔔 **[PENDING]**
+## 4. Invoice Generation System ✅ **[COMPLETED]**
+
+### ✅ Completed Tasks
+
+#### Auto-Generation System
+- ✅ Automatic invoice generation after successful payment
+- ✅ Triggered by payment verification webhook
+- ✅ Unique invoice number generation (format: `INV-YYYY-NNNN`)
+  - Example: `INV-2025-0001`
+  - Auto-increment with year reset
+  - Database counter tracking (`invoice_counter` collection)
+- ✅ PDF generation using `@react-pdf/renderer`
+- ✅ Storage in Appwrite Storage bucket `invoices`
+- ✅ Automatic email delivery to customer with PDF attachment
+
+#### Invoice Content (Professional 2-Page Template)
+- ✅ **Page 1 - Invoice Details:**
+  - Company logo and branding
+  - Company name: "LawEthic - Legal Compliance Services"
+  - Invoice number and date
+  - Customer details (name, email, phone)
+  - Service details with description
+  - Amount breakdown (subtotal, total)
+  - Payment information (method, transaction ID, date)
+  - Professional styling with colors and borders
+  
+- ✅ **Page 2 - Terms & Conditions:**
+  - Payment terms
+  - Refund policy
+  - Service delivery terms
+  - Limitation of liability
+  - Governing law
+  - Contact information
+  - Footer with company details
+
+#### Technical Implementation
+- ✅ Invoice generator module (`lib/invoice/invoice-generator.ts`)
+- ✅ React PDF template component (`lib/invoice/invoice-template.tsx`)
+- ✅ TypeScript types for invoice data (`lib/invoice/invoice-types.ts`)
+- ✅ Counter management with atomic increments
+- ✅ Manual multipart form-data encoding for file upload (workaround for Next.js/SDK compatibility)
+- ✅ Timeline entry creation on invoice generation
+- ✅ Order document update with invoice metadata
+
+#### Database Schema
+- ✅ **invoice_counter collection:**
+  - `year` (number) - Current year
+  - `lastNumber` (number) - Last invoice number used
+  - `prefix` (string) - Invoice prefix (INV)
+  
+- ✅ **orders collection additions:**
+  - `invoiceFileId` (string) - Appwrite Storage file ID
+  - `invoiceNumber` (string) - Generated invoice number
+  - `invoiceGeneratedAt` (datetime) - Generation timestamp
+  
+- ✅ **invoices storage bucket:**
+  - PDF files only
+  - Public read access
+  - Admin create/update/delete permissions
+  - Proper CORS configuration
+
+#### Admin Features
+- ✅ Manual invoice regeneration API (`/api/invoices/generate`)
+- ✅ Invoice download API with authentication (`/api/invoices/download/[fileId]`)
+- ✅ Server-side file access (bypasses permission issues)
+- ✅ Invoice display in order detail pages (customer & admin)
+
+#### Error Handling
+- ✅ Graceful failure (doesn't break payment flow)
+- ✅ Detailed error logging
+- ✅ Timeline entry for failed generations
+- ✅ Admin can manually regenerate if auto-generation fails
+- ✅ Retry mechanism in place
+
+### ⏳ Pending Tasks
+- [ ] Invoice customization settings (admin panel)
+- [ ] Multiple invoice templates
+- [ ] GST/Tax calculations (currently zero-rated)
+- [ ] Invoice preview before sending
+- [ ] Bulk invoice generation
+- [ ] Invoice export in different formats
+- [ ] Invoice analytics and reporting
+
+---
+
+## 5. Email Notification System ✅ **[COMPLETED]**
+
+### ✅ Completed Tasks
+
+#### Email Service Setup
+- ✅ Resend email service integration
+- ✅ API key configuration in `.env.local`
+- ✅ Email service module (`lib/email/email-service.ts`)
+- ✅ HTML email templates with responsive design
+- ✅ Lazy initialization for environment variable handling
+- ✅ Error handling and logging
+
+#### Email Types Implemented
+- ✅ **Invoice Email:**
+  - Sent automatically after invoice generation
+  - Includes PDF invoice as attachment
+  - Professional HTML template
+  - Order details and payment summary
+  - Direct link to order page
+  - Personalized with customer name
+  
+- ✅ **Payment Confirmation Email:**
+  - Sent when invoice generation fails (fallback)
+  - Confirms payment received
+  - Order details without invoice
+  - Link to order details
+  - Payment ID and amount
+  
+- ✅ **Order Status Update Email:**
+  - Ready for admin integration
+  - Status change notifications
+  - Custom message support
+  - Color-coded by status
+  - Direct link to order
+  
+- ✅ **Document Upload Notification:**
+  - Ready for admin integration
+  - Alerts customer of new documents
+  - Document name display
+  - Link to order page
+
+- ✅ **Certificate Ready Email:**
+  - Sent automatically when admin uploads certificate
+  - Professional celebration template with 🎉 emoji
+  - Lists all uploaded certificates with document types
+  - Download button linking to order page
+  - Personalized congratulations message
+  - Subject: "🎉 Your Certificates Are Ready - Order [Number]"
+
+#### Email Template Features
+- ✅ Professional HTML design with LawEthic branding
+- ✅ Responsive layout (mobile-friendly)
+- ✅ Branded colors (#1e40af blue theme)
+- ✅ Call-to-action buttons
+- ✅ Proper email headers and footers
+- ✅ Plain text fallback versions
+- ✅ Personalization (customer name, order details)
+- ✅ Company branding and contact info
+
+#### Integration Points
+- ✅ **Automatic Triggers:**
+  - Invoice generation → Invoice email with PDF
+  - Payment success (no invoice) → Confirmation email
+  - All emails sent automatically via payment webhook
+  
+- ✅ **Manual Triggers (Ready):**
+  - Status update emails (admin can trigger)
+  - Document upload notifications (admin can trigger)
+
+#### Testing & Configuration
+- ✅ Test script (`scripts/test-email.ts`)
+- ✅ Environment variable validation
+- ✅ Rate limit handling (1-second delays)
+- ✅ Resend test domain configuration (`onboarding@resend.dev`)
+- ✅ Comprehensive documentation (`lib/email/README.md`)
+- ✅ Error handling (never breaks payment flow)
+
+#### Production Setup
+- ✅ Using Resend's test domain for development
+- ✅ Rate limit handling (2 requests/second free tier)
+- ✅ Proper sender configuration
+- ✅ API key security (environment variables)
+- ✅ Email delivery logging
+
+### ⏳ Pending Tasks
+- [ ] Domain verification for production (lawethic.com)
+- [ ] SPF, DKIM, DMARC DNS records
+- [ ] Admin panel email trigger buttons
+- [ ] Email templates as separate files
+- [ ] Email preview endpoint
+- [ ] Unsubscribe functionality
+- [ ] Email analytics and tracking
+- [ ] Bulk email sending
+- [ ] Email queue for reliability
+- [ ] Webhook handling for bounces/complaints
+
+---
+
+## 6. Certificate Upload & Delivery System 🎓 ✅ **[COMPLETED]**
+
+### ✅ Completed Tasks
+
+#### Storage & Database Setup
+- ✅ Appwrite Storage bucket created: `certificates`
+- ✅ Bucket configuration: 10MB max file size, PDF/images/docs allowed
+- ✅ Proper permissions: read(any), create/update/delete(admin/operations)
+- ✅ Database collection: `order_certificates` with 12 attributes
+- ✅ Attributes: orderId, documentType, documentName, fileName, fileId, fileSize, mimeType, uploadedBy, uploadedByName, uploadedAt, downloadCount, status
+- ✅ Indexes: orderId_idx, status_idx
+- ✅ Setup scripts created and verified
+
+#### Backend API Routes
+- ✅ **Upload API** (`/api/admin/certificates/upload`)
+  - REST API approach (avoids SDK stream compatibility issues)
+  - Manual multipart form-data encoding
+  - File validation (size, type)
+  - Creates certificate record in database
+  - Automatic timeline entry creation
+  - **Automatic email notification** to customer with certificate details
+  - Returns certificate metadata
+  
+- ✅ **List API** (`/api/certificates`)
+  - Query certificates by orderId
+  - Fallback authentication (handles cookie issues)
+  - Returns formatted certificate array with download URLs
+  - Proper error handling and logging
+  
+- ✅ **Download API** (`/api/certificates/download/[fileId]`)
+  - Streams certificate files from storage
+  - Updates download count automatically
+  - Creates timeline entry on download
+  - Optional authentication (development-friendly)
+  - Proper content-type headers
+
+#### Admin Interface
+- ✅ **CertificateUpload Component** (`components/admin/CertificateUpload.tsx`)
+  - Drag & drop file upload interface
+  - Document type selector with 9 types:
+    - GST Certificate
+    - Incorporation Certificate
+    - PAN Card
+    - TAN Card
+    - Partnership Deed
+    - MOA (Memorandum of Association)
+    - AOA (Articles of Association)
+    - Trademark Certificate
+    - Other Documents
+  - File validation (size, type)
+  - Upload progress states
+  - Current user detection for proper attribution
+  - Success/error feedback
+  
+- ✅ **CertificateList Component**
+  - Displays all uploaded certificates
+  - Shows document name, type, file name, size
+  - Upload date and uploader name
+  - Download count tracking
+  - Download and delete action buttons
+  - Empty state handling
+
+- ✅ **Admin Case Page Integration** (`/admin/cases/[id]`)
+  - Certificate management section in right column
+  - Toggle between upload and list views
+  - Automatic refresh after upload
+  - Detailed error logging
+  - Seamless UX flow
+
+#### Customer Interface
+- ✅ **Order Detail Page Integration** (`/orders/[id]`)
+  - Certificates section in Deliverables area
+  - Dynamic certificate display
+  - Download links for each certificate
+  - Document type and upload date display
+  - Empty state: "No certificates uploaded yet. Pending"
+  - Automatic list refresh
+
+#### Email Notifications
+- ✅ **Certificate Ready Email Template**
+  - Professional HTML design with celebration theme
+  - Lists all uploaded certificates with document types
+  - Download button linking to order detail page
+  - Personalized congratulations message
+  - Company branding and styling
+  - Subject: "🎉 Your Certificates Are Ready - Order [Number]"
+  - Sent automatically on certificate upload
+  - Development mode: Sends to verified test email (dk81520826@gmail.com)
+
+#### Email Configuration
+- ✅ Development mode handling (Resend test domain)
+- ✅ Environment variable: `RESEND_TEST_EMAIL`
+- ✅ Automatic redirect to verified email in development
+- ✅ Logs show both original and actual recipients
+- ✅ Production-ready (pending domain verification)
+
+#### Order Form Enhancement
+- ✅ **Checkout Form Updated** (`/app/checkout/page.tsx`)
+  - Automatically includes logged-in user's email in order data
+  - Email field display (read-only from account)
+  - Proper formData structure with email
+  - All new orders include customer email
+
+#### Data Migration
+- ✅ **Email Backfill Script** (`scripts/fix-order-emails.ts`)
+  - Updates existing orders with user email addresses
+  - REST API approach for reliability
+  - Updates all 7 historical orders
+  - Enables email notifications for past orders
+  - Detailed logging and error handling
+
+#### Testing & Documentation
+- ✅ Comprehensive testing guide (`CERTIFICATE-TESTING-GUIDE.md`)
+- ✅ Test script for verification (`scripts/test-certificates.ts`)
+- ✅ Email notification test script (`scripts/test-email-notification.ts`)
+- ✅ Order email verification script (`scripts/check-order-emails.ts`)
+- ✅ All scripts working and validated
+
+#### Timeline Integration
+- ✅ Automatic timeline entries for:
+  - Certificate upload (with document type)
+  - Certificate download (tracked per user)
+  - Proper user attribution
+  - Detailed activity descriptions
+
+#### Technical Challenges Resolved
+- ✅ **SDK Stream Compatibility** - Switched to REST API with manual multipart encoding
+- ✅ **Authentication Cookie Issues** - Implemented fallback authentication using admin API key
+- ✅ **Email Service Limitations** - Configured development mode to use verified test email
+- ✅ **Missing Order Emails** - Created migration script and updated checkout form
+
+### Features Summary
+✅ **Admin can:**
+- Upload multiple certificate types
+- View all certificates for an order
+- Track download counts
+- See who uploaded and when
+- Delete certificates (UI ready)
+
+✅ **Customer receives:**
+- Automatic email notification when certificates ready
+- List of all available certificates
+- Direct download links
+- Certificate details (type, date, name)
+
+✅ **System automatically:**
+- Validates file uploads (size, type)
+- Creates database records
+- Updates timeline
+- Sends email notifications
+- Tracks downloads
+- Handles errors gracefully
+
+### ⏳ Pending Enhancements
+- [ ] Certificate deletion functionality (backend)
+- [ ] Batch certificate upload
+- [ ] Certificate preview before download
+- [ ] Certificate versioning
+- [ ] Advanced permissions (role-based access)
+- [ ] Email template customization per service type
+- [ ] Analytics dashboard for certificate metrics
+- [ ] Production email domain setup (lawethic.com)
+
+---
+
+## 7. Real-Time Chat System 💬 **[COMPLETED]** ✅
+
+### ✅ Completed Tasks
+
+#### Database Setup
+- ✅ Messages collection created with proper schema:
+  - `orderId` (string, required) - Links message to order
+  - `senderId` (string, required) - User ID who sent message
+  - `senderName` (string, required) - Display name
+  - `senderRole` (enum, required) - customer/admin/operations/system
+  - `message` (string, required) - Message content (max 5000 chars)
+  - `messageType` (enum, required) - text/system
+  - `read` (boolean, required) - Read status
+  - `readAt` (datetime, optional) - When message was read
+  - Indexes: orderId_idx, senderId_idx, createdAt_idx
+
+#### API Routes
+- ✅ GET `/api/messages` - Fetch message history by orderId
+- ✅ POST `/api/messages/send` - Send new message (not used, bypassed)
+- ✅ PATCH `/api/messages/mark-read` - Mark messages as read
+- ✅ GET `/api/messages/unread-count` - Get unread count for badge
+
+#### Customer Side Implementation
+- ✅ **FloatingChatButton Component:**
+  - Blue floating button (bottom-right corner)
+  - Unread message count badge (red circle)
+  - Shows "9+" if more than 9 unread
+  - Polls for unread count every 30 seconds
+  - Opens ChatPanel on click
+  
+- ✅ **ChatPanel Component:**
+  - Slide-in panel from right side
+  - Message history with blue (customer) and white (admin) bubbles
+  - Real-time message updates via Appwrite Realtime
+  - Auto-scroll to latest message
+  - Message input with send button
+  - Timestamps ("Just now", "5m ago", "2h ago", etc.)
+  - Loading states
+  - Direct SDK usage (bypasses API route authentication issues)
+  
+- ✅ **Integration:**
+  - Added to `/orders/[id]` page
+  - Fixed position, doesn't interfere with page layout
+
+#### Admin Side Implementation
+- ✅ **FloatingChatButton on Admin:**
+  - Same floating button style as customer
+  - Consistent UI/UX across both sides
+  - Unread count badge
+  - Opens ChatPanel on click
+  
+- ✅ **Integration:**
+  - Added to `/admin/cases/[id]` page
+  - Replaced embedded chat box with floating button
+  - Same real-time functionality
+
+#### Real-Time Features
+- ✅ Appwrite Realtime subscriptions working perfectly
+- ✅ Instant message delivery (both directions)
+- ✅ No duplicate messages (added existence check)
+- ✅ Messages appear immediately without refresh
+- ✅ Proper cleanup on component unmount
+- ✅ Connection handled gracefully
+
+#### Message Features
+- ✅ Send text messages
+- ✅ Message timestamps with relative formatting
+- ✅ Read receipts (marks messages as read)
+- ✅ Auto-scroll to bottom on new messages
+- ✅ Loading states during send
+- ✅ Error handling with user feedback
+
+#### Technical Implementation
+- ✅ Uses Appwrite Client SDK directly from components
+- ✅ Leverages existing client-side session authentication
+- ✅ Real-time subscription: `databases.main.collections.messages.documents`
+- ✅ Message creation via `databases.createDocument()`
+- ✅ User info via `account.get()`
+- ✅ Duplicate prevention with message ID checking
+- ✅ Proper useEffect cleanup functions
+
+#### Authentication Solution
+- ✅ Bypassed problematic API route cookie authentication
+- ✅ Direct SDK calls work reliably with client session
+- ✅ No 401 errors or authentication issues
+- ✅ Simpler, more maintainable code
+
+### ⏳ Pending Enhancements
+- [ ] Typing indicators
+- [ ] File/image attachments
+- [ ] Message editing/deletion
+- [ ] Quick reply templates for admins
+- [ ] Mark conversation as resolved
+- [ ] Message search functionality
+- [ ] Emoji picker
+- [ ] Push notifications for new messages
+- [ ] Desktop notifications
+- [ ] Message sound notifications
+
+---
+
+## 8. Notifications System 🔔 **[PENDING]**
 
 ### In-App Notifications
 - [ ] Bell icon in header with unread count badge
@@ -251,9 +734,29 @@
 
 ---
 
-## 5. Document Verification Workflow 📄 **[PENDING]**
+## 8. Document Verification Workflow 📄 **[PARTIALLY COMPLETED]**
 
-### Admin Actions on Documents
+### ✅ Completed Tasks (Admin Side)
+- ✅ Document list display in admin case detail
+- ✅ Document status badges (Verified ✓ / Pending / Rejected ✗)
+- ✅ Verify button functionality
+- ✅ Reject button with reason prompt
+- ✅ Rejection reason storage and display
+- ✅ Document download/preview buttons
+- ✅ Timeline entry creation on verification actions
+- ✅ Status display with color coding
+
+### ⏳ Pending Tasks
+
+### ⏳ Pending Tasks
+
+- [ ] **Customer Side Document Re-upload:**
+  - Show rejection reason on order detail page
+  - Re-upload button for rejected documents
+  - Upload additional requested documents
+  - Real-time status updates
+  
+- [ ] **Request More Documents:**
 - [ ] **Verify** - Mark document as verified ✓
   - Auto-update document status
   - Create timeline entry
@@ -304,7 +807,33 @@ Upload → Pending Review → Admin Reviews
 
 ---
 
-## 6. Invoice Generation 🧾 **[PENDING]**
+## 9. Invoice Generation 🧾 **[COMPLETED - See Section 4]**
+
+_This section has been moved to Section 4 for better organization._
+
+---
+
+## 10. Order Timeline/Activity Log 📅 **[PARTIALLY COMPLETED]**
+
+### ✅ Completed Tasks
+- ✅ Timeline display on customer order detail page
+- ✅ Timeline display on admin case detail page
+- ✅ Database collection: `order_timeline`
+- ✅ Timeline entry structure with all required fields:
+  - `orderId`, `action`, `details`, `performedBy`
+  - `status`, `note`, `updatedBy` (legacy fields)
+  - Timestamps and user attribution
+- ✅ Automatic timeline entries for:
+  - Order creation
+  - Payment received
+  - Document verification/rejection
+  - Status changes
+  - Invoice generation
+- ✅ Chronological display (newest first)
+- ✅ Icon and color coding by activity type
+- ✅ User-friendly descriptions
+
+### ⏳ Pending Tasks
 
 ### Auto-Generation After Payment
 - [ ] Trigger invoice creation after successful payment
@@ -363,7 +892,14 @@ Upload → Pending Review → Admin Reviews
 
 ## 7. Order Timeline/Activity Log 📅 **[PENDING]**
 
-### Timeline Features
+### ⏳ Pending Tasks
+- [ ] Filter timeline by activity type
+- [ ] Search timeline entries
+- [ ] Export timeline to PDF
+- [ ] Expandable entries for detailed metadata
+- [ ] Internal notes (visible only to admin)
+- [ ] Customer vs. admin visibility rules
+- [ ] Real-time timeline updates
 - [ ] Complete activity history for each order
 - [ ] Chronological display (newest first or oldest first toggle)
 - [ ] Timeline entry types:
@@ -437,9 +973,30 @@ Upload → Pending Review → Admin Reviews
 
 ---
 
-## 8. Role-Based Access Control (RBAC) 🔐 **[PENDING]**
+## 11. Role-Based Access Control (RBAC) 🔐 **[PARTIALLY COMPLETED]**
 
-### Role Definitions
+### ✅ Completed Tasks
+- ✅ User role system implemented (`customer`, `operations`, `admin`)
+- ✅ Role-based middleware for route protection
+- ✅ Protected `/admin/*` routes
+- ✅ RoleGuard components (StaffOnly, AdminOnly)
+- ✅ Auth utilities (getUserRole, isAdmin, isStaff)
+- ✅ Script to set user roles (`set-user-role.ts`, `set-role-by-id.ts`)
+- ✅ Session verification on protected routes
+- ✅ Conditional UI rendering based on role
+- ✅ Customer: Can only view own orders
+- ✅ Operations/Admin: Can access admin panel and manage cases
+
+### ⏳ Pending Tasks
+
+### ⏳ Pending Tasks
+- [ ] Operations users see only assigned cases (currently see all)
+- [ ] Case assignment functionality
+- [ ] Team management page (add/remove team members)
+- [ ] Granular permissions system
+- [ ] Audit log for admin actions
+- [ ] Permission-based API route protection (more granular)
+- [ ] Appwrite Teams integration for role management
 
 #### Customer Role
 - Default role for all signups
@@ -522,11 +1079,13 @@ Upload → Pending Review → Admin Reviews
 
 ---
 
-## 9. Additional Features & Enhancements 🚀 **[FUTURE]**
+## 12. Additional Features & Enhancements 🚀 **[FUTURE]**
 
 ### High Priority Enhancements
-- [ ] Order detail page for customers (`/orders/[id]`)
+- [x] ~~Order detail page for customers (`/orders/[id]`)~~ ✅ DONE
+- [x] ~~Invoice download functionality~~ ✅ DONE
 - [ ] Certificate download functionality
+- [ ] Certificate upload (admin side)
 - [ ] Search and filter improvements
 - [ ] Mobile responsive improvements
 - [ ] Error boundary components
@@ -555,7 +1114,7 @@ Upload → Pending Review → Admin Reviews
 
 ---
 
-## 10. Testing & Deployment 🧪 **[ONGOING]**
+## 13. Testing & Deployment 🧪 **[ONGOING]**
 
 ### Testing Tasks
 - [ ] Unit tests for critical functions
@@ -584,50 +1143,98 @@ Upload → Pending Review → Admin Reviews
 
 ## Progress Summary
 
-### Completed (2/8)
+### Completed (7/11)
 1. ✅ Payment Integration - Full end-to-end payment with Razorpay
 2. ✅ Admin Dashboard - Complete case management system with filters, document verification, status updates
+3. ✅ Customer Order Detail Page - Full order information display with documents and invoice
+4. ✅ Invoice Generation System - Automatic PDF generation with email delivery
+5. ✅ Email Notification System - Professional emails with Resend integration
+6. ✅ Document Verification Workflow (Admin) - Verify/reject documents with reasons
+7. ✅ Order Timeline/Activity Log (Basic) - Display timeline on order pages
 
-### In Progress (0/8)
-_None currently_
+### Partially Completed (2/11)
+8. ⏸️ Document Verification Workflow (Customer) - Admin side done, customer re-upload pending
+9. ⏸️ Role-Based Access Control - Core done, advanced features pending
 
-### Not Started (6/8)
-3. ⏳ Real-Time Chat System
-4. ⏳ Notifications System
-5. ⏳ Document Verification Workflow (Basic done, advanced features pending)
-6. ⏳ Invoice Generation
-7. ⏳ Order Timeline/Activity Log
-8. ⏳ Role-Based Access Control (Core done, advanced features pending)
+### Not Started (2/11)
+10. ⏳ Real-Time Chat System
+11. ⏳ In-App Notifications System
 
 ---
 
 ## Next Steps (Priority Order)
 
+### ✅ Recently Completed
+1. ✅ ~~Complete admin authentication~~ 
+2. ✅ ~~Create admin dashboard layout~~ 
+3. ✅ ~~Implement order listing for admin~~ 
+4. ✅ ~~Admin case detail page~~ 
+5. ✅ ~~Document verification workflow (admin)~~ 
+6. ✅ ~~Customer order detail page~~ 
+7. ✅ ~~Invoice generation system~~
+8. ✅ ~~Email notification system~~
+
 ### Immediate (This Week)
-1. ✅ ~~Complete admin authentication~~ DONE
-2. ✅ ~~Create admin dashboard layout~~ DONE
-3. ✅ ~~Implement order listing for admin~~ DONE
-4. ✅ ~~Admin case detail page~~ DONE
-5. ✅ ~~Document verification workflow~~ DONE
-6. Create customer order detail page
-7. Test admin system with real data
-8. Set up admin user accounts
+1. **Certificate Upload & Delivery System**
+   - Admin upload certificate/final documents
+   - Store in Appwrite Storage
+   - Display in customer order page
+   - Download functionality
+   - Email notification to customer
+   
+2. **Customer Document Re-upload**
+   - Show rejection reasons on order page
+   - Re-upload button for rejected docs
+   - Upload additional requested documents
+   - Status updates after re-upload
+
+3. **Email Integration with Admin Actions**
+   - Send status update emails from admin panel
+   - Document upload notifications
+   - Manual email trigger buttons
 
 ### Short Term (Next 2 Weeks)
-1. Certificate upload and delivery
-2. Invoice generation system
-3. Real-time chat system (customer ↔ operations)
-4. Email notifications (status updates, payment confirmation)
+1. **Real-time Chat System**
+   - Customer ↔ Operations communication
+   - Appwrite Realtime subscriptions
+   - Chat UI component
+   - Message persistence
+   - Unread indicators
+   
+2. **In-App Notifications**
+   - Bell icon with unread count
+   - Notification dropdown
+   - Real-time updates
+   - Mark as read functionality
+   - Database collection for notifications
+
+3. **Enhanced Timeline**
+   - Internal notes visibility rules
+   - Timeline filtering
+   - Export to PDF
+   - Real-time updates
 
 ### Medium Term (Next Month)
-1. Real-time chat system
-2. Complete notification system
-3. Order timeline implementation
-4. Advanced RBAC (team assignments, permissions)
-5. Admin analytics dashboard
+1. **Advanced RBAC**
+   - Case assignment system
+   - Team member management
+   - Operations users see only assigned cases
+   - Granular permissions
+   
+2. **Analytics Dashboard**
+   - Revenue reports
+   - Service performance
+   - Monthly trends
+   - Export capabilities
+   
+3. **Production Deployment**
+   - Domain verification for emails
+   - Production Appwrite setup
+   - Security audit
+   - Performance optimization
 
 ---
 
-**Last Updated:** December 2, 2025  
-**Current Focus:** Admin Dashboard Module - COMPLETED ✅  
-**Next Milestone:** Invoice Generation & Certificate Upload
+**Last Updated:** December 7, 2025  
+**Current Focus:** Invoice & Email System - COMPLETED ✅  
+**Next Milestone:** Certificate Upload & Real-time Chat System
