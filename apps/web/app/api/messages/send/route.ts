@@ -17,9 +17,11 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Get user from session
+        // Get user from session cookie
         const cookieStore = cookies();
         const allCookies = cookieStore.getAll();
+
+        console.log('[Messages API] All cookies:', allCookies.map(c => c.name));
 
         // Find Appwrite session cookie
         const sessionCookie = allCookies.find(c =>
@@ -29,36 +31,61 @@ export async function POST(request: NextRequest) {
         );
 
         if (!sessionCookie) {
+            console.error('[Messages API] No session cookie found');
             return NextResponse.json(
-                { error: 'Unauthorized - No session found' },
+                { error: 'Unauthorized - Please login again' },
                 { status: 401 }
             );
         }
 
-        // Create user client with session
-        const userClient = new Client()
+        console.log('[Messages API] Using session cookie:', sessionCookie.name);
+
+        // Check if API key is available
+        const apiKey = process.env.APPWRITE_API_KEY;
+        if (!apiKey) {
+            console.error('[Messages API] APPWRITE_API_KEY is not set!');
+            return NextResponse.json(
+                { error: 'Server configuration error - API key missing' },
+                { status: 500 }
+            );
+        }
+
+        console.log('[Messages API] API key loaded:', apiKey.substring(0, 20) + '...');
+
+        // Use admin client to get user info and create message
+        const adminClient = new Client()
             .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || '')
-            .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT || '');
+            .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT || '')
+            .setKey(apiKey);
 
-        // Set session cookie
-        userClient.headers['cookie'] = `${sessionCookie.name}=${sessionCookie.value}`;
+        const databases = new Databases(adminClient);
 
-        // Get current user
-        const { Account } = await import('node-appwrite');
-        const account = new Account(userClient);
-        const user = await account.get();
+        // Get user by verifying session via REST API
+        const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || '';
+        const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT || '';
+
+        const userResponse = await fetch(`${endpoint}/account`, {
+            headers: {
+                'X-Appwrite-Project': projectId,
+                'Cookie': `${sessionCookie.name}=${sessionCookie.value}`
+            }
+        });
+
+        if (!userResponse.ok) {
+            console.error('[Messages API] Failed to get user from session');
+            return NextResponse.json(
+                { error: 'Unauthorized - Invalid session' },
+                { status: 401 }
+            );
+        }
+
+        const user = await userResponse.json();
+        console.log('[Messages API] User authenticated:', user.name);
 
         // Get user role from prefs or default to customer
         const userRole = (user.prefs?.role as string) || 'customer';
 
-        // Create message using admin client
-        const adminClient = new Client()
-            .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || '')
-            .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT || '')
-            .setKey(process.env.APPWRITE_API_KEY || '');
-
-        const databases = new Databases(adminClient);
-
+        // Create message
         const newMessage = await databases.createDocument(
             DATABASE_ID,
             MESSAGES_COLLECTION,
@@ -89,7 +116,10 @@ export async function POST(request: NextRequest) {
         });
 
     } catch (error: any) {
-        console.error('[Messages API] Error sending message:', error);
+        console.error('[Messages API] Error sending message:', {
+            message: error.message,
+            stack: error.stack
+        });
         return NextResponse.json(
             { error: error.message || 'Failed to send message' },
             { status: 500 }

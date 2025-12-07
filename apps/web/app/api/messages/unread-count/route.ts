@@ -21,22 +21,35 @@ export async function GET(request: NextRequest) {
         );
 
         if (!sessionCookie) {
-            return NextResponse.json(
-                { error: 'Unauthorized - No session found' },
-                { status: 401 }
-            );
+            // Return 0 if no session (non-critical)
+            return NextResponse.json({
+                success: true,
+                unreadCount: 0,
+                orderId: orderId || null
+            });
         }
 
-        // Get current user
-        const userClient = new Client()
-            .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || '')
-            .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT || '');
+        // Get current user via REST API
+        const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || '';
+        const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT || '';
 
-        userClient.headers['cookie'] = `${sessionCookie.name}=${sessionCookie.value}`;
+        const userResponse = await fetch(`${endpoint}/account`, {
+            headers: {
+                'X-Appwrite-Project': projectId,
+                'Cookie': `${sessionCookie.name}=${sessionCookie.value}`
+            }
+        });
 
-        const { Account } = await import('node-appwrite');
-        const account = new Account(userClient);
-        const user = await account.get();
+        if (!userResponse.ok) {
+            // Return 0 if can't get user (non-critical)
+            return NextResponse.json({
+                success: true,
+                unreadCount: 0,
+                orderId: orderId || null
+            });
+        }
+
+        const user = await userResponse.json();
 
         // Use admin client to query messages
         const client = new Client()
@@ -71,9 +84,11 @@ export async function GET(request: NextRequest) {
 
     } catch (error: any) {
         console.error('[Messages API] Error getting unread count:', error);
-        return NextResponse.json(
-            { error: error.message || 'Failed to get unread count' },
-            { status: 500 }
-        );
+        // Return 0 on error (non-critical)
+        return NextResponse.json({
+            success: true,
+            unreadCount: 0,
+            orderId: null
+        });
     }
 }
