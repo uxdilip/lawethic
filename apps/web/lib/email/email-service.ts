@@ -47,21 +47,7 @@ export async function sendEmail(options: EmailOptions) {
         if (options.text) emailData.text = options.text;
         if (options.attachments) emailData.attachments = options.attachments;
 
-            originalTo: originalRecipients,
-            actualTo: emailData.to,
-            isDevelopment,
-            subject: emailData.subject,
-            from: emailData.from,
-            hasHtml: !!options.html,
-            hasAttachments: !!options.attachments
-        });
-
         const result = await client.emails.send(emailData);
-
-            data: result.data,
-            error: result.error,
-            success: !result.error
-        });
 
         if (result.error) {
             console.error('[Email] Resend API error:', result.error);

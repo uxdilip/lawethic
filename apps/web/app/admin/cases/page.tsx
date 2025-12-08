@@ -64,7 +64,19 @@ export default function AdminCasesPage() {
                 [Query.orderDesc('$createdAt'), Query.limit(1000)]
             );
 
-            setOrders(response.documents);
+            // Parse formData for each order
+            const parsedOrders = response.documents.map(order => {
+                if (typeof order.formData === 'string') {
+                    try {
+                        order.formData = JSON.parse(order.formData);
+                    } catch (e) {
+                        console.error('Error parsing formData:', e);
+                    }
+                }
+                return order;
+            });
+
+            setOrders(parsedOrders);
         } catch (error) {
             console.error('Failed to load orders:', error);
         } finally {

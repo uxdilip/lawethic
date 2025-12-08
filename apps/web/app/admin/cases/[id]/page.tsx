@@ -535,22 +535,6 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                                 </div>
                             </div>
 
-                            {/* Quick Actions */}
-                            <div className="bg-white shadow rounded-lg p-6">
-                                <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
-                                <div className="space-y-2">
-                                    <button className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-left">
-                                        📧 Send Email to Customer
-                                    </button>
-                                    <button className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-left">
-                                        📄 Upload Certificate
-                                    </button>
-                                    <button className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-left">
-                                        📋 View Timeline
-                                    </button>
-                                </div>
-                            </div>
-
                             {/* Chat Section - Floating Button */}
                             {order && (
                                 <FloatingChatButton

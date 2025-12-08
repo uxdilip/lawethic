@@ -46,16 +46,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const navigation = [
         { name: 'Dashboard', href: '/admin/dashboard', icon: '📊' },
         { name: 'Cases', href: '/admin/cases', icon: '📋' },
-        { name: 'Customers', href: '/admin/customers', icon: '👥' },
-        { name: 'Services', href: '/admin/services', icon: '⚙️' },
     ];
-
-    if (userRole === 'admin') {
-        navigation.push(
-            { name: 'Team', href: '/admin/team', icon: '👨‍💼' },
-            { name: 'Analytics', href: '/admin/analytics', icon: '📈' }
-        );
-    }
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -77,8 +68,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                                             key={item.name}
                                             href={item.href}
                                             className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors ${isActive
-                                                    ? 'border-blue-500 text-gray-900'
-                                                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                                                ? 'border-blue-500 text-gray-900'
+                                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                                                 }`}
                                         >
                                             <span className="mr-2">{item.icon}</span>
@@ -143,8 +134,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                                 key={item.name}
                                 href={item.href}
                                 className={`block px-3 py-2 rounded-md text-base font-medium ${isActive
-                                        ? 'bg-blue-50 text-blue-600'
-                                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                    ? 'bg-blue-50 text-blue-600'
+                                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                                     }`}
                             >
                                 <span className="mr-2">{item.icon}</span>
