@@ -35,8 +35,6 @@ export async function GET(request: NextRequest) {
         const cookieStore = cookies();
         const allCookies = cookieStore.getAll();
 
-        console.log('[Certificates API] Request headers:', request.headers.get('cookie'));
-        console.log('[Certificates API] All cookies from store:', allCookies.map(c => `${c.name}=${c.value.substring(0, 20)}...`));
 
         // Try to find Appwrite session cookie
         // Appwrite uses cookies like: a_session_[projectId]_legacy or fallback
@@ -47,11 +45,9 @@ export async function GET(request: NextRequest) {
         );
 
         if (!sessionCookie) {
-            console.log('[Certificates API] No session cookie found. Available cookies:', allCookies.map(c => c.name).join(', '));
 
             // For now, skip authentication and use API key directly
             // This is a workaround - in production, implement proper auth
-            console.log('[Certificates API] Falling back to API key authentication');
 
             // Use admin client to fetch certificates
             const certificates = await databases.listDocuments(
@@ -86,7 +82,6 @@ export async function GET(request: NextRequest) {
             });
         }
 
-        console.log('[Certificates API] Using session cookie:', sessionCookie.name);
 
         // Verify user has access to this order
         const userClient = new Client()
@@ -98,7 +93,6 @@ export async function GET(request: NextRequest) {
 
         try {
             const order = await userDatabases.getDocument(DATABASE_ID, ORDERS_COLLECTION_ID, orderId);
-            console.log('[Certificates API] User verified for order:', orderId);
         } catch (error: any) {
             console.error('[Certificates API] Access denied:', error.message);
             return NextResponse.json(

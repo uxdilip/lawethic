@@ -47,7 +47,6 @@ export async function sendEmail(options: EmailOptions) {
         if (options.text) emailData.text = options.text;
         if (options.attachments) emailData.attachments = options.attachments;
 
-        console.log('[Email] Sending email:', {
             originalTo: originalRecipients,
             actualTo: emailData.to,
             isDevelopment,
@@ -59,7 +58,6 @@ export async function sendEmail(options: EmailOptions) {
 
         const result = await client.emails.send(emailData);
 
-        console.log('[Email] Resend API response:', {
             data: result.data,
             error: result.error,
             success: !result.error
@@ -70,7 +68,6 @@ export async function sendEmail(options: EmailOptions) {
             return { success: false, error: result.error };
         }
 
-        console.log('[Email] Sent successfully, ID:', result.data?.id);
         return { success: true, id: result.data?.id };
     } catch (error: any) {
         console.error('[Email] Failed to send:', {

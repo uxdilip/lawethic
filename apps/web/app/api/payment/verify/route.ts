@@ -83,9 +83,7 @@ export async function POST(request: NextRequest) {
 
             // Generate invoice after successful payment
             try {
-                console.log(`[Payment] Generating invoice for order ${order.$id}...`);
                 const invoice = await generateInvoice(order.$id);
-                console.log(`[Payment] Invoice generated successfully: ${invoice.invoiceNumber}`);
                 // Email is sent automatically by generateInvoice
             } catch (invoiceError) {
                 console.error('[Payment] Failed to generate invoice:', invoiceError);

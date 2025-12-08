@@ -18,7 +18,6 @@ export async function GET(
         // TODO: Add authentication check and verify user owns the order
         // For now, anyone can download any invoice
 
-        console.log(`[API] Downloading invoice file: ${fileId}`);
 
         // Get the file download URL
         const fileBuffer = await serverStorage.getFileDownload('invoices', fileId);

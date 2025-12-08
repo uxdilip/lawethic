@@ -40,7 +40,6 @@ export async function GET(
 
         // For now, allow download without strict session checking
         // In production, implement proper authentication
-        console.log('[Download API] Session cookie found:', !!sessionCookie);        // Find certificate by fileId
         const certificates = await databases.listDocuments(
             DATABASE_ID,
             COLLECTION_ID,
@@ -78,16 +77,13 @@ export async function GET(
             // Try to access the order - will fail if user doesn't own it
             try {
                 await userDatabases.getDocument(DATABASE_ID, ORDERS_COLLECTION_ID, order.$id);
-                console.log('[Download API] User verified for order');
             } catch (error) {
-                console.log('[Download API] Access denied - user does not own order');
                 return NextResponse.json(
                     { error: 'Access denied' },
                     { status: 403 }
                 );
             }
         } else {
-            console.log('[Download API] No session - allowing download (development mode)');
         }
 
         // Get file from storage

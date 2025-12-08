@@ -125,7 +125,6 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
 
             if (data.success) {
                 setCertificates(data.certificates);
-                console.log('[Customer] Loaded certificates:', data.certificates.length);
             }
         } catch (error) {
             console.error('[Customer] Failed to load certificates:', error);

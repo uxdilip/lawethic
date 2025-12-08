@@ -67,7 +67,6 @@ export async function generateInvoiceNumber(): Promise<string> {
  */
 export async function generateInvoice(orderId: string): Promise<{ invoiceNumber: string; fileId: string }> {
     try {
-        console.log(`[Invoice] Generating invoice for order ${orderId}...`);
 
         // 1. Fetch order details
         const order = await databases.getDocument(
@@ -90,7 +89,6 @@ export async function generateInvoice(orderId: string): Promise<{ invoiceNumber:
 
         // 3. Generate invoice number
         const invoiceNumber = await generateInvoiceNumber();
-        console.log(`[Invoice] Generated number: ${invoiceNumber}`);
 
         // 4. Prepare invoice data
         const invoiceData: InvoiceData = {
@@ -121,12 +119,10 @@ export async function generateInvoice(orderId: string): Promise<{ invoiceNumber:
         };
 
         // 5. Generate PDF
-        console.log('[Invoice] Generating PDF...');
         // @ts-ignore - renderToBuffer types are incorrect
         const pdfBuffer = await renderToBuffer(
             React.createElement(InvoiceTemplate, { data: invoiceData })
         );
-        console.log(`[Invoice] PDF generated, size: ${pdfBuffer.length} bytes`);
 
         // 6. Create bucket if it doesn't exist (will fail silently if exists)
         try {
@@ -139,15 +135,12 @@ export async function generateInvoice(orderId: string): Promise<{ invoiceNumber:
                 undefined,
                 ['pdf']
             );
-            console.log('[Invoice] Created invoices bucket');
         } catch (error: any) {
             if (error.code !== 409) { // 409 = already exists
-                console.log('[Invoice] Bucket already exists or creation failed:', error.message);
             }
         }
 
         // 7. Upload PDF to storage using proper multipart encoding with Buffer
-        console.log('[Invoice] Uploading to storage...');
         const fileName = `invoice-${invoiceNumber}.pdf`;
         const fileId = ID.unique();
 
@@ -192,7 +185,6 @@ export async function generateInvoice(orderId: string): Promise<{ invoiceNumber:
         }
 
         const uploadedFile = await uploadResponse.json();
-        console.log(`[Invoice] Uploaded with file ID: ${uploadedFile.$id}`);
 
         // 8. Update order with invoice details
         await databases.updateDocument(
@@ -205,7 +197,6 @@ export async function generateInvoice(orderId: string): Promise<{ invoiceNumber:
                 invoiceGeneratedAt: new Date().toISOString()
             }
         );
-        console.log('[Invoice] Updated order with invoice details');
 
         // 9. Create timeline entry
         try {
@@ -224,17 +215,14 @@ export async function generateInvoice(orderId: string): Promise<{ invoiceNumber:
                     updatedBy: 'system'
                 }
             );
-            console.log('[Invoice] Created timeline entry');
         } catch (error) {
             console.error('[Invoice] Failed to create timeline entry:', error);
             // Non-critical, continue even if timeline fails
         }
 
-        console.log(`[Invoice] Successfully generated invoice ${invoiceNumber}`);
 
         // 10. Send invoice email to customer
         try {
-            console.log('[Invoice] Sending invoice email...');
             const emailResult = await sendInvoiceEmail(
                 invoiceData.customerEmail,
                 invoiceData.customerName,
@@ -246,7 +234,6 @@ export async function generateInvoice(orderId: string): Promise<{ invoiceNumber:
             );
 
             if (emailResult.success) {
-                console.log('[Invoice] Email sent successfully:', emailResult.id);
             } else {
                 console.warn('[Invoice] Email sending failed:', emailResult.error);
                 // Non-critical, continue even if email fails
