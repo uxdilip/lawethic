@@ -21,7 +21,6 @@ export async function POST(request: NextRequest) {
         const cookieStore = cookies();
         const allCookies = cookieStore.getAll();
 
-        console.log('[Messages API] All cookies:', allCookies.map(c => c.name));
 
         // Find Appwrite session cookie
         const sessionCookie = allCookies.find(c =>
@@ -38,7 +37,6 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        console.log('[Messages API] Using session cookie:', sessionCookie.name);
 
         // Check if API key is available
         const apiKey = process.env.APPWRITE_API_KEY;
@@ -50,7 +48,6 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        console.log('[Messages API] API key loaded:', apiKey.substring(0, 20) + '...');
 
         // Use admin client to get user info and create message
         const adminClient = new Client()
@@ -80,7 +77,6 @@ export async function POST(request: NextRequest) {
         }
 
         const user = await userResponse.json();
-        console.log('[Messages API] User authenticated:', user.name);
 
         // Get user role from prefs or default to customer
         const userRole = (user.prefs?.role as string) || 'customer';
@@ -103,12 +99,57 @@ export async function POST(request: NextRequest) {
             }
         );
 
-        console.log('[Messages API] Message sent:', {
             messageId: newMessage.$id,
             orderId,
             sender: user.name,
             role: userRole
         });
+
+        // Send notification to the other person in conversation
+        try {
+
+            // Get order to find the other person's userId
+            const order = await databases.getDocument(DATABASE_ID, 'orders', orderId);
+            const recipientUserId = order.userId; // Customer's userId
+
+
+            // Only notify if sender is not the recipient (admin messaging customer)
+            if (recipientUserId && recipientUserId !== user.$id) {
+
+                const notificationData = {
+                    userId: recipientUserId,
+                    orderId: orderId,
+                    type: 'message',
+                    message: `New message from ${user.name}: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+                    title: 'New Message',
+                    description: `${user.name} sent you a message`,
+                    actionUrl: `/orders/${orderId}`,
+                    actionLabel: 'View Message',
+                    read: false,
+                    readAt: null,
+                    sourceUserId: user.$id,
+                    metadata: null
+                };
+
+
+                // Create notification directly in database
+                const notification = await databases.createDocument(
+                    DATABASE_ID,
+                    'notifications',
+                    ID.unique(),
+                    notificationData
+                );
+
+            } else {
+            }
+        } catch (notifError: any) {
+            console.error('[Messages API] ❌ Failed to send notification:');
+            console.error('[Messages API] Error message:', notifError.message);
+            console.error('[Messages API] Error code:', notifError.code);
+            console.error('[Messages API] Error type:', notifError.type);
+            console.error('[Messages API] Full error:', notifError);
+            // Non-critical, continue
+        }
 
         return NextResponse.json({
             success: true,

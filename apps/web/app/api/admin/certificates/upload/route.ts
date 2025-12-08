@@ -121,7 +121,6 @@ export async function POST(request: NextRequest) {
 
         const uploadedFile = await uploadResponse.json();
 
-        console.log('File uploaded to storage:', uploadedFile.$id);
 
         // Create certificate record
         const certificate = await databases.createDocument(
@@ -144,7 +143,6 @@ export async function POST(request: NextRequest) {
             }
         );
 
-        console.log('Certificate record created:', certificate.$id);
 
         // Create timeline entry
         await databases.createDocument(
@@ -162,13 +160,10 @@ export async function POST(request: NextRequest) {
             }
         );
 
-        console.log('Timeline entry created');
 
         // Send email notification to customer
         try {
-            console.log('📧 Fetching order details for email notification...');
             const order = await databases.getDocument(DATABASE_ID, ORDERS_COLLECTION_ID, orderId);
-            console.log('📧 Order fetched:', {
                 orderId: order.$id,
                 orderNumber: order.orderNumber,
                 hasFormData: !!order.formData,
@@ -180,21 +175,18 @@ export async function POST(request: NextRequest) {
                 // Parse formData if needed
                 let formData = order.formData;
                 if (typeof formData === 'string') {
-                    console.log('📧 Parsing formData string...');
                     formData = JSON.parse(formData);
                 }
 
                 const customerEmail = formData?.email || order.customerEmail;
                 const customerName = formData?.fullName || formData?.businessName || 'Customer';
 
-                console.log('📧 Email details:', {
                     customerEmail,
                     customerName,
                     hasCertificateData: !!documentName && !!documentType
                 });
 
                 if (customerEmail) {
-                    console.log('📧 Sending certificate ready email to:', customerEmail);
                     const emailResult = await sendCertificateReadyEmail(
                         customerEmail,
                         customerName,
@@ -202,7 +194,31 @@ export async function POST(request: NextRequest) {
                         order.orderNumber || orderId,
                         [{ documentName, documentType }]
                     );
-                    console.log('✅ Certificate ready email sent!', emailResult);
+
+                    // Send notification to customer - use database directly
+                    try {
+                        await databases.createDocument(
+                            DATABASE_ID,
+                            'notifications',
+                            ID.unique(),
+                            {
+                                userId: order.customerId,
+                                orderId: orderId,
+                                type: 'certificate_uploaded',
+                                message: `Your ${documentName} certificate is ready for download`,
+                                title: 'Certificate Ready',
+                                description: `${documentName} has been uploaded and is available for download`,
+                                actionUrl: `/orders/${orderId}`,
+                                actionLabel: 'View Certificate',
+                                read: false,
+                                readAt: null,
+                                sourceUserId: uploadedBy,
+                                metadata: null
+                            }
+                        );
+                    } catch (notifError) {
+                        console.error('Failed to send certificate notification:', notifError);
+                    }
                 } else {
                     console.warn('⚠️ No customer email found - email not sent');
                 }

@@ -117,6 +117,8 @@ export default function AdminChatBox({ orderId, orderNumber, customerName }: Adm
 
         if (!newMessage.trim() || sending) return;
 
+        const messageText = newMessage.trim();
+
         try {
             setSending(true);
 
@@ -134,12 +136,47 @@ export default function AdminChatBox({ orderId, orderNumber, customerName }: Adm
                     senderId: user.$id,
                     senderName: user.name || 'User',
                     senderRole: userRole,
-                    message: newMessage.trim(),
+                    message: messageText,
                     messageType: 'text',
                     read: false,
                     readAt: null
                 }
             );
+
+            // Send notification to customer if sender is admin
+            if (userRole === 'admin' || userRole === 'operations') {
+                try {
+                    // Get order to find customer's userId
+                    const order = await databases.getDocument(DATABASE_ID, 'orders', orderId);
+                    const customerUserId = order.customerId;
+
+                    if (customerUserId && customerUserId !== user.$id) {
+                        // Create notification
+                        await databases.createDocument(
+                            DATABASE_ID,
+                            'notifications',
+                            ID.unique(),
+                            {
+                                userId: customerUserId,
+                                orderId: orderId,
+                                type: 'message',
+                                message: `New message from ${user.name}: ${messageText.substring(0, 50)}${messageText.length > 50 ? '...' : ''}`,
+                                title: 'New Message',
+                                description: `${user.name} sent you a message`,
+                                actionUrl: `/orders/${orderId}`,
+                                actionLabel: 'View Message',
+                                read: false,
+                                readAt: null,
+                                sourceUserId: user.$id,
+                                metadata: null
+                            }
+                        );
+                    }
+                } catch (notifError) {
+                    console.error('[AdminChatBox] Failed to create notification:', notifError);
+                    // Non-critical, don't block message send
+                }
+            }
 
             setNewMessage('');
         } catch (error) {
