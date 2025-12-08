@@ -135,6 +135,7 @@ function CheckoutContent() {
                         fileName: file.name,
                         fileType: file.type,
                         uploadedBy: user.$id,
+                        status: 'pending', // Explicitly set status
                     }
                 );
             }

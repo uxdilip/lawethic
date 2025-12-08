@@ -122,6 +122,8 @@ export default function ChatPanel({ orderId, orderNumber, onClose }: ChatPanelPr
 
         if (!newMessage.trim() || sending) return;
 
+        const messageText = newMessage.trim();
+
         try {
             setSending(true);
 
@@ -139,14 +141,49 @@ export default function ChatPanel({ orderId, orderNumber, onClose }: ChatPanelPr
                     senderId: user.$id,
                     senderName: user.name || 'User',
                     senderRole: userRole,
-                    message: newMessage.trim(),
+                    message: messageText,
                     messageType: 'text',
                     read: false,
                     readAt: null
                 }
             );
 
+            // Send notification to the other person if admin/operations messaging customer
+            if (userRole === 'admin' || userRole === 'operations') {
+                try {
+                    // Get order to find customer's userId
+                    const order = await databases.getDocument(DATABASE_ID, 'orders', orderId);
+                    const customerUserId = order.customerId;
+
+                    if (customerUserId && customerUserId !== user.$id) {
+                        // Create notification for customer
+                        await databases.createDocument(
+                            DATABASE_ID,
+                            'notifications',
+                            ID.unique(),
+                            {
+                                userId: customerUserId,
+                                orderId: orderId,
+                                type: 'message',
+                                message: `New message from ${user.name}: ${messageText.substring(0, 50)}${messageText.length > 50 ? '...' : ''}`,
+                                title: 'New Message',
+                                description: `${user.name} sent you a message`,
+                                actionUrl: `/orders/${orderId}`,
+                                actionLabel: 'View Message',
+                                read: false,
+                                readAt: null,
+                                sourceUserId: user.$id,
+                                metadata: null
+                            }
+                        );
+                    }
+                } catch (notifError) {
+                    console.error('[ChatPanel] Failed to create notification:', notifError);
+                }
+            }
+
             setNewMessage('');
+
             // Message will be added via real-time subscription
         } catch (error) {
             console.error('Error sending message:', error);
@@ -154,7 +191,9 @@ export default function ChatPanel({ orderId, orderNumber, onClose }: ChatPanelPr
         } finally {
             setSending(false);
         }
-    }; const formatTimestamp = (timestamp: string) => {
+    };
+
+    const formatTimestamp = (timestamp: string) => {
         const date = new Date(timestamp);
         const now = new Date();
         const diffMs = now.getTime() - date.getTime();

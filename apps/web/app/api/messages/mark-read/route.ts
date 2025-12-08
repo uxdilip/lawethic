@@ -28,7 +28,6 @@ export async function PATCH(request: NextRequest) {
         );
 
         if (!sessionCookie) {
-            console.log('[Messages API] No session cookie found for mark-read');
             // Don't fail, just return success (non-critical)
             return NextResponse.json({
                 success: true,
@@ -59,7 +58,6 @@ export async function PATCH(request: NextRequest) {
 
         await Promise.all(updatePromises);
 
-        console.log('[Messages API] Marked messages as read:', messageIds.length);
 
         return NextResponse.json({
             success: true,

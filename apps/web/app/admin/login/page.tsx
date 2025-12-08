@@ -22,20 +22,15 @@ export default function AdminLoginPage() {
         setLoading(true);
 
         try {
-            console.log('🔐 Attempting login...');
 
             // First, login with email and password
             await account.createEmailPasswordSession(email, password);
-            console.log('✅ Session created successfully');
 
             // Check if user has admin or operations role
-            console.log('🔍 Checking user role...');
             const role = await getUserRole();
-            console.log('📝 User role:', role);
 
             if (role === 'customer') {
                 // Customer trying to access admin panel
-                console.log('❌ Access denied - customer role');
                 await account.deleteSession('current');
                 setError('Access denied. You do not have permission to access the admin panel.');
                 setLoading(false);
@@ -43,7 +38,6 @@ export default function AdminLoginPage() {
             }
 
             // Redirect to admin dashboard or original destination
-            console.log('✅ Access granted, redirecting to:', redirect);
 
             // Use window.location for full page reload to ensure session cookie is sent
             window.location.href = redirect === '/admin' ? '/admin/dashboard' : redirect;

@@ -20,9 +20,11 @@ import {
     MessageCircle,
     HelpCircle,
     Mail,
-    Phone
+    Phone,
+    Upload
 } from 'lucide-react';
 import FloatingChatButton from '@/components/chat/FloatingChatButton';
+import DocumentReupload from '@/components/customer/DocumentReupload';
 
 interface OrderDetailProps {
     params: {
@@ -39,6 +41,7 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
     const [timeline, setTimeline] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>(null);
+    const [reuploadingDoc, setReuploadingDoc] = useState<any>(null);
 
     useEffect(() => {
         checkAuthAndLoadOrder();
@@ -125,7 +128,6 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
 
             if (data.success) {
                 setCertificates(data.certificates);
-                console.log('[Customer] Loaded certificates:', data.certificates.length);
             }
         } catch (error) {
             console.error('[Customer] Failed to load certificates:', error);
@@ -352,32 +354,67 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                                 <h3 className="text-lg font-bold text-gray-900">Uploaded Documents</h3>
                             </div>
                             {documents.length > 0 ? (
-                                <div className="space-y-3">
+                                <div className="space-y-4">
                                     {documents.map((doc) => (
-                                        <div key={doc.$id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                                            <div className="flex items-center space-x-3">
-                                                <FileText className="h-8 w-8 text-gray-400" />
-                                                <div>
-                                                    <p className="font-medium text-gray-900">{doc.name || doc.documentType || 'Document'}</p>
-                                                    <div className="flex items-center space-x-2 mt-1">
-                                                        <span className={`px-2 py-1 rounded text-xs font-medium border ${getDocumentStatusColor(doc.verificationStatus)}`}>
-                                                            {doc.verificationStatus}
-                                                        </span>
-                                                        {doc.verificationStatus === 'rejected' && doc.rejectionReason && (
-                                                            <span className="text-xs text-red-600">
-                                                                ({doc.rejectionReason})
+                                        <div key={doc.$id} className="border border-gray-200 rounded-lg overflow-hidden">
+                                            <div className="flex items-center justify-between p-4 bg-white">
+                                                <div className="flex items-center space-x-3 flex-1">
+                                                    <FileText className="h-8 w-8 text-gray-400 flex-shrink-0" />
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-medium text-gray-900 truncate">{doc.fileName || doc.name || doc.documentType || 'Document'}</p>
+                                                        <div className="flex items-center space-x-2 mt-1">
+                                                            <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${doc.status === 'verified'
+                                                                    ? 'bg-green-100 text-green-800 border border-green-200'
+                                                                    : doc.status === 'rejected'
+                                                                        ? 'bg-red-100 text-red-800 border border-red-200'
+                                                                        : 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                                                                }`}>
+                                                                {doc.status === 'verified' && <CheckCircle className="h-3 w-3 mr-1" />}
+                                                                {doc.status === 'rejected' && <XCircle className="h-3 w-3 mr-1" />}
+                                                                {doc.status === 'pending' && <Clock className="h-3 w-3 mr-1" />}
+                                                                {doc.status === 'verified' ? 'Verified' : doc.status === 'rejected' ? 'Rejected' : 'Pending Review'}
                                                             </span>
-                                                        )}
+                                                            {doc.version && doc.version > 1 && (
+                                                                <span className="text-xs text-gray-500">
+                                                                    v{doc.version}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                <div className="flex items-center space-x-2">
+                                                    <button
+                                                        onClick={() => handleDownloadDocument(doc.fileId, doc.fileName)}
+                                                        className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
+                                                    >
+                                                        <Download className="h-4 w-4" />
+                                                        <span className="text-sm font-medium hidden sm:inline">Download</span>
+                                                    </button>
+                                                    {doc.status === 'rejected' && (
+                                                        <button
+                                                            onClick={() => setReuploadingDoc(doc)}
+                                                            className="flex items-center space-x-1 text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-lg transition-colors"
+                                                        >
+                                                            <Upload className="h-4 w-4" />
+                                                            <span className="text-sm font-medium hidden sm:inline">Re-upload</span>
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <button
-                                                onClick={() => handleDownloadDocument(doc.fileId, `${doc.documentType}.pdf`)}
-                                                className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
-                                            >
-                                                <Download className="h-4 w-4" />
-                                                <span className="text-sm font-medium">Download</span>
-                                            </button>
+
+                                            {/* Rejection Reason - Prominent Display */}
+                                            {doc.status === 'rejected' && doc.rejectionReason && (
+                                                <div className="bg-red-50 border-t border-red-200 p-4">
+                                                    <div className="flex items-start space-x-2">
+                                                        <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                                                        <div className="flex-1">
+                                                            <p className="text-sm font-medium text-red-900 mb-1">Rejection Reason:</p>
+                                                            <p className="text-sm text-red-800">{doc.rejectionReason}</p>
+                                                            <p className="text-xs text-red-700 mt-2">Please re-upload a corrected version of this document.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -572,6 +609,25 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                 <FloatingChatButton
                     orderId={order.$id}
                     orderNumber={order.orderNumber || order.$id}
+                />
+            )}
+
+            {/* Document Re-upload Modal */}
+            {reuploadingDoc && (
+                <DocumentReupload
+                    documentId={reuploadingDoc.$id}
+                    documentName={reuploadingDoc.fileName || reuploadingDoc.name || 'Document'}
+                    orderId={params.id}
+                    rejectionReason={reuploadingDoc.rejectionReason || 'No reason provided'}
+                    onSuccess={() => {
+                        setReuploadingDoc(null);
+                        // Reload order details to show updated document
+                        if (user) {
+                            loadOrderDetails(user.$id);
+                        }
+                        alert('Document re-uploaded successfully! It will be reviewed shortly.');
+                    }}
+                    onClose={() => setReuploadingDoc(null)}
                 />
             )}
         </div>

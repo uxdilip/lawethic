@@ -90,7 +90,6 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
 
             if (data.success) {
                 setCertificates(data.certificates);
-                console.log('[Admin] Loaded certificates:', data.certificates.length);
             }
         } catch (error) {
             console.error('[Admin] Failed to load certificates:', error);
@@ -133,6 +132,31 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                 );
             }
 
+            // Send notification to customer
+            try {
+                await databases.createDocument(
+                    appwriteConfig.databaseId,
+                    'notifications',
+                    'unique()',
+                    {
+                        userId: order.customerId,
+                        orderId: params.id,
+                        type: 'status_change',
+                        message: `Your order status has been updated to ${selectedStatus}`,
+                        title: 'Order Status Updated',
+                        description: `Status changed to ${selectedStatus}${statusNote ? `. Note: ${statusNote}` : ''}`,
+                        actionUrl: `/orders/${params.id}`,
+                        actionLabel: 'View Order',
+                        read: false,
+                        readAt: null,
+                        sourceUserId: null,
+                        metadata: null
+                    }
+                );
+            } catch (notifError) {
+                console.error('Failed to send notification:', notifError);
+            }
+
             alert('Status updated successfully!');
             setStatusNote('');
             await loadCaseDetails();
@@ -147,30 +171,23 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
 
     const handleDocumentAction = async (documentId: string, action: 'verify' | 'reject', reason?: string) => {
         try {
-            await databases.updateDocument(
-                appwriteConfig.databaseId,
-                appwriteConfig.collections.documents,
-                documentId,
-                {
-                    status: action === 'verify' ? 'verified' : 'rejected',
-                    rejectionReason: reason || null,
-                }
-            );
-
-            // Create timeline entry
-            await databases.createDocument(
-                appwriteConfig.databaseId,
-                appwriteConfig.collections.orderTimeline,
-                'unique()',
-                {
+            const response = await fetch('/api/admin/documents/action', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    documentId,
+                    action,
+                    reason,
                     orderId: params.id,
-                    action: 'document_' + action,
-                    details: action === 'verify'
-                        ? 'Document verified'
-                        : `Document rejected: ${reason}`,
-                    performedBy: 'admin', // TODO: Get actual admin ID
-                }
-            );
+                    customerId: order?.customerId
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to process document action');
+            }
 
             alert(`Document ${action === 'verify' ? 'verified' : 'rejected'} successfully!`);
             await loadCaseDetails();

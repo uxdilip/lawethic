@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
         // TODO: Add admin authentication check here
         // For now, anyone can regenerate invoices
 
-        console.log(`[API] Regenerating invoice for order ${orderId}...`);
 
         const invoice = await generateInvoice(orderId);
 
