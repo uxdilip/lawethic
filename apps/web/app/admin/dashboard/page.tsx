@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { databases } from '@lawethic/appwrite/client';
+import { databases, account } from '@lawethic/appwrite/client';
 import { appwriteConfig } from '@lawethic/appwrite/config';
 import { Query } from 'appwrite';
 import AdminLayout from '@/components/AdminLayout';
@@ -26,6 +26,8 @@ export default function AdminDashboardPage() {
     });
     const [recentOrders, setRecentOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState<any>(null);
+    const [userRole, setUserRole] = useState<string>('');
 
     useEffect(() => {
         loadDashboardData();
@@ -35,6 +37,12 @@ export default function AdminDashboardPage() {
         try {
             setLoading(true);
 
+            // Get current user and role
+            const user = await account.get();
+            setCurrentUser(user);
+            const role = user.prefs?.role || 'customer';
+            setUserRole(role);
+
             // Get all orders
             const ordersResponse = await databases.listDocuments(
                 appwriteConfig.databaseId,
@@ -42,7 +50,12 @@ export default function AdminDashboardPage() {
                 [Query.orderDesc('$createdAt'), Query.limit(100)]
             );
 
-            const orders = ordersResponse.documents;
+            let orders = ordersResponse.documents;
+
+            // Role-based filtering: Operations users see only their assigned cases
+            if (role === 'operations') {
+                orders = orders.filter(o => o.assignedTo === user.$id);
+            }
 
             // Calculate stats
             const newOrders = orders.filter(o => o.paymentStatus === 'pending');
@@ -322,8 +335,8 @@ export default function AdminDashboardPage() {
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${order.paymentStatus === 'paid'
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : 'bg-yellow-100 text-yellow-800'
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : 'bg-yellow-100 text-yellow-800'
                                                             }`}>
                                                             {order.paymentStatus}
                                                         </span>
