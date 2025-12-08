@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { account } from '@lawethic/appwrite';
 import { LogOut, User } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 
 export default function Header() {
     const router = useRouter();
@@ -65,34 +66,39 @@ export default function Header() {
                     {loading ? (
                         <div className="w-20 h-8 bg-gray-200 animate-pulse rounded"></div>
                     ) : user ? (
-                        <div className="relative">
-                            <button
-                                onClick={() => setShowUserMenu(!showUserMenu)}
-                                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"
-                            >
-                                <User className="h-4 w-4" />
-                                <span className="text-sm font-medium">{user.name || 'User'}</span>
-                            </button>
+                        <>
+                            {/* Notification Bell */}
+                            <NotificationBell />
 
-                            {showUserMenu && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg py-1 z-50">
-                                    <Link
-                                        href="/dashboard"
-                                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                        onClick={() => setShowUserMenu(false)}
-                                    >
-                                        Dashboard
-                                    </Link>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 flex items-center"
-                                    >
-                                        <LogOut className="h-4 w-4 mr-2" />
-                                        Logout
-                                    </button>
-                                </div>
-                            )}
-                        </div>
+                            <div className="relative">
+                                <button
+                                    onClick={() => setShowUserMenu(!showUserMenu)}
+                                    className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"
+                                >
+                                    <User className="h-4 w-4" />
+                                    <span className="text-sm font-medium">{user.name || 'User'}</span>
+                                </button>
+
+                                {showUserMenu && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg py-1 z-50">
+                                        <Link
+                                            href="/dashboard"
+                                            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                            onClick={() => setShowUserMenu(false)}
+                                        >
+                                            Dashboard
+                                        </Link>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 flex items-center"
+                                        >
+                                            <LogOut className="h-4 w-4 mr-2" />
+                                            Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </>
                     ) : (
                         <>
                             <Link href="/login" className="px-4 py-2 text-gray-600 hover:text-blue-600">

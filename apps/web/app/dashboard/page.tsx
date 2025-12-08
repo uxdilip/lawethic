@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { account, databases, appwriteConfig } from '@lawethic/appwrite';
-import { LogOut, FileText, Bell, User as UserIcon, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { LogOut, FileText, User as UserIcon, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { Query } from 'appwrite';
+import NotificationBell from '@/components/NotificationBell';
 
 interface Order {
     $id: string;
@@ -124,12 +125,9 @@ export default function DashboardPage() {
                         LawEthic
                     </Link>
                     <div className="flex items-center space-x-4">
-                        <button className="p-2 hover:bg-gray-100 rounded-full relative">
-                            <Bell className="h-5 w-5 text-gray-600" />
-                            {stats.pending > 0 && (
-                                <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
-                            )}
-                        </button>
+                        {/* Notification Bell */}
+                        <NotificationBell />
+
                         <div className="flex items-center space-x-2">
                             <UserIcon className="h-5 w-5 text-gray-600" />
                             <span className="text-sm text-gray-700">{user?.name}</span>
@@ -254,8 +252,8 @@ export default function DashboardPage() {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${order.paymentStatus === 'success'
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-yellow-100 text-yellow-800'
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : 'bg-yellow-100 text-yellow-800'
                                                         }`}>
                                                         {order.paymentStatus}
                                                     </span>
