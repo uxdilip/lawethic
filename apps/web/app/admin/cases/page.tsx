@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { databases } from '@lawethic/appwrite/client';
+import { databases, account } from '@lawethic/appwrite/client';
 import { appwriteConfig } from '@lawethic/appwrite/config';
 import { Query } from 'appwrite';
 import AdminLayout from '@/components/AdminLayout';
@@ -14,6 +14,7 @@ interface FilterState {
     search: string;
     dateFrom: string;
     dateTo: string;
+    assignment: string; // New filter for assignment
 }
 
 export default function AdminCasesPage() {
@@ -21,32 +22,48 @@ export default function AdminCasesPage() {
     const [filteredOrders, setFilteredOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
+    const [currentUser, setCurrentUser] = useState<any>(null);
+    const [userRole, setUserRole] = useState<string>('');
+    const [teamMembers, setTeamMembers] = useState<Map<string, string>>(new Map());
     const [filters, setFilters] = useState<FilterState>({
         status: 'all',
         paymentStatus: 'all',
         search: '',
         dateFrom: '',
         dateTo: '',
+        assignment: 'all',
     });
 
     const itemsPerPage = 20;
 
     useEffect(() => {
-        loadOrders();
+        loadUserAndOrders();
     }, []);
 
     useEffect(() => {
         applyFilters();
-    }, [filters, orders]);
+    }, [filters, orders, currentUser]);
 
-    const loadOrders = async () => {
+    const loadUserAndOrders = async () => {
         try {
             setLoading(true);
+
+            // Get current user and role
+            const user = await account.get();
+            setCurrentUser(user);
+            const role = user.prefs?.role || 'customer';
+            setUserRole(role);
+
+            // Fetch team members for assignment display
+            await fetchTeamMembers();
+
+            // Load all orders
             const response = await databases.listDocuments(
                 appwriteConfig.databaseId,
                 appwriteConfig.collections.orders,
                 [Query.orderDesc('$createdAt'), Query.limit(1000)]
             );
+
             setOrders(response.documents);
         } catch (error) {
             console.error('Failed to load orders:', error);
@@ -55,8 +72,39 @@ export default function AdminCasesPage() {
         }
     };
 
+    const fetchTeamMembers = async () => {
+        try {
+            const response = await fetch('/api/admin/team-members');
+            const data = await response.json();
+
+            if (data.success) {
+                const membersMap = new Map();
+                data.teamMembers.forEach((member: any) => {
+                    membersMap.set(member.$id, member.name);
+                });
+                setTeamMembers(membersMap);
+            }
+        } catch (error) {
+            console.error('Failed to fetch team members:', error);
+        }
+    };
+
     const applyFilters = () => {
         let filtered = [...orders];
+
+        // Role-based filtering: Operations users see only their assigned cases
+        if (userRole === 'operations' && currentUser) {
+            filtered = filtered.filter(o => o.assignedTo === currentUser.$id);
+        }
+
+        // Assignment filter (for admins)
+        if (filters.assignment !== 'all') {
+            if (filters.assignment === 'unassigned') {
+                filtered = filtered.filter(o => !o.assignedTo);
+            } else if (filters.assignment === 'assigned') {
+                filtered = filtered.filter(o => o.assignedTo);
+            }
+        }
 
         // Status filter
         if (filters.status !== 'all') {
@@ -198,6 +246,24 @@ export default function AdminCasesPage() {
                                 </select>
                             </div>
 
+                            {/* Assignment Filter (Admin Only) */}
+                            {userRole === 'admin' && (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Assignment
+                                    </label>
+                                    <select
+                                        value={filters.assignment}
+                                        onChange={(e) => setFilters({ ...filters, assignment: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="all">All Cases</option>
+                                        <option value="assigned">Assigned</option>
+                                        <option value="unassigned">Unassigned</option>
+                                    </select>
+                                </div>
+                            )}
+
                             {/* Date From */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -273,6 +339,9 @@ export default function AdminCasesPage() {
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Payment
                                                 </th>
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                    Assigned To
+                                                </th>
                                                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Actions
                                                 </th>
@@ -281,7 +350,7 @@ export default function AdminCasesPage() {
                                         <tbody className="bg-white divide-y divide-gray-200">
                                             {currentOrders.length === 0 ? (
                                                 <tr>
-                                                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                                                    <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
                                                         No orders found
                                                     </td>
                                                 </tr>
@@ -319,13 +388,24 @@ export default function AdminCasesPage() {
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${order.paymentStatus === 'paid'
-                                                                    ? 'bg-green-100 text-green-800'
-                                                                    : order.paymentStatus === 'failed'
-                                                                        ? 'bg-red-100 text-red-800'
-                                                                        : 'bg-yellow-100 text-yellow-800'
+                                                                ? 'bg-green-100 text-green-800'
+                                                                : order.paymentStatus === 'failed'
+                                                                    ? 'bg-red-100 text-red-800'
+                                                                    : 'bg-yellow-100 text-yellow-800'
                                                                 }`}>
                                                                 {order.paymentStatus}
                                                             </span>
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                            {order.assignedTo ? (
+                                                                <span className="text-sm text-gray-900">
+                                                                    {teamMembers.get(order.assignedTo) || 'Unknown'}
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-sm text-gray-400 italic">
+                                                                    Unassigned
+                                                                </span>
+                                                            )}
                                                         </td>
                                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                             <Link
@@ -384,8 +464,8 @@ export default function AdminCasesPage() {
                                                         key={page}
                                                         onClick={() => setCurrentPage(page)}
                                                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${page === currentPage
-                                                                ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                                                            ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                                                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
                                                             }`}
                                                     >
                                                         {page}
