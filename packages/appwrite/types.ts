@@ -86,6 +86,9 @@ export interface Document {
     uploadedBy: string;
     status: DocumentStatus;
     rejectionReason?: string;
+    version?: number;
+    previousVersionId?: string;
+    reuploadedAt?: string;
     $createdAt: string;
     $updatedAt: string;
 }
