@@ -10,6 +10,7 @@ import { StaffOnly } from '@/components/RoleGuard';
 import Link from 'next/link';
 import CertificateUpload, { CertificateList } from '@/components/admin/CertificateUpload';
 import FloatingChatButton from '@/components/chat/FloatingChatButton';
+import AssignmentDropdown from '@/components/admin/AssignmentDropdown';
 
 interface CaseDetailProps {
     params: {
@@ -289,16 +290,26 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                                     Created on {new Date(order.$createdAt).toLocaleString()}
                                 </p>
                             </div>
-                            <div className="flex gap-2">
-                                <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(order.status)}`}>
-                                    {order.status.replace(/_/g, ' ')}
-                                </span>
-                                <span className={`px-4 py-2 rounded-full text-sm font-semibold ${order.paymentStatus === 'paid'
-                                    ? 'bg-green-100 text-green-800'
-                                    : 'bg-yellow-100 text-yellow-800'
-                                    }`}>
-                                    Payment: {order.paymentStatus}
-                                </span>
+                            <div className="flex flex-col gap-3 items-end">
+                                {/* Assignment Dropdown */}
+                                <AssignmentDropdown
+                                    orderId={order.$id}
+                                    currentAssignment={order.assignedTo}
+                                    onAssignmentChange={loadCaseDetails}
+                                />
+
+                                {/* Status Badges */}
+                                <div className="flex gap-2">
+                                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(order.status)}`}>
+                                        {order.status.replace(/_/g, ' ')}
+                                    </span>
+                                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${order.paymentStatus === 'paid'
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-yellow-100 text-yellow-800'
+                                        }`}>
+                                        Payment: {order.paymentStatus}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -549,8 +560,8 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                             )}
                         </div>
                     </div>
-                </div>
-            </AdminLayout>
-        </StaffOnly>
+                </div >
+            </AdminLayout >
+        </StaffOnly >
     );
 }
