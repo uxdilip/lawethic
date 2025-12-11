@@ -60,9 +60,9 @@ export async function POST(request: NextRequest) {
                 appwriteConfig.collections.orders,
                 order.$id,
                 {
-                    paymentStatus: 'success',
+                    paymentStatus: 'paid',
                     paymentId: razorpay_payment_id,
-                    status: 'paid',
+                    status: 'pending_docs', // Set to pending_docs after payment
                 }
             );
 

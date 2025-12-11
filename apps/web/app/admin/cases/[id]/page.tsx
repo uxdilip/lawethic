@@ -346,6 +346,25 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                                 </div>
                             </div>
 
+                            {/* Service-Specific Questions & Answers */}
+                            {order.formData?.serviceQuestions && Object.keys(order.formData.serviceQuestions).length > 0 && (
+                                <div className="bg-white shadow rounded-lg p-6">
+                                    <h2 className="text-xl font-bold text-gray-900 mb-4">Service-Specific Information</h2>
+                                    <div className="space-y-4">
+                                        {Object.entries(order.formData.serviceQuestions).map(([key, value]: [string, any]) => (
+                                            <div key={key} className="border-b border-gray-200 pb-3 last:border-b-0">
+                                                <p className="text-sm font-medium text-gray-700 mb-1">
+                                                    {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                                                </p>
+                                                <p className="text-gray-900">
+                                                    {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value || 'N/A'}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Service Details */}
                             {service && (
                                 <div className="bg-white shadow rounded-lg p-6">

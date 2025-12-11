@@ -76,6 +76,7 @@ async function createCollections() {
         { key: 'isActive', type: 'boolean', required: true, default: true },
         { key: 'category', type: 'string', size: 100, required: true },
         { key: 'features', type: 'string', size: 500, required: false, array: true },
+        { key: 'questionForm', type: 'string', size: 10000, required: false }, // JSON string for service-specific questions
     ];
 
     for (const attr of serviceAttrs) {
@@ -485,7 +486,43 @@ async function seedServices() {
                 'Filing assistance',
                 'GST certificate download',
                 'Post-registration support'
-            ]
+            ],
+            questionForm: JSON.stringify([
+                {
+                    id: 'propertyType',
+                    label: 'What Is the Type of Property Where Your Office Is Located?',
+                    type: 'radio',
+                    options: ['Self/Own Property', 'Rented Property', 'Commercial Space', 'Home-based'],
+                    required: true
+                },
+                {
+                    id: 'gstReason',
+                    label: 'Why are You Applying for GST Registration?',
+                    type: 'radio',
+                    options: [
+                        'To Start a New Business',
+                        'Selling on Amazon, Flipkart, Etc.',
+                        'Freelancing',
+                        'Already Running a Business, Need Compliance',
+                        'Just Exploring, Not Sure Yet!'
+                    ],
+                    required: true
+                },
+                {
+                    id: 'businessType',
+                    label: 'Type of Business Structure',
+                    type: 'select',
+                    options: ['Sole Proprietorship', 'Partnership', 'LLP', 'Private Limited', 'Other'],
+                    required: true
+                },
+                {
+                    id: 'expectedTurnover',
+                    label: 'Expected Annual Turnover',
+                    type: 'select',
+                    options: ['Below 20 Lakhs', '20-40 Lakhs', '40 Lakhs - 1 Cr', 'Above 1 Crore'],
+                    required: false
+                }
+            ])
         },
         {
             name: 'Trademark Registration',
@@ -503,7 +540,38 @@ async function seedServices() {
                 'Application filing with IPO',
                 'Vienna code classification',
                 'Objection handling support'
-            ]
+            ],
+            questionForm: JSON.stringify([
+                {
+                    id: 'trademarkType',
+                    label: 'What type of trademark do you want to register?',
+                    type: 'radio',
+                    options: ['Brand Name/Wordmark', 'Logo', 'Both Name and Logo', 'Slogan'],
+                    required: true
+                },
+                {
+                    id: 'businessCategory',
+                    label: 'Select Your Business Category',
+                    type: 'select',
+                    options: ['Goods (Products)', 'Services', 'Both Goods and Services'],
+                    required: true
+                },
+                {
+                    id: 'alreadyUsing',
+                    label: 'Are you already using this trademark in business?',
+                    type: 'radio',
+                    options: ['Yes, already in use', 'No, planning to use'],
+                    required: true
+                },
+                {
+                    id: 'trademarkClasses',
+                    label: 'Do you know which class(es) to file under?',
+                    type: 'radio',
+                    options: ['Yes, I know the class', 'No, need help selecting'],
+                    required: false,
+                    helpText: 'We can help you select the appropriate class(es) for your trademark'
+                }
+            ])
         },
         {
             name: 'Private Limited Company Registration',
@@ -522,7 +590,38 @@ async function seedServices() {
                 'Incorporation certificate',
                 'PAN and TAN',
                 'MOA and AOA drafting'
-            ]
+            ],
+            questionForm: JSON.stringify([
+                {
+                    id: 'numberOfDirectors',
+                    label: 'Number of Directors',
+                    type: 'select',
+                    options: ['2 Directors', '3 Directors', '4 or more Directors'],
+                    required: true
+                },
+                {
+                    id: 'authorizedCapital',
+                    label: 'Proposed Authorized Capital',
+                    type: 'select',
+                    options: ['1 Lakh', '5 Lakhs', '10 Lakhs', 'More than 10 Lakhs'],
+                    required: true
+                },
+                {
+                    id: 'companyActivity',
+                    label: 'What will be your main business activity?',
+                    type: 'textarea',
+                    required: true,
+                    placeholder: 'Describe your business activity briefly',
+                    helpText: 'This helps us draft the MOA/AOA correctly'
+                },
+                {
+                    id: 'hasOffice',
+                    label: 'Do you have a registered office address?',
+                    type: 'radio',
+                    options: ['Yes, I have office space', 'No, need assistance'],
+                    required: true
+                }
+            ])
         },
         {
             name: 'FSSAI License',

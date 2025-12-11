@@ -27,6 +27,17 @@ export type NotificationType =
     | 'payment_success'
     | 'message_received';
 
+// Question field for service-specific forms
+export interface QuestionField {
+    id: string;
+    label: string;
+    type: 'text' | 'select' | 'radio' | 'textarea' | 'checkbox';
+    options?: string[];
+    required: boolean;
+    placeholder?: string;
+    helpText?: string;
+}
+
 // Database Models
 export interface User {
     $id: string;
@@ -57,6 +68,7 @@ export interface Service {
     isActive: boolean;
     category: string;
     features: string[];
+    questionForm?: QuestionField[]; // Service-specific questions
     $createdAt: string;
     $updatedAt: string;
 }

@@ -3,9 +3,9 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { databases, appwriteConfig, account } from '@lawethic/appwrite';
-import { Service, Order, QuestionField } from '@lawethic/appwrite/types';
-import { CheckCircle, CreditCard, HelpCircle } from 'lucide-react';
+import { databases, appwriteConfig, account, storage } from '@lawethic/appwrite';
+import { Service, Order } from '@lawethic/appwrite/types';
+import { CheckCircle, Upload, FileText, CreditCard } from 'lucide-react';
 import { ID, Query } from 'appwrite';
 import PaymentButton from '@/components/PaymentButton';
 import Header from '@/components/Header';
@@ -25,7 +25,8 @@ function CheckoutContent() {
 
     // Form data
     const [formData, setFormData] = useState<any>({});
-    const [questionAnswers, setQuestionAnswers] = useState<Record<string, any>>({});
+    const [documents, setDocuments] = useState<File[]>([]);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         init();
@@ -60,10 +61,6 @@ function CheckoutContent() {
         setFormData({ ...formData, [field]: value });
     };
 
-    const handleQuestionChange = (questionId: string, value: any) => {
-        setQuestionAnswers({ ...questionAnswers, [questionId]: value });
-    };
-
     const handleStep1Submit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -77,8 +74,8 @@ function CheckoutContent() {
             // Add user email to formData
             const formDataWithEmail = {
                 ...formData,
-                email: user.email,
-                fullName: user.name || formData.businessName,
+                email: user.email, // Include logged-in user's email
+                fullName: user.name || formData.businessName, // Use name if available
             };
 
             const orderData = {
@@ -99,13 +96,7 @@ function CheckoutContent() {
             );
 
             setOrderId(order.$id);
-
-            // Check if service has questions
-            if (service?.questionForm && (typeof service.questionForm === 'string' ? JSON.parse(service.questionForm) : service.questionForm).length > 0) {
-                setStep(2); // Go to questions
-            } else {
-                setStep(3); // Skip to payment if no questions
-            }
+            setStep(2);
         } catch (err: any) {
             setError(err.message || 'Failed to create order');
         } finally {
@@ -113,36 +104,47 @@ function CheckoutContent() {
         }
     };
 
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setDocuments([...documents, ...Array.from(e.target.files)]);
+        }
+    };
+
     const handleStep2Submit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-        setLoading(true);
+        setUploading(true);
 
         try {
-            // Parse existing formData
-            const existingFormData = typeof formData === 'string' ? JSON.parse(formData) : formData;
+            // Upload documents
+            for (const file of documents) {
+                const uploadedFile = await storage.createFile(
+                    appwriteConfig.buckets.customerDocuments,
+                    ID.unique(),
+                    file
+                );
 
-            // Merge question answers with existing form data
-            const updatedFormData = {
-                ...existingFormData,
-                serviceQuestions: questionAnswers,
-            };
+                // Create document record
+                await databases.createDocument(
+                    appwriteConfig.databaseId,
+                    appwriteConfig.collections.documents,
+                    ID.unique(),
+                    {
+                        orderId,
+                        fileId: uploadedFile.$id,
+                        fileName: file.name,
+                        fileType: file.type,
+                        uploadedBy: user.$id,
+                        status: 'pending', // Explicitly set status
+                    }
+                );
+            }
 
-            // Update order with question answers
-            await databases.updateDocument(
-                appwriteConfig.databaseId,
-                appwriteConfig.collections.orders,
-                orderId,
-                {
-                    formData: JSON.stringify(updatedFormData),
-                }
-            );
-
-            setStep(3); // Go to payment
+            setStep(3);
         } catch (err: any) {
-            setError(err.message || 'Failed to save answers');
+            setError(err.message || 'Failed to upload documents');
         } finally {
-            setLoading(false);
+            setUploading(false);
         }
     };
 
@@ -151,24 +153,8 @@ function CheckoutContent() {
     };
 
     const handleConfirm = () => {
-        router.push(`/orders/${orderId}`);
+        router.push(`/dashboard`);
     };
-
-    // Parse question form if it's a string
-    const getQuestionForm = (): QuestionField[] => {
-        if (!service?.questionForm) return [];
-        if (typeof service.questionForm === 'string') {
-            try {
-                return JSON.parse(service.questionForm);
-            } catch {
-                return [];
-            }
-        }
-        return service.questionForm;
-    };
-
-    const questionForm = getQuestionForm();
-    const hasQuestions = questionForm.length > 0;
 
     if (loading && step === 1) {
         return (
@@ -201,41 +187,30 @@ function CheckoutContent() {
                     {/* Progress Steps */}
                     <div className="flex items-center justify-center mb-8 overflow-x-auto">
                         <div className="flex items-center space-x-2 md:space-x-4">
-                            {/* Step 1: Details */}
                             <div className={`flex items-center ${step >= 1 ? 'text-blue-600' : 'text-gray-400'}`}>
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-300'}`}>
                                     1
                                 </div>
                                 <span className="ml-2 font-medium text-sm">Details</span>
                             </div>
-
-                            {/* Step 2: Questions (only if service has questions) */}
-                            {hasQuestions && (
-                                <>
-                                    <div className="w-8 md:w-16 h-1 bg-gray-300"></div>
-                                    <div className={`flex items-center ${step >= 2 ? 'text-blue-600' : 'text-gray-400'}`}>
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-300'}`}>
-                                            2
-                                        </div>
-                                        <span className="ml-2 font-medium text-sm">Questions</span>
-                                    </div>
-                                </>
-                            )}
-
-                            {/* Step 3 (or 2 if no questions): Payment */}
+                            <div className="w-8 md:w-16 h-1 bg-gray-300"></div>
+                            <div className={`flex items-center ${step >= 2 ? 'text-blue-600' : 'text-gray-400'}`}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-300'}`}>
+                                    2
+                                </div>
+                                <span className="ml-2 font-medium text-sm">Documents</span>
+                            </div>
                             <div className="w-8 md:w-16 h-1 bg-gray-300"></div>
                             <div className={`flex items-center ${step >= 3 ? 'text-blue-600' : 'text-gray-400'}`}>
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-300'}`}>
-                                    {hasQuestions ? '3' : '2'}
+                                    3
                                 </div>
                                 <span className="ml-2 font-medium text-sm">Payment</span>
                             </div>
-
-                            {/* Step 4 (or 3 if no questions): Done */}
                             <div className="w-8 md:w-16 h-1 bg-gray-300"></div>
                             <div className={`flex items-center ${step >= 4 ? 'text-blue-600' : 'text-gray-400'}`}>
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 4 ? 'bg-blue-600 text-white' : 'bg-gray-300'}`}>
-                                    {hasQuestions ? '4' : '3'}
+                                    4
                                 </div>
                                 <span className="ml-2 font-medium text-sm">Done</span>
                             </div>
@@ -248,10 +223,10 @@ function CheckoutContent() {
                         </div>
                     )}
 
-                    {/* Step 1: Basic Details Form */}
+                    {/* Step 1: Details Form */}
                     {step === 1 && (
                         <div className="bg-white rounded-lg shadow-lg p-8">
-                            <h2 className="text-2xl font-bold mb-6">Basic Details</h2>
+                            <h2 className="text-2xl font-bold mb-6">Application Details</h2>
                             <div className="mb-6">
                                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                                     <h3 className="font-semibold text-blue-900">{service.name}</h3>
@@ -341,115 +316,67 @@ function CheckoutContent() {
                                         disabled={loading}
                                         className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                                     >
-                                        {loading ? 'Creating...' : hasQuestions ? 'Continue to Questions' : 'Continue to Payment'}
+                                        {loading ? 'Creating...' : 'Continue to Documents'}
                                     </button>
                                 </div>
                             </form>
                         </div>
                     )}
 
-                    {/* Step 2: Service-Specific Questions */}
-                    {step === 2 && hasQuestions && (
+                    {/* Step 2: Document Upload */}
+                    {step === 2 && (
                         <div className="bg-white rounded-lg shadow-lg p-8">
-                            <div className="flex items-center mb-6">
-                                <HelpCircle className="h-8 w-8 text-blue-600 mr-3" />
-                                <h2 className="text-2xl font-bold">Additional Information</h2>
+                            <h2 className="text-2xl font-bold mb-6">Upload Documents</h2>
+
+                            <div className="mb-6">
+                                <h3 className="font-semibold mb-3">Required Documents:</h3>
+                                <ul className="space-y-2">
+                                    {service.documentRequired?.map((doc, index) => (
+                                        <li key={index} className="flex items-start">
+                                            <FileText className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
+                                            <span className="text-gray-700">{doc}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                            <p className="text-gray-600 mb-6">
-                                Please answer these questions to help us process your application better.
-                            </p>
 
                             <form onSubmit={handleStep2Submit}>
-                                <div className="space-y-6">
-                                    {questionForm.map((question, index) => (
-                                        <div key={question.id} className="pb-6 border-b last:border-b-0">
-                                            <label className="block text-sm font-medium text-gray-900 mb-3">
-                                                {question.label}
-                                                {question.required && <span className="text-red-500 ml-1">*</span>}
-                                            </label>
-
-                                            {question.helpText && (
-                                                <p className="text-sm text-gray-500 mb-3">{question.helpText}</p>
-                                            )}
-
-                                            {/* Radio buttons */}
-                                            {question.type === 'radio' && (
-                                                <div className="space-y-2">
-                                                    {question.options?.map((option) => (
-                                                        <label key={option} className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                                                            <input
-                                                                type="radio"
-                                                                name={question.id}
-                                                                value={option}
-                                                                required={question.required}
-                                                                checked={questionAnswers[question.id] === option}
-                                                                onChange={(e) => handleQuestionChange(question.id, e.target.value)}
-                                                                className="mr-3 h-4 w-4 text-blue-600"
-                                                            />
-                                                            <span className="text-gray-700">{option}</span>
-                                                        </label>
-                                                    ))}
-                                                </div>
-                                            )}
-
-                                            {/* Select dropdown */}
-                                            {question.type === 'select' && (
-                                                <select
-                                                    required={question.required}
-                                                    value={questionAnswers[question.id] || ''}
-                                                    onChange={(e) => handleQuestionChange(question.id, e.target.value)}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                >
-                                                    <option value="">-- Select an option --</option>
-                                                    {question.options?.map((option) => (
-                                                        <option key={option} value={option}>
-                                                            {option}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            )}
-
-                                            {/* Text input */}
-                                            {question.type === 'text' && (
-                                                <input
-                                                    type="text"
-                                                    required={question.required}
-                                                    placeholder={question.placeholder}
-                                                    value={questionAnswers[question.id] || ''}
-                                                    onChange={(e) => handleQuestionChange(question.id, e.target.value)}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                />
-                                            )}
-
-                                            {/* Textarea */}
-                                            {question.type === 'textarea' && (
-                                                <textarea
-                                                    required={question.required}
-                                                    placeholder={question.placeholder}
-                                                    rows={4}
-                                                    value={questionAnswers[question.id] || ''}
-                                                    onChange={(e) => handleQuestionChange(question.id, e.target.value)}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                />
-                                            )}
-
-                                            {/* Checkbox */}
-                                            {question.type === 'checkbox' && (
-                                                <label className="flex items-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={questionAnswers[question.id] || false}
-                                                        onChange={(e) => handleQuestionChange(question.id, e.target.checked)}
-                                                        className="mr-3 h-4 w-4 text-blue-600 rounded"
-                                                    />
-                                                    <span className="text-gray-700">{question.label}</span>
-                                                </label>
-                                            )}
-                                        </div>
-                                    ))}
+                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-6">
+                                    <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                                    <label className="cursor-pointer">
+                                        <span className="text-blue-600 hover:text-blue-700 font-medium">
+                                            Click to upload
+                                        </span>
+                                        <span className="text-gray-600"> or drag and drop</span>
+                                        <input
+                                            type="file"
+                                            multiple
+                                            accept=".pdf,.jpg,.jpeg,.png"
+                                            onChange={handleFileSelect}
+                                            className="hidden"
+                                        />
+                                    </label>
+                                    <p className="text-sm text-gray-500 mt-2">PDF, JPG, PNG up to 10MB each</p>
                                 </div>
 
-                                <div className="mt-8 flex justify-between">
+                                {documents.length > 0 && (
+                                    <div className="mb-6">
+                                        <h4 className="font-medium mb-2">Selected Files:</h4>
+                                        <ul className="space-y-2">
+                                            {documents.map((file, index) => (
+                                                <li key={index} className="flex items-center bg-gray-50 p-3 rounded">
+                                                    <FileText className="h-5 w-5 text-blue-500 mr-2" />
+                                                    <span className="text-sm text-gray-700">{file.name}</span>
+                                                    <span className="text-xs text-gray-500 ml-auto">
+                                                        {(file.size / 1024).toFixed(2)} KB
+                                                    </span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                <div className="flex justify-between">
                                     <button
                                         type="button"
                                         onClick={() => setStep(1)}
@@ -459,10 +386,10 @@ function CheckoutContent() {
                                     </button>
                                     <button
                                         type="submit"
-                                        disabled={loading}
+                                        disabled={uploading || documents.length === 0}
                                         className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                                     >
-                                        {loading ? 'Saving...' : 'Continue to Payment'}
+                                        {uploading ? 'Uploading...' : 'Continue to Payment'}
                                     </button>
                                 </div>
                             </form>
@@ -488,6 +415,10 @@ function CheckoutContent() {
                                         <span className="text-gray-600">Processing Time</span>
                                         <span className="font-medium">{service.estimatedDays}</span>
                                     </div>
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-gray-600">Documents Uploaded</span>
+                                        <span className="font-medium">{documents.length} files</span>
+                                    </div>
                                     <div className="border-t pt-3 mt-3">
                                         <div className="flex justify-between text-lg">
                                             <span className="font-semibold">Total Amount</span>
@@ -495,12 +426,6 @@ function CheckoutContent() {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                                <p className="text-sm text-yellow-800">
-                                    <strong>📄 Documents Required:</strong> After payment, you'll be able to upload required documents from your order details page.
-                                </p>
                             </div>
 
                             <PaymentButton
@@ -515,10 +440,10 @@ function CheckoutContent() {
 
                             <div className="mt-6 text-center">
                                 <button
-                                    onClick={() => setStep(hasQuestions ? 2 : 1)}
+                                    onClick={() => setStep(2)}
                                     className="text-gray-600 hover:text-gray-800 text-sm"
                                 >
-                                    ← Back to {hasQuestions ? 'Questions' : 'Details'}
+                                    ← Back to Documents
                                 </button>
                             </div>
                         </div>
@@ -538,10 +463,6 @@ function CheckoutContent() {
                             <div className="bg-gray-50 rounded-lg p-6 mb-6">
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <div>
-                                        <p className="text-sm text-gray-600">Order Number</p>
-                                        <p className="font-semibold">{orderNumber}</p>
-                                    </div>
-                                    <div>
                                         <p className="text-sm text-gray-600">Service</p>
                                         <p className="font-semibold">{service.name}</p>
                                     </div>
@@ -550,26 +471,21 @@ function CheckoutContent() {
                                         <p className="font-semibold text-green-600">₹{service.price.toLocaleString()}</p>
                                     </div>
                                     <div>
+                                        <p className="text-sm text-gray-600">Status</p>
+                                        <p className="font-semibold text-blue-600">Payment Received</p>
+                                    </div>
+                                    <div>
                                         <p className="text-sm text-gray-600">Processing Time</p>
                                         <p className="font-semibold">{service.estimatedDays}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                                <h3 className="font-semibold text-blue-900 mb-2">📄 Next Step: Upload Documents</h3>
-                                <p className="text-sm text-blue-800 mb-3">
-                                    Please upload the required documents to proceed with your application.
-                                    You can do this now or later from your order details page.
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                                <p className="text-sm text-blue-900">
+                                    <strong>What's Next?</strong> Our team will start processing your application.
+                                    You'll receive updates via email and can track progress in your dashboard.
                                 </p>
-                                <ul className="text-sm text-blue-700 space-y-1 mb-4">
-                                    {service.documentRequired?.slice(0, 3).map((doc, index) => (
-                                        <li key={index}>• {doc}</li>
-                                    ))}
-                                    {service.documentRequired && service.documentRequired.length > 3 && (
-                                        <li>• And {service.documentRequired.length - 3} more...</li>
-                                    )}
-                                </ul>
                             </div>
 
                             <div className="text-center">
@@ -577,7 +493,7 @@ function CheckoutContent() {
                                     onClick={handleConfirm}
                                     className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
                                 >
-                                    View Order & Upload Documents
+                                    Go to Dashboard
                                 </button>
                             </div>
                         </div>
