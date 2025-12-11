@@ -237,9 +237,13 @@ async function createCollections() {
     const messageAttrs = [
         { key: 'orderId', type: 'string', size: 255, required: true },
         { key: 'senderId', type: 'string', size: 255, required: true },
-        { key: 'message', type: 'string', size: 5000, required: true },
-        { key: 'attachments', type: 'string', size: 500, required: false, array: true },
-        { key: 'isRead', type: 'boolean', required: true, default: false },
+        { key: 'senderName', type: 'string', size: 255, required: true },
+        { key: 'senderRole', type: 'string', size: 50, required: true },
+        { key: 'message', type: 'string', size: 5000, required: false },
+        { key: 'messageType', type: 'string', size: 50, required: true, default: 'text' },
+        { key: 'read', type: 'boolean', required: true, default: false },
+        { key: 'readAt', type: 'datetime', required: false },
+        { key: 'metadata', type: 'string', size: 5000, required: false },
     ];
 
     for (const attr of messageAttrs) {
@@ -256,6 +260,14 @@ async function createCollections() {
                 );
             } else if (attr.type === 'boolean') {
                 await databases.createBooleanAttribute(
+                    DATABASE_ID,
+                    'messages',
+                    attr.key,
+                    attr.required,
+                    attr.default
+                );
+            } else if (attr.type === 'datetime') {
+                await databases.createDatetimeAttribute(
                     DATABASE_ID,
                     'messages',
                     attr.key,
@@ -418,8 +430,9 @@ async function createIndex(databaseId, collectionId, key, type, attributes, orde
 
 // Create storage bucket
 async function createStorageBucket() {
-    console.log('\n💾 Creating storage bucket...');
+    console.log('\n💾 Creating storage buckets...');
 
+    // Customer Documents Bucket
     try {
         await storage.createBucket(
             'customer-documents',
@@ -443,9 +456,39 @@ async function createStorageBucket() {
         console.log('✅ Created storage bucket: customer-documents');
     } catch (error) {
         if (error.code === 409) {
-            console.log('⚠️  Storage bucket already exists');
+            console.log('⚠️  Storage bucket customer-documents already exists');
         } else {
-            console.error('❌ Error creating storage bucket:', error.message);
+            console.error('❌ Error creating storage bucket customer-documents:', error.message);
+        }
+    }
+
+    // Message Attachments Bucket
+    try {
+        await storage.createBucket(
+            'message-attachments',
+            'Message Attachments',
+            [
+                sdk.Permission.read(sdk.Role.users()),
+                sdk.Permission.create(sdk.Role.users()),
+                sdk.Permission.update(sdk.Role.team('operations')),
+                sdk.Permission.update(sdk.Role.team('admin')),
+                sdk.Permission.delete(sdk.Role.team('operations')),
+                sdk.Permission.delete(sdk.Role.team('admin')),
+            ],
+            false, // fileSecurity
+            true,  // enabled
+            10485760, // maxFileSize (10MB)
+            ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'], // allowedFileExtensions
+            'none', // compression
+            true,  // encryption
+            true   // antivirus
+        );
+        console.log('✅ Created storage bucket: message-attachments');
+    } catch (error) {
+        if (error.code === 409) {
+            console.log('⚠️  Storage bucket message-attachments already exists');
+        } else {
+            console.error('❌ Error creating storage bucket message-attachments:', error.message);
         }
     }
 }

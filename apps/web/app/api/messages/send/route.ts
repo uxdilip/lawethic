@@ -8,34 +8,56 @@ const MESSAGES_COLLECTION = 'messages';
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { orderId, message } = body;
+        const { orderId, message = '', attachments = [] } = body;
 
-        if (!orderId || !message) {
+        console.log('[Messages API] Request body:', { orderId, messageLength: message?.length, attachmentsCount: attachments.length });
+
+        if (!orderId || (!message && (!attachments || attachments.length === 0))) {
             return NextResponse.json(
-                { error: 'orderId and message are required' },
+                { error: 'orderId and either message or attachments are required' },
                 { status: 400 }
             );
         }
 
-        // Get user from session cookie
-        const cookieStore = cookies();
-        const allCookies = cookieStore.getAll();
+        // Get cookies from request headers instead of cookies() helper
+        const cookieHeader = request.headers.get('cookie');
+        console.log('[Messages API] Cookie header:', cookieHeader ? 'Present' : 'Missing');
 
-
-        // Find Appwrite session cookie
-        const sessionCookie = allCookies.find(c =>
-            c.name.startsWith('a_session_') ||
-            c.name === 'appwrite-session' ||
-            c.name.includes('session')
-        );
-
-        if (!sessionCookie) {
-            console.error('[Messages API] No session cookie found');
+        if (!cookieHeader) {
+            console.error('[Messages API] No cookie header found');
             return NextResponse.json(
                 { error: 'Unauthorized - Please login again' },
                 { status: 401 }
             );
         }
+
+        // Parse cookies from header
+        const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
+            const [name, value] = cookie.trim().split('=');
+            acc[name] = value;
+            return acc;
+        }, {} as Record<string, string>);
+
+        console.log('[Messages API] Parsed cookies:', Object.keys(cookies));
+
+        // Find Appwrite session cookie
+        const sessionCookieName = Object.keys(cookies).find(name =>
+            name.startsWith('a_session_') ||
+            name === 'appwrite-session' ||
+            name.includes('session')
+        );
+
+        if (!sessionCookieName) {
+            console.error('[Messages API] No session cookie found');
+            console.error('[Messages API] Available cookies:', Object.keys(cookies));
+            return NextResponse.json(
+                { error: 'Unauthorized - Please login again' },
+                { status: 401 }
+            );
+        }
+
+        const sessionCookieValue = cookies[sessionCookieName];
+        console.log('[Messages API] Using session cookie:', sessionCookieName);
 
 
         // Check if API key is available
@@ -64,12 +86,17 @@ export async function POST(request: NextRequest) {
         const userResponse = await fetch(`${endpoint}/account`, {
             headers: {
                 'X-Appwrite-Project': projectId,
-                'Cookie': `${sessionCookie.name}=${sessionCookie.value}`
+                'Cookie': `${sessionCookieName}=${sessionCookieValue}`
             }
         });
 
+        console.log('[Messages API] User validation response status:', userResponse.status);
+
         if (!userResponse.ok) {
             console.error('[Messages API] Failed to get user from session');
+            console.error('[Messages API] Response status:', userResponse.status);
+            const errorText = await userResponse.text();
+            console.error('[Messages API] Response body:', errorText);
             return NextResponse.json(
                 { error: 'Unauthorized - Invalid session' },
                 { status: 401 }
@@ -91,19 +118,13 @@ export async function POST(request: NextRequest) {
                 senderId: user.$id,
                 senderName: user.name || 'User',
                 senderRole: userRole,
-                message: message.trim(),
-                messageType: 'text',
+                message: message?.trim() || '',
+                messageType: attachments.length > 0 ? 'file' : 'text',
                 read: false,
                 readAt: null,
-                metadata: null
+                metadata: attachments.length > 0 ? JSON.stringify({ attachments }) : null
             }
         );
-
-            messageId: newMessage.$id,
-            orderId,
-            sender: user.name,
-            role: userRole
-        });
 
         // Send notification to the other person in conversation
         try {
@@ -120,9 +141,13 @@ export async function POST(request: NextRequest) {
                     userId: recipientUserId,
                     orderId: orderId,
                     type: 'message',
-                    message: `New message from ${user.name}: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+                    message: attachments.length > 0
+                        ? `${user.name} sent ${attachments.length} file(s)`
+                        : `New message from ${user.name}: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
                     title: 'New Message',
-                    description: `${user.name} sent you a message`,
+                    description: attachments.length > 0
+                        ? `${user.name} sent you ${attachments.length} attachment(s)`
+                        : `${user.name} sent you a message`,
                     actionUrl: `/orders/${orderId}`,
                     actionLabel: 'View Message',
                     read: false,
