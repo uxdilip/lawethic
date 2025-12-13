@@ -36,6 +36,8 @@ export function ServicePageClient({ service }: ServicePageClientProps) {
             {/* Hero */}
             <HeroSection
                 hero={service.hero}
+                service={service.title}
+                category={service.category}
                 onGetStarted={handleGetStarted}
                 onConsult={handleConsult}
             />

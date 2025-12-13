@@ -118,31 +118,6 @@ export default function DashboardPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white border-b">
-                <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                    <Link href="/" className="text-2xl font-bold text-blue-600">
-                        LawEthic
-                    </Link>
-                    <div className="flex items-center space-x-4">
-                        {/* Notification Bell */}
-                        <NotificationBell />
-
-                        <div className="flex items-center space-x-2">
-                            <UserIcon className="h-5 w-5 text-gray-600" />
-                            <span className="text-sm text-gray-700">{user?.name}</span>
-                        </div>
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-red-600"
-                        >
-                            <LogOut className="h-4 w-4" />
-                            <span>Logout</span>
-                        </button>
-                    </div>
-                </div>
-            </header>
-
             {/* Main Content */}
             <main className="container mx-auto px-4 py-8">
                 <div className="mb-8">

@@ -6,12 +6,14 @@ export const appwriteConfig = {
     collections: {
         users: process.env.NEXT_PUBLIC_COLLECTION_USERS || 'users',
         services: process.env.NEXT_PUBLIC_COLLECTION_SERVICES || 'services',
+        categories: process.env.NEXT_PUBLIC_COLLECTION_CATEGORIES || 'categories',
         orders: process.env.NEXT_PUBLIC_COLLECTION_ORDERS || 'orders',
         documents: process.env.NEXT_PUBLIC_COLLECTION_DOCUMENTS || 'documents',
         messages: process.env.NEXT_PUBLIC_COLLECTION_MESSAGES || 'messages',
         notifications: process.env.NEXT_PUBLIC_COLLECTION_NOTIFICATIONS || 'notifications',
         payments: process.env.NEXT_PUBLIC_COLLECTION_PAYMENTS || 'payments',
         orderTimeline: process.env.NEXT_PUBLIC_COLLECTION_ORDER_TIMELINE || 'order_timeline',
+        leads: process.env.NEXT_PUBLIC_COLLECTION_LEADS || 'leads',
     },
     buckets: {
         customerDocuments: process.env.NEXT_PUBLIC_BUCKET_CUSTOMER_DOCUMENTS || 'customer-documents',

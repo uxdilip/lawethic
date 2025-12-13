@@ -6,12 +6,16 @@ import { useRouter } from 'next/navigation';
 import { account } from '@lawethic/appwrite';
 import { LogOut, User } from 'lucide-react';
 import NotificationBell from './NotificationBell';
+import { MegaMenu } from './navigation/MegaMenu';
+import { MobileNav, MobileNavTrigger } from './navigation/MobileNav';
+import { NavigationParent } from '@/types/service';
 
-export default function Header() {
+export default function Header({ navigationData }: { navigationData?: NavigationParent[] }) {
     const router = useRouter();
     const [user, setUser] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
     useEffect(() => {
         checkAuth();
@@ -39,29 +43,23 @@ export default function Header() {
     };
 
     return (
-        <header className="bg-white border-b">
+        <header className="bg-white border-b sticky top-0 z-50">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                <Link href="/" className="text-2xl font-bold text-blue-600">
-                    LawEthic
-                </Link>
-
-                <nav className="hidden md:flex space-x-6">
-                    <Link href="/services" className="text-gray-600 hover:text-blue-600">
-                        Services
+                {/* Logo */}
+                <div className="flex items-center gap-8">
+                    <Link href="/" className="text-2xl font-bold text-blue-600">
+                        LawEthic
                     </Link>
-                    {user && (
-                        <Link href="/dashboard" className="text-gray-600 hover:text-blue-600">
-                            Dashboard
-                        </Link>
+
+                    {/* Desktop Navigation with Mega Menu */}
+                    {navigationData && (
+                        <div className="hidden md:block">
+                            <MegaMenu parentCategories={navigationData} />
+                        </div>
                     )}
-                    <Link href="/about" className="text-gray-600 hover:text-blue-600">
-                        About
-                    </Link>
-                    <Link href="/contact" className="text-gray-600 hover:text-blue-600">
-                        Contact
-                    </Link>
-                </nav>
+                </div>
 
+                {/* Right side actions */}
                 <div className="flex items-center space-x-4">
                     {loading ? (
                         <div className="w-20 h-8 bg-gray-200 animate-pulse rounded"></div>
@@ -101,19 +99,33 @@ export default function Header() {
                         </>
                     ) : (
                         <>
-                            <Link href="/login" className="px-4 py-2 text-gray-600 hover:text-blue-600">
+                            <Link href="/login" className="px-4 py-2 text-gray-600 hover:text-blue-600 hidden md:block">
                                 Login
                             </Link>
                             <Link
                                 href="/signup"
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hidden md:block"
                             >
                                 Sign Up
                             </Link>
                         </>
                     )}
+
+                    {/* Mobile Menu Trigger */}
+                    {navigationData && (
+                        <MobileNavTrigger onClick={() => setMobileNavOpen(true)} />
+                    )}
                 </div>
             </div>
+
+            {/* Mobile Navigation */}
+            {navigationData && (
+                <MobileNav
+                    parentCategories={navigationData}
+                    isOpen={mobileNavOpen}
+                    onClose={() => setMobileNavOpen(false)}
+                />
+            )}
         </header>
     );
 }

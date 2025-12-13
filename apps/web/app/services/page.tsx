@@ -6,7 +6,6 @@ import { databases, appwriteConfig } from '@lawethic/appwrite';
 import { Service } from '@lawethic/appwrite/types';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import { Query } from 'appwrite';
-import Header from '@/components/Header';
 
 export default function ServicesPage() {
     const [services, setServices] = useState<Service[]>([]);
@@ -35,8 +34,6 @@ export default function ServicesPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <Header />
-
             {/* Hero */}
             <section className="bg-blue-600 text-white py-16 px-4">
                 <div className="container mx-auto text-center max-w-3xl">

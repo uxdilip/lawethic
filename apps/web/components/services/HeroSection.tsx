@@ -5,14 +5,17 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CheckCircle, Star } from 'lucide-react'
 import { ServiceHero } from '@/types/service-content'
+import { LeadCaptureForm } from '@/components/LeadCaptureForm'
 
 interface HeroSectionProps {
     hero: ServiceHero
+    service: string
+    category: string
     onGetStarted: () => void
     onConsult: () => void
 }
 
-export function HeroSection({ hero, onGetStarted, onConsult }: HeroSectionProps) {
+export function HeroSection({ hero, service, category, onGetStarted, onConsult }: HeroSectionProps) {
     return (
         <section className="relative min-h-[600px] bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white overflow-hidden">
             {/* Animated background pattern */}
@@ -122,19 +125,32 @@ export function HeroSection({ hero, onGetStarted, onConsult }: HeroSectionProps)
                         </motion.div>
                     </motion.div>
 
-                    {/* Right side - Image or video placeholder */}
+                    {/* Right side - Lead Capture Form - Desktop */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.5, duration: 0.8 }}
-                        className="hidden lg:flex items-center justify-center"
+                        className="hidden lg:block"
                     >
-                        <div className="relative w-full h-96 bg-white/10 rounded-2xl backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                            {/* Placeholder for image/video */}
-                            <p className="text-white/50 text-lg">Service Illustration</p>
-                        </div>
+                        <LeadCaptureForm
+                            service={service}
+                            category={category}
+                        />
                     </motion.div>
                 </div>
+
+                {/* Mobile Form - Below Hero Content */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.2, duration: 0.6 }}
+                    className="lg:hidden mt-8"
+                >
+                    <LeadCaptureForm
+                        service={service}
+                        category={category}
+                    />
+                </motion.div>
             </div>
 
             {/* Floating trust badge */}

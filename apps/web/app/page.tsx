@@ -4,40 +4,6 @@ import { ArrowRight, CheckCircle, FileText, Shield, Clock } from 'lucide-react';
 export default function HomePage() {
     return (
         <div className="min-h-screen bg-white">
-            {/* Header */}
-            <header className="border-b">
-                <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                    <Link href="/" className="text-2xl font-bold text-blue-600">
-                        LawEthic
-                    </Link>
-                    <nav className="hidden md:flex space-x-6">
-                        <Link href="/services" className="text-gray-600 hover:text-blue-600">
-                            Services
-                        </Link>
-                        <Link href="/about" className="text-gray-600 hover:text-blue-600">
-                            About
-                        </Link>
-                        <Link href="/contact" className="text-gray-600 hover:text-blue-600">
-                            Contact
-                        </Link>
-                    </nav>
-                    <div className="flex space-x-4">
-                        <Link
-                            href="/login"
-                            className="px-4 py-2 text-gray-600 hover:text-blue-600"
-                        >
-                            Login
-                        </Link>
-                        <Link
-                            href="/signup"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                        >
-                            Sign Up
-                        </Link>
-                    </div>
-                </div>
-            </header>
-
             {/* Hero Section */}
             <section className="py-20 px-4">
                 <div className="container mx-auto text-center max-w-4xl">
