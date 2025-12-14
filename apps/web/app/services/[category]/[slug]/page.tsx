@@ -75,9 +75,18 @@ export default async function ServicePage({ params }: PageProps) {
                 emiAvailable: pkg.price > 2000
             })),
             process: service.process,
-            documents: service.documents.required.map(doc => ({
-                applicantType: doc.applicableFor,
-                items: [doc.title]
+            documents: Object.entries(
+                service.documents.required.reduce((acc, doc) => {
+                    const category = doc.applicableFor;
+                    if (!acc[category]) {
+                        acc[category] = [];
+                    }
+                    acc[category].push(doc.title);
+                    return acc;
+                }, {} as Record<string, string[]>)
+            ).map(([applicantType, items]) => ({
+                applicantType,
+                items
             })),
             education: {
                 overview: service.metaDescription,

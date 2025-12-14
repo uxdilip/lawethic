@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { account } from '@lawethic/appwrite';
 import { ID } from 'appwrite';
 
 export default function SignupPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirect = searchParams.get('redirect');
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -44,7 +47,12 @@ export default function SignupPage() {
                 fullName: name,
             });
 
-            router.push('/dashboard');
+            // Redirect to original page or dashboard
+            if (redirect) {
+                router.push(decodeURIComponent(redirect));
+            } else {
+                router.push('/dashboard');
+            }
         } catch (err: any) {
             setError(err.message || 'Failed to create account. Please try again.');
         } finally {
@@ -64,7 +72,10 @@ export default function SignupPage() {
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
                         Or{' '}
-                        <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
+                        <Link
+                            href={redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : '/login'}
+                            className="font-medium text-blue-600 hover:text-blue-500"
+                        >
                             sign in to existing account
                         </Link>
                     </p>
