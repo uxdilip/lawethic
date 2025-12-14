@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Bell } from 'lucide-react';
 import { client } from '@lawethic/appwrite';
 import { NotificationItem } from '@/lib/notifications/types';
@@ -12,6 +12,7 @@ export default function NotificationBell() {
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState<string | null>(null);
+    const bellButtonRef = useRef<HTMLButtonElement>(null);
 
     // Get current user ID
     useEffect(() => {
@@ -198,6 +199,7 @@ export default function NotificationBell() {
     return (
         <div className="relative">
             <button
+                ref={bellButtonRef}
                 onClick={() => setIsOpen(!isOpen)}
                 className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors z-50"
                 style={{ cursor: 'pointer', pointerEvents: 'auto' }}
@@ -218,6 +220,7 @@ export default function NotificationBell() {
                     onNotificationClick={handleNotificationClick}
                     onMarkAllRead={handleMarkAllAsRead}
                     onDelete={handleDelete}
+                    bellButtonRef={bellButtonRef}
                 />
             )}
         </div>

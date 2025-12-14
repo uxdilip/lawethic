@@ -11,6 +11,7 @@ interface NotificationDropdownProps {
     onNotificationClick: (notification: NotificationItem) => void;
     onMarkAllRead: () => void;
     onDelete: (id: string) => void;
+    bellButtonRef?: React.RefObject<HTMLButtonElement>;
 }
 
 export default function NotificationDropdown({
@@ -19,21 +20,26 @@ export default function NotificationDropdown({
     onClose,
     onNotificationClick,
     onMarkAllRead,
-    onDelete
+    onDelete,
+    bellButtonRef
 }: NotificationDropdownProps) {
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Close on outside click
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            const target = event.target as Node;
+            const isOutsideDropdown = dropdownRef.current && !dropdownRef.current.contains(target);
+            const isOutsideBellButton = bellButtonRef?.current && !bellButtonRef.current.contains(target);
+
+            if (isOutsideDropdown && isOutsideBellButton) {
                 onClose();
             }
         };
 
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [onClose]);
+    }, [onClose, bellButtonRef]);
 
     const getNotificationIcon = (type: string) => {
         switch (type) {

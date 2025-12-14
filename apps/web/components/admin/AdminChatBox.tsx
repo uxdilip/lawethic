@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Send, Loader2, MessageCircle } from 'lucide-react';
-import { client, databases, account } from '@lawethic/appwrite';
+import { Send, Loader2, MessageCircle, Paperclip, FileText, Image as ImageIcon, Download, XCircle } from 'lucide-react';
+import { client, databases, account, storage } from '@lawethic/appwrite';
 import { ID } from 'appwrite';
 
 const DATABASE_ID = 'main';
 const MESSAGES_COLLECTION = 'messages';
+const MESSAGE_ATTACHMENTS_BUCKET = 'message-attachments';
 
 interface Message {
     $id: string;
@@ -15,10 +16,18 @@ interface Message {
     senderName: string;
     senderRole: 'customer' | 'admin' | 'operations' | 'system';
     message: string;
-    messageType: 'text' | 'system';
+    messageType: 'text' | 'system' | 'file';
     read: boolean;
     readAt: string | null;
+    metadata: string | null;
     $createdAt: string;
+}
+
+interface FileAttachment {
+    $id: string;
+    name: string;
+    size: number;
+    mimeType: string;
 }
 
 interface AdminChatBoxProps {
@@ -32,7 +41,10 @@ export default function AdminChatBox({ orderId, orderNumber, customerName }: Adm
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [uploading, setUploading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         loadMessages();
@@ -112,22 +124,74 @@ export default function AdminChatBox({ orderId, orderNumber, customerName }: Adm
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        const validFiles = files.filter(file => {
+            const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB
+            const isValidType = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/jpg', 'image/png'].includes(file.type);
+            return isValidSize && isValidType;
+        });
+
+        if (validFiles.length < files.length) {
+            alert('Some files were skipped. Only PDF, DOC, DOCX, JPG, PNG files under 10MB are allowed.');
+        }
+
+        setSelectedFiles(prev => [...prev, ...validFiles].slice(0, 3)); // Max 3 files
+    };
+
+    const removeFile = (index: number) => {
+        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!newMessage.trim() || sending) return;
+        if ((!newMessage.trim() && selectedFiles.length === 0) || sending) return;
 
         const messageText = newMessage.trim();
+        let attachments: FileAttachment[] = [];
 
         try {
             setSending(true);
+            setUploading(true);
+
+            // Upload files if any using Appwrite client SDK
+            if (selectedFiles.length > 0) {
+                for (const file of selectedFiles) {
+                    // Validate file
+                    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+                    if (file.size > MAX_SIZE) {
+                        throw new Error(`File ${file.name} exceeds 10MB limit`);
+                    }
+
+                    try {
+                        const uploadedFile = await storage.createFile(
+                            MESSAGE_ATTACHMENTS_BUCKET,
+                            ID.unique(),
+                            file
+                        );
+
+                        attachments.push({
+                            $id: uploadedFile.$id,
+                            name: uploadedFile.name,
+                            size: uploadedFile.sizeOriginal,
+                            mimeType: uploadedFile.mimeType
+                        });
+                    } catch (uploadError: any) {
+                        console.error('File upload error:', uploadError);
+                        throw new Error(`Failed to upload ${file.name}`);
+                    }
+                }
+            }
+
+            setUploading(false);
 
             // Get current user
             const user = await account.get();
             const userRole = (user.prefs?.role as string) || 'customer';
 
             // Create message directly using client SDK
-            const response = await databases.createDocument(
+            await databases.createDocument(
                 DATABASE_ID,
                 MESSAGES_COLLECTION,
                 ID.unique(),
@@ -136,56 +200,28 @@ export default function AdminChatBox({ orderId, orderNumber, customerName }: Adm
                     senderId: user.$id,
                     senderName: user.name || 'User',
                     senderRole: userRole,
-                    message: messageText,
+                    message: messageText || '',
                     messageType: 'text',
                     read: false,
-                    readAt: null
+                    readAt: null,
+                    metadata: attachments.length > 0 ? JSON.stringify({ attachments }) : null
                 }
             );
 
-            // Send notification to customer if sender is admin
-            if (userRole === 'admin' || userRole === 'operations') {
-                try {
-                    // Get order to find customer's userId
-                    const order = await databases.getDocument(DATABASE_ID, 'orders', orderId);
-                    const customerUserId = order.customerId;
-
-                    if (customerUserId && customerUserId !== user.$id) {
-                        // Create notification
-                        await databases.createDocument(
-                            DATABASE_ID,
-                            'notifications',
-                            ID.unique(),
-                            {
-                                userId: customerUserId,
-                                orderId: orderId,
-                                type: 'message',
-                                message: `New message from ${user.name}: ${messageText.substring(0, 50)}${messageText.length > 50 ? '...' : ''}`,
-                                title: 'New Message',
-                                description: `${user.name} sent you a message`,
-                                actionUrl: `/orders/${orderId}`,
-                                actionLabel: 'View Message',
-                                read: false,
-                                readAt: null,
-                                sourceUserId: user.$id,
-                                metadata: null
-                            }
-                        );
-                    }
-                } catch (notifError) {
-                    console.error('[AdminChatBox] Failed to create notification:', notifError);
-                    // Non-critical, don't block message send
-                }
-            }
-
             setNewMessage('');
+            setSelectedFiles([]);
+
+            // Message will be added via real-time subscription
         } catch (error) {
             console.error('Error sending message:', error);
-            alert('Failed to send message');
+            alert(error instanceof Error ? error.message : 'Failed to send message');
         } finally {
             setSending(false);
+            setUploading(false);
         }
-    }; const formatTimestamp = (timestamp: string) => {
+    };
+
+    const formatTimestamp = (timestamp: string) => {
         const date = new Date(timestamp);
         const now = new Date();
         const diffMs = now.getTime() - date.getTime();
@@ -199,6 +235,25 @@ export default function AdminChatBox({ orderId, orderNumber, customerName }: Adm
         if (diffDays < 7) return `${diffDays}d ago`;
 
         return date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+    };
+
+    const getFileIcon = (mimeType: string) => {
+        if (mimeType.startsWith('image/')) return <ImageIcon className="h-4 w-4" />;
+        return <FileText className="h-4 w-4" />;
+    };
+
+    const formatFileSize = (bytes: number) => {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    };
+
+    const downloadFile = async (fileId: string, fileName: string) => {
+        const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || '';
+        const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT || '';
+        const downloadUrl = `${endpoint}/storage/buckets/message-attachments/files/${fileId}/download?project=${projectId}`;
+
+        window.open(downloadUrl, '_blank');
     };
 
     return (
@@ -231,6 +286,17 @@ export default function AdminChatBox({ orderId, orderNumber, customerName }: Adm
                         {messages.map((msg) => {
                             const isCustomer = msg.senderRole === 'customer';
                             const isSystem = msg.messageType === 'system';
+                            const hasAttachments = msg.metadata !== null && msg.metadata !== '';
+                            let attachments: FileAttachment[] = [];
+
+                            if (hasAttachments) {
+                                try {
+                                    const metadata = JSON.parse(msg.metadata || '{}');
+                                    attachments = metadata.attachments || [];
+                                } catch (e) {
+                                    console.error('Failed to parse attachments:', e);
+                                }
+                            }
 
                             if (isSystem) {
                                 return (
@@ -258,9 +324,39 @@ export default function AdminChatBox({ orderId, orderNumber, customerName }: Adm
                                                 }`}>
                                                 {msg.senderName}
                                             </p>
-                                            <p className="text-sm whitespace-pre-wrap break-words">
-                                                {msg.message}
-                                            </p>
+                                            {msg.message && (
+                                                <p className="text-sm whitespace-pre-wrap break-words">
+                                                    {msg.message}
+                                                </p>
+                                            )}
+                                            {attachments.length > 0 && (
+                                                <div className={`space-y-2 ${msg.message ? 'mt-2' : ''}`}>
+                                                    {attachments.map((file, idx) => (
+                                                        <div
+                                                            key={idx}
+                                                            className={`flex items-center gap-2 p-2 rounded ${isCustomer ? 'bg-gray-50' : 'bg-indigo-700'
+                                                                }`}
+                                                        >
+                                                            {getFileIcon(file.mimeType)}
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-xs font-medium truncate">
+                                                                    {file.name}
+                                                                </p>
+                                                                <p className={`text-xs ${isCustomer ? 'text-gray-500' : 'text-indigo-200'}`}>
+                                                                    {formatFileSize(file.size)}
+                                                                </p>
+                                                            </div>
+                                                            <button
+                                                                onClick={() => downloadFile(file.$id, file.name)}
+                                                                className={`p-1 rounded hover:bg-opacity-80 ${isCustomer ? 'hover:bg-gray-200' : 'hover:bg-indigo-800'
+                                                                    }`}
+                                                            >
+                                                                <Download className="h-4 w-4" />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                         <p
                                             className={`text-xs text-gray-500 mt-1 ${isCustomer ? 'text-left' : 'text-right'
@@ -282,7 +378,44 @@ export default function AdminChatBox({ orderId, orderNumber, customerName }: Adm
 
             {/* Input */}
             <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 bg-white rounded-b-lg">
+                {/* File Preview */}
+                {selectedFiles.length > 0 && (
+                    <div className="mb-2 space-y-1">
+                        {selectedFiles.map((file, index) => (
+                            <div key={index} className="flex items-center gap-2 bg-gray-50 p-2 rounded text-sm">
+                                {file.type.startsWith('image/') ? <ImageIcon className="h-4 w-4 text-gray-600" /> : <FileText className="h-4 w-4 text-gray-600" />}
+                                <span className="flex-1 truncate text-gray-700">{file.name}</span>
+                                <span className="text-xs text-gray-500">{formatFileSize(file.size)}</span>
+                                <button
+                                    type="button"
+                                    onClick={() => removeFile(index)}
+                                    className="text-gray-400 hover:text-red-600"
+                                >
+                                    <XCircle className="h-4 w-4" />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
                 <div className="flex gap-2">
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        onChange={handleFileSelect}
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                        multiple
+                        className="hidden"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={sending || selectedFiles.length >= 3}
+                        className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        title="Attach files (max 3)"
+                    >
+                        <Paperclip className="h-5 w-5" />
+                    </button>
                     <input
                         type="text"
                         value={newMessage}
@@ -293,20 +426,26 @@ export default function AdminChatBox({ orderId, orderNumber, customerName }: Adm
                     />
                     <button
                         type="submit"
-                        disabled={!newMessage.trim() || sending}
+                        disabled={(!newMessage.trim() && selectedFiles.length === 0) || sending}
                         className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
                     >
                         {sending ? (
                             <Loader2 className="h-5 w-5 animate-spin" />
                         ) : (
-                            <>
-                                <Send className="h-5 w-5" />
-                                <span className="hidden sm:inline">Send</span>
-                            </>
+                            <Send className="h-5 w-5" />
                         )}
                     </button>
                 </div>
             </form>
-        </div>
+            ) : (
+            <>
+                <Send className="h-5 w-5" />
+                <span className="hidden sm:inline">Send</span>
+            </>
+                        )}
+        </button>
+                </div >
+            </form >
+        </div >
     );
 }

@@ -25,6 +25,8 @@ import {
 } from 'lucide-react';
 import FloatingChatButton from '@/components/chat/FloatingChatButton';
 import DocumentReupload from '@/components/customer/DocumentReupload';
+import DocumentUploadSection from '@/components/customer/DocumentUploadSection';
+import PaymentButton from '@/components/PaymentButton';
 
 interface OrderDetailProps {
     params: {
@@ -46,6 +48,13 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
     useEffect(() => {
         checkAuthAndLoadOrder();
     }, [params.id]);
+
+    const handlePaymentSuccess = () => {
+        // Reload order details to show updated payment status
+        if (user) {
+            loadOrderDetails(user.$id);
+        }
+    };
 
     const checkAuthAndLoadOrder = async () => {
         try {
@@ -307,7 +316,7 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-500">Processing Time</p>
-                                            <p className="font-medium text-gray-900">{service?.deliveryTime ? `${service.deliveryTime} days` : 'N/A'}</p>
+                                            <p className="font-medium text-gray-900">{service?.estimatedDays ? `${service.estimatedDays} ` : 'N/A'}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -337,15 +346,33 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                                         <span className="text-sm text-gray-900 font-mono">{order.razorpayOrderId}</span>
                                     </div>
                                 )}
-                                {order.paymentStatus === 'pending' && (
+                                {order.paymentStatus === 'pending' && service && user && (
                                     <div className="mt-4 pt-4 border-t border-gray-200">
-                                        <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
-                                            Complete Payment
-                                        </button>
+                                        <PaymentButton
+                                            amount={order.amount}
+                                            orderId={order.$id}
+                                            orderNumber={order.orderNumber}
+                                            customerName={user.name || order.formData?.businessName || 'Customer'}
+                                            customerEmail={user.email || order.formData?.email || ''}
+                                            serviceName={service.name}
+                                            onSuccess={handlePaymentSuccess}
+                                        />
                                     </div>
                                 )}
                             </div>
                         </div>
+
+                        {/* Document Upload Section - Show when payment is done but no documents uploaded */}
+                        {order.paymentStatus === 'paid' && documents.length === 0 && service?.documentRequired && (
+                            <DocumentUploadSection
+                                orderId={params.id}
+                                orderStatus={order.status}
+                                documentRequired={service.documentRequired}
+                                existingDocuments={documents}
+                                onUploadSuccess={() => loadOrderDetails(user.$id)}
+                                userId={user.$id}
+                            />
+                        )}
 
                         {/* Documents Section */}
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -364,10 +391,10 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                                                         <p className="font-medium text-gray-900 truncate">{doc.fileName || doc.name || doc.documentType || 'Document'}</p>
                                                         <div className="flex items-center space-x-2 mt-1">
                                                             <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${doc.status === 'verified'
-                                                                    ? 'bg-green-100 text-green-800 border border-green-200'
-                                                                    : doc.status === 'rejected'
-                                                                        ? 'bg-red-100 text-red-800 border border-red-200'
-                                                                        : 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                                                                ? 'bg-green-100 text-green-800 border border-green-200'
+                                                                : doc.status === 'rejected'
+                                                                    ? 'bg-red-100 text-red-800 border border-red-200'
+                                                                    : 'bg-yellow-100 text-yellow-800 border border-yellow-200'
                                                                 }`}>
                                                                 {doc.status === 'verified' && <CheckCircle className="h-3 w-3 mr-1" />}
                                                                 {doc.status === 'rejected' && <XCircle className="h-3 w-3 mr-1" />}
@@ -570,10 +597,6 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                             <h3 className="text-lg font-bold text-gray-900 mb-4">Need Help?</h3>
                             <div className="space-y-3">
-                                <button className="w-full flex items-center justify-center space-x-2 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <MessageCircle className="h-5 w-5 text-gray-600" />
-                                    <span className="font-medium text-gray-900">Chat with Support</span>
-                                </button>
                                 <a href="mailto:support@lawethic.com" className="w-full flex items-center justify-center space-x-2 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                                     <Mail className="h-5 w-5 text-gray-600" />
                                     <span className="font-medium text-gray-900">Email Support</span>

@@ -10,6 +10,7 @@ import { StaffOnly } from '@/components/RoleGuard';
 import Link from 'next/link';
 import CertificateUpload, { CertificateList } from '@/components/admin/CertificateUpload';
 import FloatingChatButton from '@/components/chat/FloatingChatButton';
+import AssignmentDropdown from '@/components/admin/AssignmentDropdown';
 
 interface CaseDetailProps {
     params: {
@@ -289,16 +290,26 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                                     Created on {new Date(order.$createdAt).toLocaleString()}
                                 </p>
                             </div>
-                            <div className="flex gap-2">
-                                <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(order.status)}`}>
-                                    {order.status.replace(/_/g, ' ')}
-                                </span>
-                                <span className={`px-4 py-2 rounded-full text-sm font-semibold ${order.paymentStatus === 'paid'
-                                    ? 'bg-green-100 text-green-800'
-                                    : 'bg-yellow-100 text-yellow-800'
-                                    }`}>
-                                    Payment: {order.paymentStatus}
-                                </span>
+                            <div className="flex flex-col gap-3 items-end">
+                                {/* Assignment Dropdown */}
+                                <AssignmentDropdown
+                                    orderId={order.$id}
+                                    currentAssignment={order.assignedTo}
+                                    onAssignmentChange={loadCaseDetails}
+                                />
+
+                                {/* Status Badges */}
+                                <div className="flex gap-2">
+                                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusColor(order.status)}`}>
+                                        {order.status.replace(/_/g, ' ')}
+                                    </span>
+                                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${order.paymentStatus === 'paid'
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-yellow-100 text-yellow-800'
+                                        }`}>
+                                        Payment: {order.paymentStatus}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -334,6 +345,25 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                                     )}
                                 </div>
                             </div>
+
+                            {/* Service-Specific Questions & Answers */}
+                            {order.formData?.serviceQuestions && Object.keys(order.formData.serviceQuestions).length > 0 && (
+                                <div className="bg-white shadow rounded-lg p-6">
+                                    <h2 className="text-xl font-bold text-gray-900 mb-4">Service-Specific Information</h2>
+                                    <div className="space-y-4">
+                                        {Object.entries(order.formData.serviceQuestions).map(([key, value]: [string, any]) => (
+                                            <div key={key} className="border-b border-gray-200 pb-3 last:border-b-0">
+                                                <p className="text-sm font-medium text-gray-700 mb-1">
+                                                    {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                                                </p>
+                                                <p className="text-gray-900">
+                                                    {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value || 'N/A'}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Service Details */}
                             {service && (
@@ -524,22 +554,6 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                                 </div>
                             </div>
 
-                            {/* Quick Actions */}
-                            <div className="bg-white shadow rounded-lg p-6">
-                                <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
-                                <div className="space-y-2">
-                                    <button className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-left">
-                                        📧 Send Email to Customer
-                                    </button>
-                                    <button className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-left">
-                                        📄 Upload Certificate
-                                    </button>
-                                    <button className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-left">
-                                        📋 View Timeline
-                                    </button>
-                                </div>
-                            </div>
-
                             {/* Chat Section - Floating Button */}
                             {order && (
                                 <FloatingChatButton
@@ -549,8 +563,8 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                             )}
                         </div>
                     </div>
-                </div>
-            </AdminLayout>
-        </StaffOnly>
+                </div >
+            </AdminLayout >
+        </StaffOnly >
     );
 }
