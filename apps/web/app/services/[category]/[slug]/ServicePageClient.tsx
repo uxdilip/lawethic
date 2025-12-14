@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ServiceDetail } from '@/types/service-content'
 import { HeroSection } from '@/components/services/HeroSection'
@@ -9,6 +10,8 @@ import { DocumentsChecklist } from '@/components/services/DocumentsChecklist'
 import { FAQSection } from '@/components/services/FAQSection'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
+import { account } from '@lawethic/appwrite'
+import { AuthModal } from '@/components/auth/AuthModal'
 
 interface ServicePageClientProps {
     service: ServiceDetail
@@ -16,9 +19,33 @@ interface ServicePageClientProps {
 
 export function ServicePageClient({ service }: ServicePageClientProps) {
     const router = useRouter()
+    const [user, setUser] = useState<any>(null)
+    const [showAuthModal, setShowAuthModal] = useState(false)
+    const [checkingAuth, setCheckingAuth] = useState(true)
+
+    useEffect(() => {
+        checkAuth()
+    }, [])
+
+    const checkAuth = async () => {
+        try {
+            const userData = await account.get()
+            setUser(userData)
+        } catch {
+            setUser(null)
+        } finally {
+            setCheckingAuth(false)
+        }
+    }
 
     const handleGetStarted = () => {
-        router.push(`/checkout?serviceId=${service.$id}`)
+        if (!user) {
+            setShowAuthModal(true)
+            return
+        }
+
+        // User is logged in, proceed to checkout
+        router.push(`/checkout?category=${service.category}&slug=${service.slug}`)
     }
 
     const handleConsult = () => {
@@ -28,7 +55,19 @@ export function ServicePageClient({ service }: ServicePageClientProps) {
     }
 
     const handleSelectPackage = (pkg: any) => {
-        router.push(`/checkout?serviceId=${service.$id}&package=${pkg.name}`)
+        if (!user) {
+            setShowAuthModal(true)
+            return
+        }
+
+        router.push(`/checkout?category=${service.category}&slug=${service.slug}&package=${pkg.name}`)
+    }
+
+    const handleAuthSuccess = async () => {
+        // Refresh user state
+        await checkAuth()
+        // Navigate to checkout
+        router.push(`/checkout?category=${service.category}&slug=${service.slug}`)
     }
 
     return (
@@ -79,6 +118,14 @@ export function ServicePageClient({ service }: ServicePageClientProps) {
                     Get Started Now - ₹{service.price.toLocaleString()}
                 </Button>
             </motion.div>
+
+            {/* Auth Modal */}
+            <AuthModal
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                onSuccess={handleAuthSuccess}
+                defaultTab="signup"
+            />
         </div>
     )
 }

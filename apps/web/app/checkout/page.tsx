@@ -8,14 +8,20 @@ import { Service, Order, QuestionField } from '@lawethic/appwrite/types';
 import { CheckCircle, CreditCard, HelpCircle } from 'lucide-react';
 import { ID, Query } from 'appwrite';
 import PaymentButton from '@/components/PaymentButton';
+import { getServiceData } from '@/lib/services-static';
 
 function CheckoutContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const serviceId = searchParams.get('serviceId');
+    const category = searchParams.get('category');
+    const slug = searchParams.get('slug');
+    const selectedPackageName = searchParams.get('package');
 
     const [user, setUser] = useState<any>(null);
     const [service, setService] = useState<Service | null>(null);
+    const [selectedPackage, setSelectedPackage] = useState<any>(null);
+    const [finalPrice, setFinalPrice] = useState<number>(0);
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -28,28 +34,86 @@ function CheckoutContent() {
 
     useEffect(() => {
         init();
-    }, [serviceId]);
+    }, [serviceId, category, slug]);
 
     const init = async () => {
+        setLoading(true);
+        setError('');
+
+        // Step 1: Check authentication
         try {
-            // Check authentication
             const userData = await account.get();
             setUser(userData);
+        } catch (authError) {
+            console.error('Authentication required:', authError);
+            const currentPath = window.location.pathname + window.location.search;
+            router.push('/login?redirect=' + encodeURIComponent(currentPath));
+            return;
+        }
 
-            if (!serviceId) {
-                router.push('/services');
+        // Step 2: Fetch service by slug or ID
+        try {
+            let serviceResponse: any;
+
+            if (category && slug) {
+                // Fetch by slug (from service landing pages)
+                const services = await databases.listDocuments(
+                    appwriteConfig.databaseId,
+                    appwriteConfig.collections.services,
+                    [Query.equal('slug', slug), Query.equal('category', category)]
+                );
+
+                if (services.documents.length === 0) {
+                    setError('Service not found. Please go back and select a service.');
+                    setLoading(false);
+                    return;
+                }
+
+                serviceResponse = services.documents[0];
+            } else if (serviceId) {
+                // Fetch by ID (legacy support)
+                serviceResponse = await databases.getDocument(
+                    appwriteConfig.databaseId,
+                    appwriteConfig.collections.services,
+                    serviceId
+                );
+            } else {
+                setError('No service specified. Please select a service.');
+                setLoading(false);
                 return;
             }
 
-            // Fetch service
-            const serviceResponse = await databases.getDocument(
-                appwriteConfig.databaseId,
-                appwriteConfig.collections.services,
-                serviceId
-            );
             setService(serviceResponse as unknown as Service);
-        } catch (err) {
-            router.push('/login?redirect=/checkout?serviceId=' + serviceId);
+
+            // Find selected package and calculate final price
+            let packageData = null;
+            let price = serviceResponse.price; // Default to base price
+
+            // Fetch static service data to get packages (since Appwrite only has base service)
+            if (selectedPackageName && category && slug) {
+                const staticServiceData = await getServiceData(category, slug);
+
+                if (staticServiceData?.packages) {
+                    packageData = staticServiceData.packages.find(
+                        (pkg: any) => pkg.name === selectedPackageName
+                    );
+
+                    if (packageData) {
+                        price = packageData.price;
+                        console.log('✅ Package found:', packageData.name, 'Price:', price);
+                    } else {
+                        console.warn('⚠️ Package not found:', selectedPackageName);
+                    }
+                } else {
+                    console.warn('⚠️ No packages in static data for:', category, slug);
+                }
+            }
+
+            setSelectedPackage(packageData);
+            setFinalPrice(price);
+        } catch (serviceError: any) {
+            console.error('Failed to load service:', serviceError);
+            setError('Failed to load service details. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -78,6 +142,8 @@ function CheckoutContent() {
                 ...formData,
                 email: user.email,
                 fullName: user.name || formData.businessName,
+                selectedPackage: selectedPackageName || 'Standard',
+                packagePrice: finalPrice,
             };
 
             const orderData = {
@@ -86,7 +152,7 @@ function CheckoutContent() {
                 serviceId: service!.$id,
                 status: 'new',
                 paymentStatus: 'pending',
-                amount: service!.price,
+                amount: finalPrice,
                 formData: JSON.stringify(formDataWithEmail),
             };
 
@@ -251,8 +317,30 @@ function CheckoutContent() {
                             <h2 className="text-2xl font-bold mb-6">Basic Details</h2>
                             <div className="mb-6">
                                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                    <h3 className="font-semibold text-blue-900">{service.name}</h3>
-                                    <p className="text-sm text-blue-700 mt-1">Price: ₹{service.price.toLocaleString()}</p>
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h3 className="font-semibold text-blue-900">{service.name}</h3>
+                                            {selectedPackage && (
+                                                <span className="inline-block mt-1 px-2 py-1 bg-blue-600 text-white text-xs font-semibold rounded">
+                                                    {selectedPackage.name} Package
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-lg font-bold text-blue-900">₹{finalPrice.toLocaleString()}</p>
+                                    </div>
+                                    {selectedPackage && selectedPackage.inclusions && (
+                                        <div className="mt-3 pt-3 border-t border-blue-200">
+                                            <p className="text-xs text-blue-700 font-medium mb-2">Package Includes:</p>
+                                            <ul className="text-xs text-blue-600 space-y-1">
+                                                {selectedPackage.inclusions.slice(0, 3).map((item: string, idx: number) => (
+                                                    <li key={idx}>✓ {item}</li>
+                                                ))}
+                                                {selectedPackage.inclusions.length > 3 && (
+                                                    <li>+ {selectedPackage.inclusions.length - 3} more...</li>
+                                                )}
+                                            </ul>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -481,14 +569,20 @@ function CheckoutContent() {
                                         <span className="text-gray-600">Service</span>
                                         <span className="font-medium">{service.name}</span>
                                     </div>
+                                    {selectedPackage && (
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Package</span>
+                                            <span className="font-medium text-blue-600">{selectedPackage.name}</span>
+                                        </div>
+                                    )}
                                     <div className="flex justify-between">
                                         <span className="text-gray-600">Processing Time</span>
-                                        <span className="font-medium">{service.estimatedDays}</span>
+                                        <span className="font-medium">{selectedPackage?.timeline || service.estimatedDays}</span>
                                     </div>
                                     <div className="border-t pt-3 mt-3">
                                         <div className="flex justify-between text-lg">
                                             <span className="font-semibold">Total Amount</span>
-                                            <span className="font-bold text-blue-600">₹{service.price.toLocaleString('en-IN')}</span>
+                                            <span className="font-bold text-blue-600">₹{finalPrice.toLocaleString('en-IN')}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -501,7 +595,7 @@ function CheckoutContent() {
                             </div>
 
                             <PaymentButton
-                                amount={service.price}
+                                amount={finalPrice}
                                 orderId={orderId}
                                 orderNumber={orderNumber}
                                 customerName={user?.name || ''}
@@ -542,9 +636,15 @@ function CheckoutContent() {
                                         <p className="text-sm text-gray-600">Service</p>
                                         <p className="font-semibold">{service.name}</p>
                                     </div>
+                                    {selectedPackage && (
+                                        <div>
+                                            <p className="text-sm text-gray-600">Package</p>
+                                            <p className="font-semibold text-blue-600">{selectedPackage.name}</p>
+                                        </div>
+                                    )}
                                     <div>
                                         <p className="text-sm text-gray-600">Amount Paid</p>
-                                        <p className="font-semibold text-green-600">₹{service.price.toLocaleString()}</p>
+                                        <p className="font-semibold text-green-600">₹{finalPrice.toLocaleString()}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-600">Processing Time</p>

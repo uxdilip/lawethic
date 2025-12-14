@@ -2,11 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { account } from '@lawethic/appwrite';
 
 export default function LoginPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirect = searchParams.get('redirect');
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -19,7 +22,13 @@ export default function LoginPage() {
 
         try {
             await account.createEmailPasswordSession(email, password);
-            router.push('/dashboard');
+
+            // Redirect to original page or dashboard
+            if (redirect) {
+                router.push(decodeURIComponent(redirect));
+            } else {
+                router.push('/dashboard');
+            }
         } catch (err: any) {
             setError(err.message || 'Failed to login. Please check your credentials.');
         } finally {
@@ -39,7 +48,10 @@ export default function LoginPage() {
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
                         Or{' '}
-                        <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
+                        <Link
+                            href={redirect ? `/signup?redirect=${encodeURIComponent(redirect)}` : '/signup'}
+                            className="font-medium text-blue-600 hover:text-blue-500"
+                        >
                             create a new account
                         </Link>
                     </p>
