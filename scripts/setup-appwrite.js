@@ -412,6 +412,46 @@ async function createCollections() {
     }
 
     await createIndex(DATABASE_ID, 'order_timeline', 'timeline_order_index', 'key', ['orderId'], ['ASC']);
+
+    // Collection: leads
+    await safeCreate(
+        () => databases.createCollection(DATABASE_ID, 'leads', 'Leads'),
+        'Collection: leads'
+    );
+
+    const leadAttrs = [
+        { key: 'name', type: 'string', size: 255, required: true },
+        { key: 'email', type: 'string', size: 255, required: true },
+        { key: 'phone', type: 'string', size: 20, required: true },
+        { key: 'city', type: 'string', size: 100, required: true },
+        { key: 'service', type: 'string', size: 255, required: true },
+        { key: 'category', type: 'string', size: 100, required: true },
+        { key: 'package', type: 'string', size: 100, required: false },
+        { key: 'status', type: 'string', size: 50, required: true, default: 'new' },
+    ];
+
+    for (const attr of leadAttrs) {
+        try {
+            await databases.createStringAttribute(
+                DATABASE_ID,
+                'leads',
+                attr.key,
+                attr.size,
+                attr.required,
+                attr.default
+            );
+            console.log(`  ✅ Added attribute: leads.${attr.key}`);
+            await sleep(1000);
+        } catch (error) {
+            if (error.code === 409) {
+                console.log(`  ⚠️  Attribute leads.${attr.key} already exists`);
+            }
+        }
+    }
+
+    await createIndex(DATABASE_ID, 'leads', 'email_index', 'key', ['email'], ['ASC']);
+    await createIndex(DATABASE_ID, 'leads', 'status_index', 'key', ['status'], ['ASC']);
+    await createIndex(DATABASE_ID, 'leads', 'service_index', 'key', ['service'], ['ASC']);
 }
 
 async function createIndex(databaseId, collectionId, key, type, attributes, orders) {
@@ -723,6 +763,145 @@ async function seedServices() {
     }
 }
 
+// Update services collection with new fields for rich content
+async function updateServicesCollection() {
+    console.log('\n📝 Updating services collection with content fields...');
+
+    const newAttributes = [
+        { key: 'category', type: 'string', size: 100, required: false },
+        { key: 'shortDescription', type: 'string', size: 500, required: false },
+        { key: 'heroBadge', type: 'string', size: 200, required: false },
+        { key: 'heroTitle', type: 'string', size: 300, required: false },
+        { key: 'heroHighlights', type: 'string', size: 500, required: false, array: true },
+        { key: 'contentBlocks', type: 'string', size: 100000, required: false },
+        { key: 'metaTitle', type: 'string', size: 200, required: false },
+        { key: 'metaDescription', type: 'string', size: 500, required: false },
+        { key: 'keywords', type: 'string', size: 200, required: false, array: true },
+    ];
+
+    for (const attr of newAttributes) {
+        try {
+            if (attr.array) {
+                await databases.createStringAttribute(
+                    DATABASE_ID,
+                    'services',
+                    attr.key,
+                    attr.size,
+                    attr.required,
+                    undefined,
+                    attr.array
+                );
+            } else {
+                await databases.createStringAttribute(
+                    DATABASE_ID,
+                    'services',
+                    attr.key,
+                    attr.size,
+                    attr.required
+                );
+            }
+            console.log(`✅ Added attribute: ${attr.key}`);
+            await sleep(1000); // Wait between attribute creations
+        } catch (error) {
+            if (error.code === 409) {
+                console.log(`⚠️  Attribute ${attr.key} already exists`);
+            } else {
+                console.error(`❌ Error adding ${attr.key}:`, error.message);
+            }
+        }
+    }
+}
+
+// Create categories collection
+async function createCategoriesCollection() {
+    console.log('\n📂 Creating categories collection...');
+
+    try {
+        await databases.createCollection(
+            DATABASE_ID,
+            'categories',
+            'Categories',
+            [
+                sdk.Permission.read(sdk.Role.any()),
+                sdk.Permission.write(sdk.Role.team('admin')),
+                sdk.Permission.write(sdk.Role.team('operations'))
+            ]
+        );
+        console.log('✅ Created categories collection');
+
+        await sleep(2000);
+
+        const attributes = [
+            { key: 'slug', type: 'string', size: 100, required: true },
+            { key: 'title', type: 'string', size: 200, required: true },
+            { key: 'description', type: 'string', size: 1000, required: false },
+            { key: 'icon', type: 'string', size: 200, required: false },
+            { key: 'order', type: 'integer', required: true },
+            { key: 'hubContent', type: 'string', size: 50000, required: false },
+            { key: 'metaTitle', type: 'string', size: 200, required: false },
+            { key: 'metaDescription', type: 'string', size: 500, required: false },
+        ];
+
+        for (const attr of attributes) {
+            try {
+                if (attr.type === 'integer') {
+                    await databases.createIntegerAttribute(
+                        DATABASE_ID,
+                        'categories',
+                        attr.key,
+                        attr.required,
+                        0,
+                        1000
+                    );
+                } else {
+                    await databases.createStringAttribute(
+                        DATABASE_ID,
+                        'categories',
+                        attr.key,
+                        attr.size,
+                        attr.required
+                    );
+                }
+                console.log(`✅ Added attribute: ${attr.key}`);
+                await sleep(1000);
+            } catch (error) {
+                if (error.code === 409) {
+                    console.log(`⚠️  Attribute ${attr.key} already exists`);
+                } else {
+                    console.error(`❌ Error adding ${attr.key}:`, error.message);
+                }
+            }
+        }
+
+        // Create index on slug
+        await sleep(2000);
+        try {
+            await databases.createIndex(
+                DATABASE_ID,
+                'categories',
+                'slug_index',
+                'key',
+                ['slug'],
+                ['ASC']
+            );
+            console.log('✅ Created slug index');
+        } catch (error) {
+            if (error.code === 409) {
+                console.log('⚠️  Slug index already exists');
+            } else {
+                console.error('❌ Error creating index:', error.message);
+            }
+        }
+
+    } catch (error) {
+        if (error.code === 409) {
+            console.log('⚠️  Categories collection already exists');
+        } else {
+            console.error('❌ Error creating categories collection:', error.message);
+        }
+    }
+}
+
 // Helper sleep function
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -747,6 +926,14 @@ async function main() {
         await sleep(2000);
 
         await seedServices();
+        await sleep(2000);
+
+        // Update services collection with new fields
+        await updateServicesCollection();
+        await sleep(2000);
+
+        // Create categories collection
+        await createCategoriesCollection();
 
         console.log('\n✅ Appwrite setup complete!');
         console.log('\n📝 Next steps:');
