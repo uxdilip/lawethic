@@ -6,7 +6,24 @@ import { appwriteConfig } from '@lawethic/appwrite/config';
 import { Query } from 'appwrite';
 import AdminLayout from '@/components/AdminLayout';
 import { StaffOnly } from '@/components/RoleGuard';
+import StatCard from '@/components/admin/StatCard';
 import Link from 'next/link';
+import {
+    ShoppingCart,
+    DollarSign,
+    Clock,
+    CheckCircle2,
+    FileText,
+    ArrowRight,
+    TrendingUp,
+    AlertCircle,
+    XCircle,
+    Ban,
+    Loader,
+    CreditCard,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface Stats {
     newOrders: { count: number; amount: number };
@@ -107,18 +124,28 @@ export default function AdminDashboardPage() {
         }
     };
 
-    const getStatusColor = (status: string) => {
-        const colors: Record<string, string> = {
-            new: 'bg-blue-100 text-blue-800',
-            pending_docs: 'bg-yellow-100 text-yellow-800',
-            in_review: 'bg-purple-100 text-purple-800',
-            ready_for_filing: 'bg-indigo-100 text-indigo-800',
-            submitted: 'bg-cyan-100 text-cyan-800',
-            pending_approval: 'bg-orange-100 text-orange-800',
-            completed: 'bg-green-100 text-green-800',
-            on_hold: 'bg-red-100 text-red-800',
+    const getStatusConfig = (status: string) => {
+        const configs: Record<string, { color: string; icon: any; label: string }> = {
+            new: { color: 'bg-blue-50 text-blue-700 border-blue-200', icon: AlertCircle, label: 'New' },
+            pending_docs: { color: 'bg-amber-50 text-amber-700 border-amber-200', icon: FileText, label: 'Pending Docs' },
+            in_review: { color: 'bg-purple-50 text-purple-700 border-purple-200', icon: Loader, label: 'In Review' },
+            ready_for_filing: { color: 'bg-indigo-50 text-indigo-700 border-indigo-200', icon: CheckCircle2, label: 'Ready for Filing' },
+            submitted: { color: 'bg-cyan-50 text-cyan-700 border-cyan-200', icon: CheckCircle2, label: 'Submitted' },
+            pending_approval: { color: 'bg-orange-50 text-orange-700 border-orange-200', icon: Clock, label: 'Pending Approval' },
+            completed: { color: 'bg-green-50 text-green-700 border-green-200', icon: CheckCircle2, label: 'Completed' },
+            on_hold: { color: 'bg-red-50 text-red-700 border-red-200', icon: Ban, label: 'On Hold' },
         };
-        return colors[status] || 'bg-gray-100 text-gray-800';
+        return configs[status] || { color: 'bg-neutral-100 text-neutral-700 border-neutral-200', icon: AlertCircle, label: status.replace(/_/g, ' ') };
+    };
+
+    const getPaymentStatusConfig = (status: string) => {
+        const configs: Record<string, { color: string; icon: any }> = {
+            paid: { color: 'bg-green-50 text-green-700 border-green-200', icon: CheckCircle2 },
+            pending: { color: 'bg-amber-50 text-amber-700 border-amber-200', icon: Clock },
+            failed: { color: 'bg-red-50 text-red-700 border-red-200', icon: XCircle },
+            refunded: { color: 'bg-neutral-50 text-neutral-700 border-neutral-200', icon: CreditCard },
+        };
+        return configs[status] || { color: 'bg-neutral-100 text-neutral-700 border-neutral-200', icon: AlertCircle };
     };
 
     const formatCurrency = (amount: number) => {
@@ -132,232 +159,183 @@ export default function AdminDashboardPage() {
     return (
         <StaffOnly>
             <AdminLayout>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-                        <p className="mt-2 text-gray-600">Overview of all operations</p>
+                {/* Page Header */}
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-neutral-900">Dashboard</h1>
+                    <p className="mt-2 text-neutral-600">Welcome back! Here's what's happening today.</p>
+                </div>
+
+                {loading ? (
+                    <div className="flex justify-center py-12">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
                     </div>
+                ) : (
+                    <div className="space-y-8">
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                            <StatCard
+                                title="New Orders"
+                                value={stats.newOrders.count}
+                                subtitle={formatCurrency(stats.newOrders.amount)}
+                                icon={ShoppingCart}
+                                gradient="from-blue-500 to-blue-600"
+                                trend={{
+                                    value: 12,
+                                    label: 'vs last week',
+                                    direction: 'up'
+                                }}
+                            />
 
-                    {loading ? (
-                        <div className="flex justify-center py-12">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                            <StatCard
+                                title="Payment Received"
+                                value={stats.paymentReceived.count}
+                                subtitle="Needs processing"
+                                icon={DollarSign}
+                                gradient="from-emerald-500 to-emerald-600"
+                                trend={{
+                                    value: 8,
+                                    label: 'vs last week',
+                                    direction: 'up'
+                                }}
+                            />
+
+                            <StatCard
+                                title="In Progress"
+                                value={stats.inProgress.count}
+                                subtitle="Active cases"
+                                icon={Clock}
+                                gradient="from-amber-500 to-amber-600"
+                            />
+
+                            <StatCard
+                                title="Completed (Month)"
+                                value={stats.completedThisMonth.count}
+                                subtitle={formatCurrency(stats.completedThisMonth.revenue)}
+                                icon={CheckCircle2}
+                                gradient="from-green-500 to-green-600"
+                                trend={{
+                                    value: 15,
+                                    label: 'vs last month',
+                                    direction: 'up'
+                                }}
+                            />
+
+                            <StatCard
+                                title="Pending Docs"
+                                value={stats.pendingDocuments.count}
+                                subtitle="Need review"
+                                icon={FileText}
+                                gradient="from-purple-500 to-purple-600"
+                            />
                         </div>
-                    ) : (
-                        <>
-                            {/* Stats Cards */}
-                            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5 mb-8">
-                                {/* New Orders */}
-                                <div className="bg-white overflow-hidden shadow rounded-lg">
-                                    <div className="p-5">
-                                        <div className="flex items-center">
-                                            <div className="flex-shrink-0">
-                                                <div className="text-3xl">🆕</div>
-                                            </div>
-                                            <div className="ml-5 w-0 flex-1">
-                                                <dl>
-                                                    <dt className="text-sm font-medium text-gray-500 truncate">
-                                                        New Orders
-                                                    </dt>
-                                                    <dd className="flex items-baseline">
-                                                        <div className="text-2xl font-semibold text-gray-900">
-                                                            {stats.newOrders.count}
-                                                        </div>
-                                                    </dd>
-                                                    <dd className="text-sm text-gray-500">
-                                                        {formatCurrency(stats.newOrders.amount)}
-                                                    </dd>
-                                                </dl>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                {/* Payment Received */}
-                                <div className="bg-white overflow-hidden shadow rounded-lg">
-                                    <div className="p-5">
-                                        <div className="flex items-center">
-                                            <div className="flex-shrink-0">
-                                                <div className="text-3xl">💰</div>
-                                            </div>
-                                            <div className="ml-5 w-0 flex-1">
-                                                <dl>
-                                                    <dt className="text-sm font-medium text-gray-500 truncate">
-                                                        Payment Received
-                                                    </dt>
-                                                    <dd className="flex items-baseline">
-                                                        <div className="text-2xl font-semibold text-gray-900">
-                                                            {stats.paymentReceived.count}
-                                                        </div>
-                                                    </dd>
-                                                    <dd className="text-sm text-gray-500">
-                                                        Needs processing
-                                                    </dd>
-                                                </dl>
-                                            </div>
-                                        </div>
-                                    </div>
+                        {/* Recent Orders Table */}
+                        <div className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+                            {/* Table Header */}
+                            <div className="px-6 py-4 border-b border-neutral-100 bg-neutral-50/50 flex items-center justify-between">
+                                <div>
+                                    <h3 className="text-base font-semibold text-neutral-900">Recent Orders</h3>
+                                    <p className="text-xs text-neutral-500 mt-0.5">Latest customer orders and their status</p>
                                 </div>
-
-                                {/* In Progress */}
-                                <div className="bg-white overflow-hidden shadow rounded-lg">
-                                    <div className="p-5">
-                                        <div className="flex items-center">
-                                            <div className="flex-shrink-0">
-                                                <div className="text-3xl">⚙️</div>
-                                            </div>
-                                            <div className="ml-5 w-0 flex-1">
-                                                <dl>
-                                                    <dt className="text-sm font-medium text-gray-500 truncate">
-                                                        In Progress
-                                                    </dt>
-                                                    <dd className="flex items-baseline">
-                                                        <div className="text-2xl font-semibold text-gray-900">
-                                                            {stats.inProgress.count}
-                                                        </div>
-                                                    </dd>
-                                                    <dd className="text-sm text-gray-500">
-                                                        Active cases
-                                                    </dd>
-                                                </dl>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Completed This Month */}
-                                <div className="bg-white overflow-hidden shadow rounded-lg">
-                                    <div className="p-5">
-                                        <div className="flex items-center">
-                                            <div className="flex-shrink-0">
-                                                <div className="text-3xl">✅</div>
-                                            </div>
-                                            <div className="ml-5 w-0 flex-1">
-                                                <dl>
-                                                    <dt className="text-sm font-medium text-gray-500 truncate">
-                                                        Completed (Month)
-                                                    </dt>
-                                                    <dd className="flex items-baseline">
-                                                        <div className="text-2xl font-semibold text-gray-900">
-                                                            {stats.completedThisMonth.count}
-                                                        </div>
-                                                    </dd>
-                                                    <dd className="text-sm text-gray-500">
-                                                        {formatCurrency(stats.completedThisMonth.revenue)}
-                                                    </dd>
-                                                </dl>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Pending Documents */}
-                                <div className="bg-white overflow-hidden shadow rounded-lg">
-                                    <div className="p-5">
-                                        <div className="flex items-center">
-                                            <div className="flex-shrink-0">
-                                                <div className="text-3xl">📄</div>
-                                            </div>
-                                            <div className="ml-5 w-0 flex-1">
-                                                <dl>
-                                                    <dt className="text-sm font-medium text-gray-500 truncate">
-                                                        Pending Docs
-                                                    </dt>
-                                                    <dd className="flex items-baseline">
-                                                        <div className="text-2xl font-semibold text-gray-900">
-                                                            {stats.pendingDocuments.count}
-                                                        </div>
-                                                    </dd>
-                                                    <dd className="text-sm text-gray-500">
-                                                        Need review
-                                                    </dd>
-                                                </dl>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <Link
+                                    href="/admin/cases"
+                                    className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-brand-600 hover:text-brand-700 hover:bg-brand-50 rounded-lg transition-colors"
+                                >
+                                    View all
+                                    <ArrowRight className="w-4 h-4" />
+                                </Link>
                             </div>
 
-                            {/* Recent Orders */}
-                            <div className="bg-white shadow rounded-lg">
-                                <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                            Recent Orders
-                                        </h3>
-                                        <Link
-                                            href="/admin/cases"
-                                            className="text-sm font-medium text-blue-600 hover:text-blue-700"
-                                        >
-                                            View all →
-                                        </Link>
-                                    </div>
-                                </div>
-                                <div className="overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Order ID
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Date
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Amount
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Status
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Payment
-                                                </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Actions
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {recentOrders.map((order) => (
-                                                <tr key={order.$id} className="hover:bg-gray-50">
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                        #{order.orderNumber}
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                        {new Date(order.$createdAt).toLocaleDateString()}
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        {formatCurrency(order.amount || 0)}
+                            {/* Table */}
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-neutral-200">
+                                    <thead className="bg-neutral-50/50">
+                                        <tr>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                                                Order ID
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                                                Date
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                                                Amount
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                                                Status
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                                                Payment
+                                            </th>
+                                            <th className="px-6 py-3 text-right text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                                                Actions
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-neutral-100">
+                                        {recentOrders.map((order) => {
+                                            const statusConfig = getStatusConfig(order.status);
+                                            const StatusIcon = statusConfig.icon;
+                                            const paymentConfig = getPaymentStatusConfig(order.paymentStatus);
+                                            const PaymentIcon = paymentConfig.icon;
+
+                                            return (
+                                                <tr
+                                                    key={order.$id}
+                                                    className="hover:bg-neutral-50 transition-colors group"
+                                                >
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <div className="text-sm font-medium text-brand-600">
+                                                            #{order.orderNumber}
+                                                        </div>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
-                                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}`}>
-                                                            {order.status.replace(/_/g, ' ')}
+                                                        <div className="text-sm text-neutral-900">
+                                                            {format(new Date(order.$createdAt), 'MMM dd, yyyy')}
+                                                        </div>
+                                                        <div className="text-xs text-neutral-500">
+                                                            {format(new Date(order.$createdAt), 'hh:mm a')}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <div className="text-sm font-semibold text-neutral-900">
+                                                            {formatCurrency(order.amount || 0)}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <span className={cn(
+                                                            "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border",
+                                                            statusConfig.color
+                                                        )}>
+                                                            <StatusIcon className="w-3.5 h-3.5" />
+                                                            {statusConfig.label}
                                                         </span>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
-                                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${order.paymentStatus === 'paid'
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-yellow-100 text-yellow-800'
-                                                            }`}>
+                                                        <span className={cn(
+                                                            "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border capitalize",
+                                                            paymentConfig.color
+                                                        )}>
+                                                            <PaymentIcon className="w-3.5 h-3.5" />
                                                             {order.paymentStatus}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                    <td className="px-6 py-4 whitespace-nowrap text-right">
                                                         <Link
                                                             href={`/admin/cases/${order.$id}`}
-                                                            className="text-blue-600 hover:text-blue-900"
+                                                            className="text-brand-600 hover:text-brand-700 font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity"
                                                         >
-                                                            View
+                                                            View →
                                                         </Link>
                                                     </td>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
                             </div>
-                        </>
-                    )}
-                </div>
+                        </div>
+                    </div>
+                )}
             </AdminLayout>
         </StaffOnly>
     );
