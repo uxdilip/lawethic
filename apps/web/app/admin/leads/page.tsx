@@ -21,7 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Search, Phone, Mail, MapPin } from 'lucide-react';
+import { Search, Phone, Mail, MapPin, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Lead {
@@ -165,61 +165,99 @@ export default function AdminLeadsPage() {
                     </div>
 
                     {/* Stats Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                        <div className="bg-white p-4 rounded-lg shadow">
-                            <p className="text-gray-600 text-sm">Total Leads</p>
-                            <p className="text-2xl font-bold">{stats.total}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div className="bg-white rounded-xl border border-neutral-200 p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                            <div className="flex items-start justify-between mb-4">
+                                <div className="p-3 rounded-lg bg-gradient-to-br from-neutral-500 to-neutral-600">
+                                    <Users className="w-5 h-5 text-white" />
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-neutral-600">Total Leads</p>
+                                <p className="text-3xl font-bold text-neutral-900">{stats.total}</p>
+                            </div>
                         </div>
-                        <div className="bg-blue-50 p-4 rounded-lg shadow">
-                            <p className="text-gray-600 text-sm">New Leads</p>
-                            <p className="text-2xl font-bold text-blue-600">{stats.new}</p>
+                        <div className="bg-white rounded-xl border border-neutral-200 p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                            <div className="flex items-start justify-between mb-4">
+                                <div className="p-3 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
+                                    <Users className="w-5 h-5 text-white" />
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-neutral-600">New Leads</p>
+                                <p className="text-3xl font-bold text-neutral-900">{stats.new}</p>
+                            </div>
                         </div>
-                        <div className="bg-yellow-50 p-4 rounded-lg shadow">
-                            <p className="text-gray-600 text-sm">Contacted</p>
-                            <p className="text-2xl font-bold text-yellow-600">{stats.contacted}</p>
+                        <div className="bg-white rounded-xl border border-neutral-200 p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                            <div className="flex items-start justify-between mb-4">
+                                <div className="p-3 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600">
+                                    <Users className="w-5 h-5 text-white" />
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-neutral-600">Contacted</p>
+                                <p className="text-3xl font-bold text-neutral-900">{stats.contacted}</p>
+                            </div>
                         </div>
-                        <div className="bg-green-50 p-4 rounded-lg shadow">
-                            <p className="text-gray-600 text-sm">Converted</p>
-                            <p className="text-2xl font-bold text-green-600">{stats.converted}</p>
+                        <div className="bg-white rounded-xl border border-neutral-200 p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                            <div className="flex items-start justify-between mb-4">
+                                <div className="p-3 rounded-lg bg-gradient-to-br from-green-500 to-green-600">
+                                    <Users className="w-5 h-5 text-white" />
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-neutral-600">Converted</p>
+                                <p className="text-3xl font-bold text-neutral-900">{stats.converted}</p>
+                            </div>
                         </div>
                     </div>
 
                     {/* Filters */}
-                    <div className="bg-white p-4 rounded-lg shadow mb-6">
-                        <div className="flex flex-col md:flex-row gap-4">
-                            <div className="flex-1 relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                <Input
-                                    placeholder="Search by name, email, phone, or service..."
-                                    value={searchTerm}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                                    className="pl-10"
-                                />
+                    <div className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden mb-6">
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 bg-neutral-50/50">
+                            <h3 className="text-base font-semibold text-neutral-900">Search & Filter</h3>
+                        </div>
+                        <div className="p-6">
+                            <div className="flex flex-col md:flex-row gap-4">
+                                <div className="flex-1 relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 w-4 h-4" />
+                                    <Input
+                                        placeholder="Search by name, email, phone, or service..."
+                                        value={searchTerm}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                                        className="pl-10 border-neutral-200 focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                                    />
+                                </div>
+                                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                    <SelectTrigger className="w-full md:w-48 border-neutral-200">
+                                        <SelectValue placeholder="Filter by status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">All Status</SelectItem>
+                                        <SelectItem value="new">New</SelectItem>
+                                        <SelectItem value="contacted">Contacted</SelectItem>
+                                        <SelectItem value="converted">Converted</SelectItem>
+                                        <SelectItem value="rejected">Rejected</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
-                            <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                <SelectTrigger className="w-full md:w-48">
-                                    <SelectValue placeholder="Filter by status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Status</SelectItem>
-                                    <SelectItem value="new">New</SelectItem>
-                                    <SelectItem value="contacted">Contacted</SelectItem>
-                                    <SelectItem value="converted">Converted</SelectItem>
-                                    <SelectItem value="rejected">Rejected</SelectItem>
-                                </SelectContent>
-                            </Select>
                         </div>
                     </div>
 
                     {/* Leads Table */}
-                    <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
                         {loading ? (
-                            <div className="p-8 text-center">
-                                <p className="text-gray-500">Loading leads...</p>
+                            <div className="p-12 text-center">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600 mx-auto mb-4"></div>
+                                <p className="text-neutral-600">Loading leads...</p>
                             </div>
                         ) : filteredLeads.length === 0 ? (
-                            <div className="p-8 text-center">
-                                <p className="text-gray-500">No leads found</p>
+                            <div className="p-12 text-center">
+                                <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-4">
+                                    <Users className="w-6 h-6 text-neutral-400" />
+                                </div>
+                                <p className="text-neutral-600 font-medium">No leads found</p>
+                                <p className="text-xs text-neutral-500 mt-1">Try adjusting your search or filters</p>
                             </div>
                         ) : (
                             <Table>
