@@ -119,9 +119,9 @@ export async function generateInvoice(orderId: string): Promise<{ invoiceNumber:
         };
 
         // 5. Generate PDF
-        // @ts-ignore - renderToBuffer types are incorrect
         const pdfBuffer = await renderToBuffer(
-            React.createElement(InvoiceTemplate, { data: invoiceData })
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            React.createElement(InvoiceTemplate, { data: invoiceData }) as any
         );
 
         // 6. Create bucket if it doesn't exist (will fail silently if exists)

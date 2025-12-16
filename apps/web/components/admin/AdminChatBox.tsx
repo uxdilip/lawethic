@@ -437,15 +437,6 @@ export default function AdminChatBox({ orderId, orderNumber, customerName }: Adm
                     </button>
                 </div>
             </form>
-            ) : (
-            <>
-                <Send className="h-5 w-5" />
-                <span className="hidden sm:inline">Send</span>
-            </>
-                        )}
-        </button>
-                </div >
-            </form >
-        </div >
+        </div>
     );
 }
