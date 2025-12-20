@@ -11,6 +11,7 @@ import Link from 'next/link';
 import CertificateUpload, { CertificateList } from '@/components/admin/CertificateUpload';
 import FloatingChatButton from '@/components/chat/FloatingChatButton';
 import AssignmentDropdown from '@/components/admin/AssignmentDropdown';
+import { getServiceBySlug } from '@/data/services';
 
 interface CaseDetailProps {
     params: {
@@ -53,13 +54,36 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
             setOrder(orderDoc);
             setSelectedStatus(orderDoc.status);
 
-            // Load service
-            const serviceDoc = await databases.getDocument(
-                appwriteConfig.databaseId,
-                appwriteConfig.collections.services,
-                orderDoc.serviceId
-            );
-            setService(serviceDoc);
+            // Load service - try Appwrite first, then fallback to static registry
+            let serviceData = null;
+            try {
+                serviceData = await databases.getDocument(
+                    appwriteConfig.databaseId,
+                    appwriteConfig.collections.services,
+                    orderDoc.serviceId
+                );
+            } catch (serviceError) {
+                // If not found in Appwrite, try static registry
+                console.log('[Admin] Service not in Appwrite, checking static registry for:', orderDoc.serviceId);
+                const staticService = getServiceBySlug(orderDoc.serviceId);
+                if (staticService) {
+                    // Get documents required from the first document group
+                    const docsRequired = staticService.documents?.groups?.[0]?.items || [];
+
+                    serviceData = {
+                        $id: staticService.slug,
+                        name: staticService.title,
+                        shortDescription: staticService.hero?.description || '',
+                        description: staticService.overview?.description || '',
+                        category: staticService.category,
+                        estimatedDays: staticService.timeline,
+                        price: staticService.basePrice,
+                        documentRequired: docsRequired, // Note: singular to match expected format
+                    };
+                    console.log('[Admin] ✅ Service found in static registry:', staticService.title);
+                }
+            }
+            setService(serviceData);
 
             // Load documents
             const docsResponse = await databases.listDocuments(
@@ -322,21 +346,33 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                                 <h2 className="text-xl font-bold text-gray-900 mb-4">Customer Information</h2>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <p className="text-sm text-gray-500">Business Name</p>
-                                        <p className="font-medium">{order.formData?.businessName || 'N/A'}</p>
+                                        <p className="text-sm text-gray-500">Name</p>
+                                        <p className="font-medium">{order.formData?.fullName || order.formData?.businessName || 'N/A'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500">Email</p>
+                                        <p className="font-medium">{order.formData?.email || 'N/A'}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500">Mobile</p>
-                                        <p className="font-medium">{order.formData?.mobile || 'N/A'}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-500">PAN Number</p>
-                                        <p className="font-medium">{order.formData?.panNumber || 'N/A'}</p>
+                                        <p className="font-medium">{order.formData?.phone || order.formData?.mobile || 'N/A'}</p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500">Customer ID</p>
                                         <p className="font-medium text-sm">{order.customerId}</p>
                                     </div>
+                                    {order.formData?.businessName && (
+                                        <div>
+                                            <p className="text-sm text-gray-500">Business Name</p>
+                                            <p className="font-medium">{order.formData.businessName}</p>
+                                        </div>
+                                    )}
+                                    {order.formData?.panNumber && (
+                                        <div>
+                                            <p className="text-sm text-gray-500">PAN Number</p>
+                                            <p className="font-medium">{order.formData.panNumber}</p>
+                                        </div>
+                                    )}
                                     {order.formData?.address && (
                                         <div className="col-span-2">
                                             <p className="text-sm text-gray-500">Address</p>
@@ -346,7 +382,26 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                                 </div>
                             </div>
 
-                            {/* Service-Specific Questions & Answers */}
+                            {/* Onboarding Answers (from new flow) */}
+                            {order.formData?.onboardingAnswers && Object.keys(order.formData.onboardingAnswers).length > 0 && (
+                                <div className="bg-white shadow rounded-lg p-6">
+                                    <h2 className="text-xl font-bold text-gray-900 mb-4">Onboarding Information</h2>
+                                    <div className="space-y-4">
+                                        {Object.entries(order.formData.onboardingAnswers).map(([key, value]: [string, any]) => (
+                                            <div key={key} className="border-b border-gray-200 pb-3 last:border-b-0">
+                                                <p className="text-sm font-medium text-gray-700 mb-1">
+                                                    {key.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                                                </p>
+                                                <p className="text-gray-900">
+                                                    {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value || 'N/A'}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Service-Specific Questions & Answers (from old flow) */}
                             {order.formData?.serviceQuestions && Object.keys(order.formData.serviceQuestions).length > 0 && (
                                 <div className="bg-white shadow rounded-lg p-6">
                                     <h2 className="text-xl font-bold text-gray-900 mb-4">Service-Specific Information</h2>

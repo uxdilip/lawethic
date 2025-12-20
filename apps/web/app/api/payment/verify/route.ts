@@ -4,6 +4,32 @@ import { serverDatabases, appwriteConfig } from '@lawethic/appwrite';
 import { ID, Query } from 'appwrite';
 import { generateInvoice } from '@/lib/invoice/invoice-generator';
 import { sendPaymentConfirmationEmail } from '@/lib/email/email-service';
+import { getServiceBySlug } from '@/data/services';
+
+/**
+ * Helper to get service data from either Appwrite or static registry
+ */
+async function getServiceData(serviceId: string) {
+    try {
+        const service = await serverDatabases.getDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.collections.services,
+            serviceId
+        );
+        return service;
+    } catch (error) {
+        // If not found in Appwrite, try static registry
+        const staticService = getServiceBySlug(serviceId);
+        if (staticService) {
+            return {
+                $id: staticService.slug,
+                name: staticService.title,
+                shortDescription: staticService.hero?.description || '',
+            };
+        }
+        throw new Error(`Service not found: ${serviceId}`);
+    }
+}
 
 export async function POST(request: NextRequest) {
     try {
@@ -96,11 +122,7 @@ export async function POST(request: NextRequest) {
                         ? JSON.parse(order.formData)
                         : order.formData;
 
-                    const service = await serverDatabases.getDocument(
-                        appwriteConfig.databaseId,
-                        appwriteConfig.collections.services,
-                        order.serviceId
-                    );
+                    const service = await getServiceData(order.serviceId);
 
                     await sendPaymentConfirmationEmail(
                         formData.email,

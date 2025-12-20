@@ -27,6 +27,8 @@ import FloatingChatButton from '@/components/chat/FloatingChatButton';
 import DocumentReupload from '@/components/customer/DocumentReupload';
 import DocumentUploadSection from '@/components/customer/DocumentUploadSection';
 import PaymentButton from '@/components/PaymentButton';
+import CustomerDashboardLayout from '@/components/customer/CustomerDashboardLayout';
+import { getServiceBySlug } from '@/data/services';
 
 interface OrderDetailProps {
     params: {
@@ -90,13 +92,38 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
 
             setOrder(orderDoc);
 
-            // Load service
-            const serviceDoc = await databases.getDocument(
-                appwriteConfig.databaseId,
-                appwriteConfig.collections.services,
-                orderDoc.serviceId
-            );
-            setService(serviceDoc);
+            // Load service - try Appwrite first, then fallback to static registry
+            let serviceData = null;
+            try {
+                // First try to fetch from Appwrite (for legacy orders)
+                serviceData = await databases.getDocument(
+                    appwriteConfig.databaseId,
+                    appwriteConfig.collections.services,
+                    orderDoc.serviceId
+                );
+            } catch (serviceError) {
+                // If not found in Appwrite, try static registry (for new orders using slug)
+                console.log('Service not in Appwrite, checking static registry for:', orderDoc.serviceId);
+                const staticService = getServiceBySlug(orderDoc.serviceId);
+                if (staticService) {
+                    // Get documents required from the first document group
+                    const docsRequired = staticService.documents?.groups?.[0]?.items || [];
+
+                    // Map static service to expected format
+                    serviceData = {
+                        $id: staticService.slug,
+                        name: staticService.title,
+                        shortDescription: staticService.hero?.description || '',
+                        description: staticService.overview?.description || '',
+                        category: staticService.category,
+                        estimatedDays: staticService.timeline,
+                        price: staticService.basePrice,
+                        documentRequired: docsRequired, // Note: singular to match expected format
+                    };
+                    console.log('✅ Service found in static registry:', staticService.title);
+                }
+            }
+            setService(serviceData);
 
             // Load documents
             const docsResponse = await databases.listDocuments(
@@ -249,35 +276,39 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading order details...</p>
+            <CustomerDashboardLayout>
+                <div className="flex items-center justify-center py-20">
+                    <div className="text-center">
+                        <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <p className="text-gray-600">Loading order details...</p>
+                    </div>
                 </div>
-            </div>
+            </CustomerDashboardLayout>
         );
     }
 
     if (!order) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Order Not Found</h1>
-                    <p className="text-gray-600 mb-6">The order you're looking for doesn't exist or has been removed.</p>
-                    <Link href="/dashboard" className="text-blue-600 hover:underline">
-                        ← Back to Dashboard
-                    </Link>
+            <CustomerDashboardLayout>
+                <div className="flex items-center justify-center py-20">
+                    <div className="text-center">
+                        <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+                        <h1 className="text-2xl font-bold text-gray-900 mb-2">Order Not Found</h1>
+                        <p className="text-gray-600 mb-6">The order you're looking for doesn't exist or has been removed.</p>
+                        <Link href="/dashboard" className="text-blue-600 hover:underline">
+                            ← Back to Dashboard
+                        </Link>
+                    </div>
                 </div>
-            </div>
+            </CustomerDashboardLayout>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <CustomerDashboardLayout>
+            <div className="p-6">
+                {/* Page Header */}
+                <div className="mb-6">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                             <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
@@ -294,9 +325,7 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-6">
@@ -362,8 +391,8 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                             </div>
                         </div>
 
-                        {/* Document Upload Section - Show when payment is done but no documents uploaded */}
-                        {order.paymentStatus === 'paid' && documents.length === 0 && service?.documentRequired && (
+                        {/* Document Upload Section - Show when payment is done and documents are required */}
+                        {order.paymentStatus === 'paid' && service?.documentRequired && service.documentRequired.length > 0 && (
                             <DocumentUploadSection
                                 orderId={params.id}
                                 orderStatus={order.status}
@@ -625,34 +654,34 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                         </div>
                     </div>
                 </div>
+
+                {/* Floating Chat Button */}
+                {order && (
+                    <FloatingChatButton
+                        orderId={order.$id}
+                        orderNumber={order.orderNumber || order.$id}
+                    />
+                )}
+
+                {/* Document Re-upload Modal */}
+                {reuploadingDoc && (
+                    <DocumentReupload
+                        documentId={reuploadingDoc.$id}
+                        documentName={reuploadingDoc.fileName || reuploadingDoc.name || 'Document'}
+                        orderId={params.id}
+                        rejectionReason={reuploadingDoc.rejectionReason || 'No reason provided'}
+                        onSuccess={() => {
+                            setReuploadingDoc(null);
+                            // Reload order details to show updated document
+                            if (user) {
+                                loadOrderDetails(user.$id);
+                            }
+                            alert('Document re-uploaded successfully! It will be reviewed shortly.');
+                        }}
+                        onClose={() => setReuploadingDoc(null)}
+                    />
+                )}
             </div>
-
-            {/* Floating Chat Button */}
-            {order && (
-                <FloatingChatButton
-                    orderId={order.$id}
-                    orderNumber={order.orderNumber || order.$id}
-                />
-            )}
-
-            {/* Document Re-upload Modal */}
-            {reuploadingDoc && (
-                <DocumentReupload
-                    documentId={reuploadingDoc.$id}
-                    documentName={reuploadingDoc.fileName || reuploadingDoc.name || 'Document'}
-                    orderId={params.id}
-                    rejectionReason={reuploadingDoc.rejectionReason || 'No reason provided'}
-                    onSuccess={() => {
-                        setReuploadingDoc(null);
-                        // Reload order details to show updated document
-                        if (user) {
-                            loadOrderDetails(user.$id);
-                        }
-                        alert('Document re-uploaded successfully! It will be reviewed shortly.');
-                    }}
-                    onClose={() => setReuploadingDoc(null)}
-                />
-            )}
-        </div>
+        </CustomerDashboardLayout>
     );
 }

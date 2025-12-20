@@ -50,24 +50,18 @@ export default function ServicePageClient({ service }: ServicePageClientProps) {
     }
 
     const handleGetStarted = () => {
-        if (!user) {
-            setShowAuthModal(true)
-            return
-        }
-        router.push(`/checkout?service=${service.slug}`)
+        // Redirect to onboarding flow (handles auth internally)
+        router.push(`/onboarding?service=${service.slug}`)
     }
 
     const handleSelectPackage = (pkg: any) => {
-        if (!user) {
-            setShowAuthModal(true)
-            return
-        }
-        router.push(`/checkout?service=${service.slug}&package=${pkg.id}`)
+        // Redirect to onboarding flow with pre-selected package
+        router.push(`/onboarding?service=${service.slug}&package=${pkg.id}`)
     }
 
     const handleAuthSuccess = async () => {
         await checkAuth()
-        router.push(`/checkout?service=${service.slug}`)
+        router.push(`/onboarding?service=${service.slug}`)
     }
 
     // Build navigation items based on available sections

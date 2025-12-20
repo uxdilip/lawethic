@@ -195,6 +195,15 @@ export interface Service {
 
     // Related services (slugs)
     relatedServices?: string[]
+
+    // Onboarding flow questions (1-3 questions max)
+    onboardingQuestions?: {
+        id: string
+        question: string
+        type: 'single' | 'multiple'
+        options: { value: string; label: string }[]
+        required: boolean
+    }[]
 }
 
 /**
@@ -2071,7 +2080,32 @@ There are three types of FSSAI licenses based on business scale: **Basic Registr
             }
         ],
 
-        relatedServices: ['gst-registration', 'trademark-registration', 'private-limited-company-registration']
+        relatedServices: ['gst-registration', 'trademark-registration', 'private-limited-company-registration'],
+
+        onboardingQuestions: [
+            {
+                id: 'license_type',
+                question: 'What type of license are you looking for?',
+                type: 'single',
+                options: [
+                    { value: 'new', label: 'New Registration' },
+                    { value: 'renewal', label: 'Renewal' },
+                    { value: 'modification', label: 'Modification' }
+                ],
+                required: true
+            },
+            {
+                id: 'annual_turnover',
+                question: "What's your annual turnover?",
+                type: 'single',
+                options: [
+                    { value: 'below_12l', label: 'Less than 12 lakhs' },
+                    { value: '12l_20cr', label: '12 lakhs - 20 crores' },
+                    { value: 'above_20cr', label: 'More than 20 crores' }
+                ],
+                required: true
+            }
+        ]
     },
 
     // IEC IMPORT EXPORT CODE
@@ -2384,7 +2418,33 @@ IEC registration is a **one-time process** with **lifetime validity**. There is 
             }
         ],
 
-        relatedServices: ['gst-registration', 'private-limited-company-registration', 'fssai-registration']
+        relatedServices: ['gst-registration', 'private-limited-company-registration', 'fssai-registration'],
+
+        onboardingQuestions: [
+            {
+                id: 'registration_type',
+                question: 'What do you need?',
+                type: 'single',
+                options: [
+                    { value: 'new', label: 'New IEC Registration' },
+                    { value: 'modification', label: 'IEC Modification' },
+                    { value: 'ad_code', label: 'AD Code Registration' }
+                ],
+                required: true
+            },
+            {
+                id: 'business_type',
+                question: 'What is your business type?',
+                type: 'single',
+                options: [
+                    { value: 'proprietorship', label: 'Proprietorship' },
+                    { value: 'partnership', label: 'Partnership Firm' },
+                    { value: 'company', label: 'Private Limited Company' },
+                    { value: 'llp', label: 'LLP' }
+                ],
+                required: true
+            }
+        ]
     }
 ]
 
