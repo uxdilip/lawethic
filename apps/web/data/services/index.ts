@@ -348,20 +348,25 @@ export const SERVICES: Service[] = [
         ],
 
         documents: {
-            required: [
-                { title: 'PAN Card', description: 'Mandatory for all directors', applicableFor: 'All Directors' },
-                { title: 'Aadhaar Card', description: 'For identity proof', applicableFor: 'All Directors' },
-                { title: 'Passport-size photograph', description: 'Recent photograph', applicableFor: 'All Directors' },
-                { title: 'Address Proof', description: 'Utility bill, bank statement, or passport', applicableFor: 'All Directors' },
-                { title: 'Bank statement', description: 'Last 2 months', applicableFor: 'All Directors' },
-                { title: 'Registered office address proof', description: 'NOC from property owner', applicableFor: 'For Company' },
-                { title: 'Rent agreement', description: 'If rented property', applicableFor: 'For Company' },
-                { title: 'Utility bill', description: 'Of registered office', applicableFor: 'For Company' }
-            ],
-            optional: [
-                { title: 'Specimen signature', description: 'Signed on blank paper', applicableFor: 'All Directors' },
-                { title: 'Directors consent letter', description: 'Consent to act as director', applicableFor: 'All Directors' },
-                { title: 'Business activities description', description: 'Proposed business details', applicableFor: 'For Company' }
+            groups: [
+                {
+                    entityType: 'All Directors',
+                    items: [
+                        'PAN Card',
+                        'Aadhaar Card', 
+                        'Passport-size photograph',
+                        'Address Proof (utility bill, bank statement, or passport)',
+                        'Bank statement (last 2 months)'
+                    ]
+                },
+                {
+                    entityType: 'For Company',
+                    items: [
+                        'Registered office address proof (NOC from property owner)',
+                        'Rent agreement (if rented property)',
+                        'Utility bill of registered office'
+                    ]
+                }
             ]
         },
 
