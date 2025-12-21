@@ -77,7 +77,11 @@ module.exports = {
 			},
 
 			// Typography from design tokens
-			fontFamily: typography.fontFamily,
+			fontFamily: {
+				...typography.fontFamily,
+				playfair: ['var(--font-playfair)', 'serif'],
+				montserrat: ['var(--font-montserrat)', 'sans-serif'],
+			},
 			fontSize: typography.fontSize,
 			fontWeight: typography.fontWeight,
 

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Metadata } from 'next'
 import { getAllServices, getServicesByCategory, Service } from '@/data/services'
 import { ArrowRight, CheckCircle, Clock, Star, Building2, FileText, Award, BadgeCheck } from 'lucide-react'
+import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
     title: 'All Services | LawEthic',
@@ -119,6 +120,9 @@ export default function ServicesPage() {
                     </div>
                 ))}
             </section>
+
+            {/* Footer */}
+            <Footer />
         </div>
     )
 }

@@ -330,7 +330,7 @@ function CheckoutContent() {
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <h1 className="text-2xl font-bold mb-4">Service not found</h1>
-                    <Link href="/services" className="text-blue-600 hover:underline">
+                    <Link href="/services" className="text-brand-600 hover:underline">
                         Back to Services
                     </Link>
                 </div>
@@ -347,8 +347,8 @@ function CheckoutContent() {
                     <div className="flex items-center justify-center mb-8 overflow-x-auto">
                         <div className="flex items-center space-x-2 md:space-x-4">
                             {/* Step 1: Details */}
-                            <div className={`flex items-center ${step >= 1 ? 'text-blue-600' : 'text-gray-400'}`}>
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-300'}`}>
+                            <div className={`flex items-center ${step >= 1 ? 'text-brand-600' : 'text-gray-400'}`}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 1 ? 'bg-brand-600 text-white' : 'bg-gray-300'}`}>
                                     1
                                 </div>
                                 <span className="ml-2 font-medium text-sm">Details</span>
@@ -358,8 +358,8 @@ function CheckoutContent() {
                             {hasQuestions && (
                                 <>
                                     <div className="w-8 md:w-16 h-1 bg-gray-300"></div>
-                                    <div className={`flex items-center ${step >= 2 ? 'text-blue-600' : 'text-gray-400'}`}>
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-300'}`}>
+                                    <div className={`flex items-center ${step >= 2 ? 'text-brand-600' : 'text-gray-400'}`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 2 ? 'bg-brand-600 text-white' : 'bg-gray-300'}`}>
                                             2
                                         </div>
                                         <span className="ml-2 font-medium text-sm">Questions</span>
@@ -369,8 +369,8 @@ function CheckoutContent() {
 
                             {/* Step 3 (or 2 if no questions): Payment */}
                             <div className="w-8 md:w-16 h-1 bg-gray-300"></div>
-                            <div className={`flex items-center ${step >= 3 ? 'text-blue-600' : 'text-gray-400'}`}>
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-300'}`}>
+                            <div className={`flex items-center ${step >= 3 ? 'text-brand-600' : 'text-gray-400'}`}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 3 ? 'bg-brand-600 text-white' : 'bg-gray-300'}`}>
                                     {hasQuestions ? '3' : '2'}
                                 </div>
                                 <span className="ml-2 font-medium text-sm">Payment</span>
@@ -378,8 +378,8 @@ function CheckoutContent() {
 
                             {/* Step 4 (or 3 if no questions): Done */}
                             <div className="w-8 md:w-16 h-1 bg-gray-300"></div>
-                            <div className={`flex items-center ${step >= 4 ? 'text-blue-600' : 'text-gray-400'}`}>
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 4 ? 'bg-blue-600 text-white' : 'bg-gray-300'}`}>
+                            <div className={`flex items-center ${step >= 4 ? 'text-brand-600' : 'text-gray-400'}`}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${step >= 4 ? 'bg-brand-600 text-white' : 'bg-gray-300'}`}>
                                     {hasQuestions ? '4' : '3'}
                                 </div>
                                 <span className="ml-2 font-medium text-sm">Done</span>
@@ -398,22 +398,22 @@ function CheckoutContent() {
                         <div className="bg-white rounded-lg shadow-lg p-8">
                             <h2 className="text-2xl font-bold mb-6">Basic Details</h2>
                             <div className="mb-6">
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <div className="bg-brand-50 border border-brand-200 rounded-lg p-4">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <h3 className="font-semibold text-blue-900">{service.name}</h3>
+                                            <h3 className="font-semibold text-brand-900">{service.name}</h3>
                                             {selectedPackage && (
-                                                <span className="inline-block mt-1 px-2 py-1 bg-blue-600 text-white text-xs font-semibold rounded">
+                                                <span className="inline-block mt-1 px-2 py-1 bg-brand-600 text-white text-xs font-semibold rounded">
                                                     {selectedPackage.name} Package
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-lg font-bold text-blue-900">₹{finalPrice.toLocaleString()}</p>
+                                        <p className="text-lg font-bold text-brand-900">₹{finalPrice.toLocaleString()}</p>
                                     </div>
                                     {selectedPackage && selectedPackage.inclusions && (
-                                        <div className="mt-3 pt-3 border-t border-blue-200">
-                                            <p className="text-xs text-blue-700 font-medium mb-2">Package Includes:</p>
-                                            <ul className="text-xs text-blue-600 space-y-1">
+                                        <div className="mt-3 pt-3 border-t border-brand-200">
+                                            <p className="text-xs text-brand-700 font-medium mb-2">Package Includes:</p>
+                                            <ul className="text-xs text-brand-600 space-y-1">
                                                 {selectedPackage.inclusions.slice(0, 3).map((item: string, idx: number) => (
                                                     <li key={idx}>✓ {item}</li>
                                                 ))}
@@ -435,7 +435,7 @@ function CheckoutContent() {
                                         <input
                                             type="email"
                                             required
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-gray-50"
                                             value={user?.email || ''}
                                             readOnly
                                             title="Email from your account"
@@ -449,7 +449,7 @@ function CheckoutContent() {
                                         <input
                                             type="text"
                                             required
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                                             value={formData.businessName || ''}
                                             onChange={(e) => handleFormChange('businessName', e.target.value)}
                                         />
@@ -463,7 +463,7 @@ function CheckoutContent() {
                                             required
                                             pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}"
                                             placeholder="ABCDE1234F"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                                             value={formData.panNumber || ''}
                                             onChange={(e) => handleFormChange('panNumber', e.target.value.toUpperCase())}
                                         />
@@ -475,7 +475,7 @@ function CheckoutContent() {
                                         <textarea
                                             required
                                             rows={3}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                                             value={formData.address || ''}
                                             onChange={(e) => handleFormChange('address', e.target.value)}
                                         />
@@ -489,7 +489,7 @@ function CheckoutContent() {
                                             required
                                             pattern="[0-9]{10}"
                                             placeholder="9876543210"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                                             value={formData.mobile || ''}
                                             onChange={(e) => handleFormChange('mobile', e.target.value)}
                                         />
@@ -506,7 +506,7 @@ function CheckoutContent() {
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                        className="px-6 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-50"
                                     >
                                         {loading ? 'Creating...' : hasQuestions ? 'Continue to Questions' : 'Continue to Payment'}
                                     </button>
@@ -519,7 +519,7 @@ function CheckoutContent() {
                     {step === 2 && hasQuestions && (
                         <div className="bg-white rounded-lg shadow-lg p-8">
                             <div className="flex items-center mb-6">
-                                <HelpCircle className="h-8 w-8 text-blue-600 mr-3" />
+                                <HelpCircle className="h-8 w-8 text-brand-600 mr-3" />
                                 <h2 className="text-2xl font-bold">Additional Information</h2>
                             </div>
                             <p className="text-gray-600 mb-6">
@@ -551,7 +551,7 @@ function CheckoutContent() {
                                                                 required={question.required}
                                                                 checked={questionAnswers[question.id] === option}
                                                                 onChange={(e) => handleQuestionChange(question.id, e.target.value)}
-                                                                className="mr-3 h-4 w-4 text-blue-600"
+                                                                className="mr-3 h-4 w-4 text-brand-600"
                                                             />
                                                             <span className="text-gray-700">{option}</span>
                                                         </label>
@@ -565,7 +565,7 @@ function CheckoutContent() {
                                                     required={question.required}
                                                     value={questionAnswers[question.id] || ''}
                                                     onChange={(e) => handleQuestionChange(question.id, e.target.value)}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                                                 >
                                                     <option value="">-- Select an option --</option>
                                                     {question.options?.map((option) => (
@@ -584,7 +584,7 @@ function CheckoutContent() {
                                                     placeholder={question.placeholder}
                                                     value={questionAnswers[question.id] || ''}
                                                     onChange={(e) => handleQuestionChange(question.id, e.target.value)}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                                                 />
                                             )}
 
@@ -596,7 +596,7 @@ function CheckoutContent() {
                                                     rows={4}
                                                     value={questionAnswers[question.id] || ''}
                                                     onChange={(e) => handleQuestionChange(question.id, e.target.value)}
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                                                 />
                                             )}
 
@@ -607,7 +607,7 @@ function CheckoutContent() {
                                                         type="checkbox"
                                                         checked={questionAnswers[question.id] || false}
                                                         onChange={(e) => handleQuestionChange(question.id, e.target.checked)}
-                                                        className="mr-3 h-4 w-4 text-blue-600 rounded"
+                                                        className="mr-3 h-4 w-4 text-brand-600 rounded"
                                                     />
                                                     <span className="text-gray-700">{question.label}</span>
                                                 </label>
@@ -627,7 +627,7 @@ function CheckoutContent() {
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                        className="px-6 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-50"
                                     >
                                         {loading ? 'Saving...' : 'Continue to Payment'}
                                     </button>
@@ -640,7 +640,7 @@ function CheckoutContent() {
                     {step === 3 && (
                         <div className="bg-white rounded-lg shadow-lg p-8">
                             <div className="flex items-center mb-6">
-                                <CreditCard className="h-8 w-8 text-blue-600 mr-3" />
+                                <CreditCard className="h-8 w-8 text-brand-600 mr-3" />
                                 <h2 className="text-2xl font-bold">Complete Payment</h2>
                             </div>
 
@@ -654,7 +654,7 @@ function CheckoutContent() {
                                     {selectedPackage && (
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">Package</span>
-                                            <span className="font-medium text-blue-600">{selectedPackage.name}</span>
+                                            <span className="font-medium text-brand-600">{selectedPackage.name}</span>
                                         </div>
                                     )}
                                     <div className="flex justify-between">
@@ -664,7 +664,7 @@ function CheckoutContent() {
                                     <div className="border-t pt-3 mt-3">
                                         <div className="flex justify-between text-lg">
                                             <span className="font-semibold">Total Amount</span>
-                                            <span className="font-bold text-blue-600">₹{finalPrice.toLocaleString('en-IN')}</span>
+                                            <span className="font-bold text-brand-600">₹{finalPrice.toLocaleString('en-IN')}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -721,7 +721,7 @@ function CheckoutContent() {
                                     {selectedPackage && (
                                         <div>
                                             <p className="text-sm text-gray-600">Package</p>
-                                            <p className="font-semibold text-blue-600">{selectedPackage.name}</p>
+                                            <p className="font-semibold text-brand-600">{selectedPackage.name}</p>
                                         </div>
                                     )}
                                     <div>
@@ -735,13 +735,13 @@ function CheckoutContent() {
                                 </div>
                             </div>
 
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                                <h3 className="font-semibold text-blue-900 mb-2">📄 Next Step: Upload Documents</h3>
-                                <p className="text-sm text-blue-800 mb-3">
+                            <div className="bg-brand-50 border border-brand-200 rounded-lg p-6 mb-6">
+                                <h3 className="font-semibold text-brand-900 mb-2">📄 Next Step: Upload Documents</h3>
+                                <p className="text-sm text-brand-800 mb-3">
                                     Please upload the required documents to proceed with your application.
                                     You can do this now or later from your order details page.
                                 </p>
-                                <ul className="text-sm text-blue-700 space-y-1 mb-4">
+                                <ul className="text-sm text-brand-700 space-y-1 mb-4">
                                     {service.documentRequired?.slice(0, 3).map((doc, index) => (
                                         <li key={index}>• {doc}</li>
                                     ))}
@@ -754,7 +754,7 @@ function CheckoutContent() {
                             <div className="text-center">
                                 <button
                                     onClick={handleConfirm}
-                                    className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
+                                    className="px-8 py-3 bg-brand-600 text-white rounded-lg hover:bg-brand-700 font-semibold"
                                 >
                                     View Order & Upload Documents
                                 </button>

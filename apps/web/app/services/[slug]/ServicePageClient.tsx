@@ -23,6 +23,7 @@ import {
 } from '@/components/services/sections'
 import { PackagesSection } from '@/components/services/PackagesSection'
 import { FAQSection } from '@/components/services/FAQSection'
+import Footer from '@/components/Footer'
 
 interface ServicePageClientProps {
     service: Service
@@ -175,6 +176,11 @@ export default function ServicePageClient({ service }: ServicePageClientProps) {
                     </div>
                 </div>
             )}
+
+            {/* Footer */}
+            <div className="pb-20 lg:pb-0">
+                <Footer />
+            </div>
 
             {/* Sticky CTA - Mobile only */}
             <motion.div

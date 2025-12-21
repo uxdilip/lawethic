@@ -76,7 +76,7 @@ export default function DashboardPage() {
                 return 'text-green-600 bg-green-50';
             case 'processing':
             case 'paid':
-                return 'text-blue-600 bg-blue-50';
+                return 'text-brand-600 bg-brand-50';
             case 'new':
                 return 'text-yellow-600 bg-yellow-50';
             default:
@@ -99,7 +99,7 @@ export default function DashboardPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
             </div>
         );
     }
@@ -120,8 +120,8 @@ export default function DashboardPage() {
                             <p className="text-sm text-gray-600">Total Orders</p>
                             <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
                         </div>
-                        <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
-                            <FileText className="h-6 w-6 text-blue-600" />
+                        <div className="w-12 h-12 rounded-lg bg-brand-50 flex items-center justify-center">
+                            <FileText className="h-6 w-6 text-brand-600" />
                         </div>
                     </div>
                 </div>
@@ -167,7 +167,7 @@ export default function DashboardPage() {
                         <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
                         <Link
                             href="/dashboard/orders"
-                            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                            className="text-sm text-brand-600 hover:text-brand-700 font-medium"
                         >
                             View all
                         </Link>
@@ -180,7 +180,7 @@ export default function DashboardPage() {
                             <p className="text-gray-600 mb-4">No orders yet</p>
                             <Link
                                 href="/dashboard/services"
-                                className="inline-block px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                                className="inline-block px-6 py-2.5 bg-brand-600 text-white rounded-lg hover:bg-brand-700 font-medium transition-colors"
                             >
                                 Browse Services
                             </Link>
@@ -245,7 +245,7 @@ export default function DashboardPage() {
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <Link
                                                     href={`/orders/${order.$id}`}
-                                                    className="text-blue-600 hover:text-blue-900"
+                                                    className="text-brand-600 hover:text-brand-900"
                                                 >
                                                     View Details
                                                 </Link>

@@ -213,7 +213,7 @@ export const InvoiceTemplate: React.FC<{ data: InvoiceData }> = ({ data }) => {
                 <View style={styles.header}>
                     <View style={styles.row}>
                         <View style={styles.col}>
-                            <Text style={styles.logo}>LawEthic</Text>
+                            <Text style={styles.logo}>LAWethic</Text>
                             <Text style={styles.companyInfo}>Compliance Services</Text>
                             <Text style={styles.companyInfo}>India</Text>
                             <Text style={styles.companyInfo}>support@lawethic.com</Text>
@@ -338,7 +338,7 @@ export const InvoiceTemplate: React.FC<{ data: InvoiceData }> = ({ data }) => {
                 {/* Footer */}
                 <View style={styles.footer}>
                     <Text>Thank you for your business!</Text>
-                    <Text>LawEthic Compliance Services</Text>
+                    <Text>LAWethic Compliance Services</Text>
                 </View>
             </Page>
         </Document>

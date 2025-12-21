@@ -38,7 +38,7 @@ export async function sendEmail(options: EmailOptions) {
         const testEmail = process.env.RESEND_TEST_EMAIL || 'dk81520826@gmail.com';
 
         const emailData: any = {
-            from: process.env.EMAIL_FROM || 'LawEthic <onboarding@resend.dev>',
+            from: process.env.EMAIL_FROM || 'LAWethic <onboarding@resend.dev>',
             to: isDevelopment ? [testEmail] : originalRecipients,
             subject: options.subject,
         };
@@ -117,11 +117,11 @@ export async function sendInvoiceEmail(
             <p>If you have any questions about this invoice, please don't hesitate to contact us.</p>
             
             <p>Best regards,<br>
-            <strong>LawEthic Team</strong></p>
+            <strong>LAWethic Team</strong></p>
         </div>
         <div class="footer">
             <p>This is an automated email. Please do not reply to this message.</p>
-            <p>&copy; ${new Date().getFullYear()} LawEthic. All rights reserved.</p>
+            <p>&copy; ${new Date().getFullYear()} LAWethic. All rights reserved.</p>
         </div>
     </div>
 </body>
@@ -144,7 +144,7 @@ You can also download your invoice anytime from: ${process.env.NEXT_PUBLIC_APP_U
 If you have any questions about this invoice, please don't hesitate to contact us.
 
 Best regards,
-LawEthic Team
+LAWethic Team
     `.trim();
 
     return sendEmail({
@@ -194,7 +194,7 @@ export async function sendPaymentConfirmationEmail(
         <div class="content">
             <p>Dear ${customerName},</p>
             
-            <p>We have successfully received your payment. Thank you for choosing LawEthic!</p>
+            <p>We have successfully received your payment. Thank you for choosing LAWethic!</p>
             
             <div class="payment-info">
                 <p><strong>Order Number:</strong> ${orderNumber}</p>
@@ -212,11 +212,11 @@ export async function sendPaymentConfirmationEmail(
             <p>We will keep you updated on the progress of your order.</p>
             
             <p>Best regards,<br>
-            <strong>LawEthic Team</strong></p>
+            <strong>LAWethic Team</strong></p>
         </div>
         <div class="footer">
             <p>This is an automated email. Please do not reply to this message.</p>
-            <p>&copy; ${new Date().getFullYear()} LawEthic. All rights reserved.</p>
+            <p>&copy; ${new Date().getFullYear()} LAWethic. All rights reserved.</p>
         </div>
     </div>
 </body>
@@ -296,11 +296,11 @@ export async function sendOrderStatusEmail(
             <p>If you have any questions, please feel free to contact us.</p>
             
             <p>Best regards,<br>
-            <strong>LawEthic Team</strong></p>
+            <strong>LAWethic Team</strong></p>
         </div>
         <div class="footer">
             <p>This is an automated email. Please do not reply to this message.</p>
-            <p>&copy; ${new Date().getFullYear()} LawEthic. All rights reserved.</p>
+            <p>&copy; ${new Date().getFullYear()} LAWethic. All rights reserved.</p>
         </div>
     </div>
 </body>
@@ -359,11 +359,11 @@ export async function sendDocumentUploadedEmail(
             </a>
             
             <p>Best regards,<br>
-            <strong>LawEthic Team</strong></p>
+            <strong>LAWethic Team</strong></p>
         </div>
         <div class="footer">
             <p>This is an automated email. Please do not reply to this message.</p>
-            <p>&copy; ${new Date().getFullYear()} LawEthic. All rights reserved.</p>
+            <p>&copy; ${new Date().getFullYear()} LAWethic. All rights reserved.</p>
         </div>
     </div>
 </body>
@@ -449,12 +449,12 @@ export async function sendCertificateReadyEmail(
             <p>Congratulations on completing your registration!</p>
             
             <p>Best regards,<br>
-            <strong>LawEthic Team</strong></p>
+            <strong>LAWethic Team</strong></p>
         </div>
         <div class="footer">
             <p>This is an automated email. Please do not reply to this message.</p>
             <p>For support, contact us at support@lawethic.com</p>
-            <p>&copy; ${new Date().getFullYear()} LawEthic. All rights reserved.</p>
+            <p>&copy; ${new Date().getFullYear()} LAWethic. All rights reserved.</p>
         </div>
     </div>
 </body>

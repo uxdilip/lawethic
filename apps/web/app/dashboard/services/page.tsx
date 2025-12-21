@@ -83,7 +83,7 @@ export default function ServiceHubPage() {
                         placeholder="Search services..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                        className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white"
                     />
                 </div>
             </div>
@@ -98,7 +98,7 @@ export default function ServiceHubPage() {
                             className={cn(
                                 "px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors",
                                 activeCategory === tab.id
-                                    ? "border-blue-600 text-blue-600"
+                                    ? "border-brand-600 text-brand-600"
                                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                             )}
                         >

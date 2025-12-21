@@ -10,18 +10,25 @@
 // ============================================
 
 export const colors = {
-    // Brand Colors (Legal/Trust theme - Blue)
+    // Brand Colors - Primary: #1A2A44 (Dark Navy), Secondary: #AEC8FF (Light Blue)
     brand: {
-        50: '#eff6ff',
-        100: '#dbeafe',
-        200: '#bfdbfe',
-        300: '#93c5fd',
-        400: '#60a5fa',
-        500: '#3b82f6',   // Primary brand color
-        600: '#2563eb',   // Main interactive elements
-        700: '#1d4ed8',   // Hover states
-        800: '#1e40af',
-        900: '#1e3a8a',
+        50: '#f0f4ff',    // Lightest tint
+        100: '#e0e9ff',   // Very light
+        200: '#AEC8FF',   // Secondary color - light blue
+        300: '#8eb0ff',   // Medium light
+        400: '#5c8dff',   // Medium
+        500: '#3a6fef',   // Bright accent
+        600: '#1A2A44',   // PRIMARY - Dark navy (main brand)
+        700: '#152238',   // Darker navy
+        800: '#101a2c',   // Very dark
+        900: '#0a1120',   // Darkest
+    },
+
+    // Secondary accent colors for variety
+    accent: {
+        light: '#AEC8FF',  // Secondary color
+        DEFAULT: '#5c8dff',
+        dark: '#1A2A44',   // Primary color
     },
 
     // Semantic Colors
