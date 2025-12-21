@@ -353,7 +353,7 @@ export const SERVICES: Service[] = [
                     entityType: 'All Directors',
                     items: [
                         'PAN Card',
-                        'Aadhaar Card', 
+                        'Aadhaar Card',
                         'Passport-size photograph',
                         'Address Proof (utility bill, bank statement, or passport)',
                         'Bank statement (last 2 months)'
@@ -504,13 +504,23 @@ export const SERVICES: Service[] = [
         ],
 
         documents: {
-            required: [
-                { title: 'PAN Card', description: 'For all partners', applicableFor: 'All Partners' },
-                { title: 'Aadhaar Card', description: 'Identity proof', applicableFor: 'All Partners' },
-                { title: 'Passport Photo', description: 'Recent photograph', applicableFor: 'All Partners' },
-                { title: 'Address Proof', description: 'Bank statement or utility bill', applicableFor: 'All Partners' },
-                { title: 'Office Address Proof', description: 'Rent agreement or ownership proof', applicableFor: 'For LLP' },
-                { title: 'NOC from Owner', description: 'If rented premises', applicableFor: 'For LLP' }
+            groups: [
+                {
+                    entityType: 'All Partners',
+                    items: [
+                        'PAN Card',
+                        'Aadhaar Card',
+                        'Passport Photo',
+                        'Address Proof (Bank statement or utility bill)'
+                    ]
+                },
+                {
+                    entityType: 'For LLP',
+                    items: [
+                        'Office Address Proof (Rent agreement or ownership proof)',
+                        'NOC from Owner (if rented premises)'
+                    ]
+                }
             ]
         },
 
@@ -640,13 +650,29 @@ export const SERVICES: Service[] = [
         ],
 
         documents: {
-            required: [
-                { title: 'PAN Card', description: 'Of the single member', applicableFor: 'Member' },
-                { title: 'Aadhaar Card', description: 'Identity proof', applicableFor: 'Member' },
-                { title: 'Passport Photo', description: 'Recent photograph', applicableFor: 'Member' },
-                { title: 'Address Proof', description: 'Bank statement or utility bill', applicableFor: 'Member' },
-                { title: 'Nominee Details', description: 'PAN and Aadhaar of nominee', applicableFor: 'Nominee' },
-                { title: 'Office Address Proof', description: 'Rent agreement or ownership proof', applicableFor: 'For Company' }
+            groups: [
+                {
+                    entityType: 'Member',
+                    items: [
+                        'PAN Card',
+                        'Aadhaar Card',
+                        'Passport Photo',
+                        'Address Proof (Bank statement or utility bill)'
+                    ]
+                },
+                {
+                    entityType: 'Nominee',
+                    items: [
+                        'Nominee PAN Card',
+                        'Nominee Aadhaar Card'
+                    ]
+                },
+                {
+                    entityType: 'For Company',
+                    items: [
+                        'Office Address Proof (Rent agreement or ownership proof)'
+                    ]
+                }
             ]
         },
 
@@ -768,13 +794,23 @@ export const SERVICES: Service[] = [
         ],
 
         documents: {
-            required: [
-                { title: 'PAN Card', description: 'Of business/proprietor', applicableFor: 'Business' },
-                { title: 'Aadhaar Card', description: 'Of proprietor/partners/directors', applicableFor: 'Applicant' },
-                { title: 'Business Address Proof', description: 'Rent agreement or electricity bill', applicableFor: 'Business' },
-                { title: 'Bank Account Details', description: 'Cancelled cheque or statement', applicableFor: 'Business' },
-                { title: 'Passport Photo', description: 'Of applicant', applicableFor: 'Applicant' },
-                { title: 'Business Registration', description: 'Certificate of Incorporation if applicable', applicableFor: 'Business' }
+            groups: [
+                {
+                    entityType: 'Business',
+                    items: [
+                        'PAN Card (of business/proprietor)',
+                        'Business Address Proof (Rent agreement or electricity bill)',
+                        'Bank Account Details (Cancelled cheque or statement)',
+                        'Business Registration Certificate (if applicable)'
+                    ]
+                },
+                {
+                    entityType: 'Applicant',
+                    items: [
+                        'Aadhaar Card (of proprietor/partners/directors)',
+                        'Passport Photo'
+                    ]
+                }
             ]
         },
 
