@@ -5,9 +5,10 @@ import { useState, useEffect } from 'react';
 import { account } from '@lawethic/appwrite/client';
 import { getUserRole } from '@lawethic/appwrite/auth';
 import { UserRole } from '@lawethic/appwrite/types';
-import { Bell, ChevronDown, User } from 'lucide-react';
+import { ChevronDown, User } from 'lucide-react';
 import AdminSidebar from './admin/AdminSidebar';
 import CommandPalette from './admin/CommandPalette';
+import NotificationBell from './NotificationBell';
 import { Toaster } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -21,7 +22,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const [userRole, setUserRole] = useState<UserRole>('customer');
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [commandOpen, setCommandOpen] = useState(false);
-    const [showNotifications, setShowNotifications] = useState(false);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
     useEffect(() => {
@@ -69,30 +69,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        {/* Notifications */}
-                        <div className="relative">
-                            <button
-                                onClick={() => setShowNotifications(!showNotifications)}
-                                className="relative p-2 rounded-lg hover:bg-neutral-100 transition-colors"
-                            >
-                                <Bell className="w-5 h-5 text-neutral-600" />
-                                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-brand-500 rounded-full ring-2 ring-white" />
-                            </button>
-
-                            {showNotifications && (
-                                <div className="absolute right-0 top-full mt-2 w-80 rounded-xl shadow-lg bg-white ring-1 ring-neutral-200 z-50 overflow-hidden">
-                                    <div className="p-4 border-b border-neutral-100">
-                                        <h3 className="text-sm font-semibold text-neutral-900">Notifications</h3>
-                                    </div>
-                                    <div className="max-h-96 overflow-y-auto">
-                                        <div className="p-8 text-center">
-                                            <Bell className="w-12 h-12 text-neutral-300 mx-auto mb-2" />
-                                            <p className="text-sm text-neutral-500">No new notifications</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                        {/* Notifications - Using real NotificationBell component */}
+                        <NotificationBell />
 
                         {/* User Menu */}
                         <div className="relative">

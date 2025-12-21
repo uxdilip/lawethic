@@ -74,10 +74,20 @@ export async function GET(request: NextRequest) {
         );
 
         return NextResponse.json(leads);
-    } catch (error) {
-        console.error('Error fetching leads:', error);
+    } catch (error: any) {
+        console.error('Error fetching leads:', {
+            message: error.message,
+            code: error.code,
+            type: error.type,
+            databaseId: appwriteConfig.databaseId,
+            collectionId: appwriteConfig.collections.leads,
+        });
         return NextResponse.json(
-            { error: 'Failed to fetch leads' },
+            {
+                error: 'Failed to fetch leads',
+                details: error.message,
+                code: error.code
+            },
             { status: 500 }
         );
     }

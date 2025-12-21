@@ -1,0 +1,11 @@
+// Section components for service pages
+export { LeadCaptureForm } from './LeadCaptureForm'
+export { StickyNav, StickyNavMobile } from './StickyNav'
+export { HeroSectionNew } from './HeroSectionNew'
+export { OverviewSection } from './OverviewSection'
+export { EligibilitySection } from './EligibilitySection'
+export { TypesSection } from './TypesSection'
+export { FeesSection } from './FeesSection'
+export { DocumentsSection } from './DocumentsSection'
+export { ProcessSectionNew } from './ProcessSectionNew'
+export { BenefitsSection } from './BenefitsSection'

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Client, Databases, ID } from 'node-appwrite';
+import { Client, Databases, ID, Users } from 'node-appwrite';
 import { cookies } from 'next/headers';
 
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || 'main';
@@ -128,51 +128,100 @@ export async function POST(request: NextRequest) {
 
         // Send notification to the other person in conversation
         try {
-
             // Get order to find the other person's userId
             const order = await databases.getDocument(DATABASE_ID, 'orders', orderId);
-            const recipientUserId = order.userId; // Customer's userId
+            const customerId = order.userId; // Customer's userId
+            const assignedAdminId = order.assignedTo; // Assigned admin's userId
 
+            let actionUrl: string = '';
+            const baseNotificationData = {
+                orderId: orderId,
+                type: 'message',
+                message: attachments.length > 0
+                    ? `${user.name} sent ${attachments.length} file(s)`
+                    : `New message from ${user.name}: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+                title: 'New Message',
+                description: attachments.length > 0
+                    ? `${user.name} sent you ${attachments.length} attachment(s)`
+                    : `${user.name} sent you a message`,
+                actionLabel: 'View Message',
+                read: false,
+                readAt: null,
+                sourceUserId: user.$id,
+                metadata: null
+            };
 
-            // Only notify if sender is not the recipient (admin messaging customer)
-            if (recipientUserId && recipientUserId !== user.$id) {
+            // Determine recipient based on sender role
+            if (userRole === 'customer') {
+                // Customer sending message -> notify assigned admin or all staff
+                actionUrl = `/admin/cases/${orderId}`;
 
-                const notificationData = {
-                    userId: recipientUserId,
-                    orderId: orderId,
-                    type: 'message',
-                    message: attachments.length > 0
-                        ? `${user.name} sent ${attachments.length} file(s)`
-                        : `New message from ${user.name}: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
-                    title: 'New Message',
-                    description: attachments.length > 0
-                        ? `${user.name} sent you ${attachments.length} attachment(s)`
-                        : `${user.name} sent you a message`,
-                    actionUrl: `/orders/${orderId}`,
-                    actionLabel: 'View Message',
-                    read: false,
-                    readAt: null,
-                    sourceUserId: user.$id,
-                    metadata: null
-                };
+                if (assignedAdminId) {
+                    // Notify assigned admin
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        'notifications',
+                        ID.unique(),
+                        {
+                            ...baseNotificationData,
+                            userId: assignedAdminId,
+                            actionUrl: actionUrl
+                        }
+                    );
+                    console.log('[Messages API] ✅ Notification sent to assigned admin:', assignedAdminId);
+                } else {
+                    // No assignee - notify ALL admin/operations users
+                    const usersClient = new Users(adminClient);
+                    const allUsers = await usersClient.list();
 
+                    const staffUsers = allUsers.users.filter(u => {
+                        const role = u.prefs?.role;
+                        return role === 'admin' || role === 'operations';
+                    });
 
-                // Create notification directly in database
-                const notification = await databases.createDocument(
-                    DATABASE_ID,
-                    'notifications',
-                    ID.unique(),
-                    notificationData
-                );
+                    console.log('[Messages API] No assignee, notifying', staffUsers.length, 'staff members');
 
+                    for (const staffUser of staffUsers) {
+                        try {
+                            await databases.createDocument(
+                                DATABASE_ID,
+                                'notifications',
+                                ID.unique(),
+                                {
+                                    ...baseNotificationData,
+                                    userId: staffUser.$id,
+                                    actionUrl: actionUrl
+                                }
+                            );
+                            console.log('[Messages API] ✅ Notified staff:', staffUser.email);
+                        } catch (err) {
+                            console.error('[Messages API] Failed to notify:', staffUser.email);
+                        }
+                    }
+                }
             } else {
+                // Admin/operations sending message -> notify customer
+                actionUrl = `/orders/${orderId}`;
+
+                if (customerId && customerId !== user.$id) {
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        'notifications',
+                        ID.unique(),
+                        {
+                            ...baseNotificationData,
+                            userId: customerId,
+                            actionUrl: actionUrl
+                        }
+                    );
+                    console.log('[Messages API] ✅ Notification sent to customer:', customerId);
+                }
             }
         } catch (notifError: any) {
             console.error('[Messages API] ❌ Failed to send notification:');
             console.error('[Messages API] Error message:', notifError.message);
             console.error('[Messages API] Error code:', notifError.code);
             console.error('[Messages API] Error type:', notifError.type);
-            console.error('[Messages API] Full error:', notifError);
             // Non-critical, continue
         }
 

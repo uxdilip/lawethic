@@ -8,7 +8,6 @@ import { Query } from 'appwrite';
 import Link from 'next/link';
 import {
     ArrowLeft,
-    Calendar,
     CreditCard,
     FileText,
     Download,
@@ -17,22 +16,34 @@ import {
     XCircle,
     AlertCircle,
     Package,
-    MessageCircle,
-    HelpCircle,
-    Mail,
+    Upload,
+    ChevronRight,
+    Receipt,
+    Award,
     Phone,
-    Upload
+    Mail
 } from 'lucide-react';
 import FloatingChatButton from '@/components/chat/FloatingChatButton';
 import DocumentReupload from '@/components/customer/DocumentReupload';
 import DocumentUploadSection from '@/components/customer/DocumentUploadSection';
 import PaymentButton from '@/components/PaymentButton';
+import CustomerDashboardLayout from '@/components/customer/CustomerDashboardLayout';
+import { getServiceBySlug } from '@/data/services';
 
 interface OrderDetailProps {
     params: {
         id: string;
     };
 }
+
+// Progress step configuration
+const ORDER_STEPS = [
+    { key: 'payment', label: 'Payment', icon: CreditCard },
+    { key: 'documents', label: 'Documents', icon: FileText },
+    { key: 'review', label: 'Review', icon: Clock },
+    { key: 'processing', label: 'Processing', icon: Package },
+    { key: 'completed', label: 'Completed', icon: Award },
+];
 
 export default function OrderDetailPage({ params }: OrderDetailProps) {
     const router = useRouter();
@@ -44,13 +55,13 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>(null);
     const [reuploadingDoc, setReuploadingDoc] = useState<any>(null);
+    const [activeTab, setActiveTab] = useState<'documents' | 'timeline' | 'deliverables'>('documents');
 
     useEffect(() => {
         checkAuthAndLoadOrder();
     }, [params.id]);
 
     const handlePaymentSuccess = () => {
-        // Reload order details to show updated payment status
         if (user) {
             loadOrderDetails(user.$id);
         }
@@ -70,20 +81,17 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
 
     const loadOrderDetails = async (userId: string) => {
         try {
-            // Load order
             const orderDoc = await databases.getDocument(
                 appwriteConfig.databaseId,
                 appwriteConfig.collections.orders,
                 params.id
             );
 
-            // Verify this order belongs to the logged-in user
             if (orderDoc.customerId !== userId) {
                 router.push('/dashboard');
                 return;
             }
 
-            // Parse formData if it's a string
             if (typeof orderDoc.formData === 'string') {
                 orderDoc.formData = JSON.parse(orderDoc.formData);
             }
@@ -91,12 +99,30 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
             setOrder(orderDoc);
 
             // Load service
-            const serviceDoc = await databases.getDocument(
-                appwriteConfig.databaseId,
-                appwriteConfig.collections.services,
-                orderDoc.serviceId
-            );
-            setService(serviceDoc);
+            let serviceData = null;
+            try {
+                serviceData = await databases.getDocument(
+                    appwriteConfig.databaseId,
+                    appwriteConfig.collections.services,
+                    orderDoc.serviceId
+                );
+            } catch (serviceError) {
+                const staticService = getServiceBySlug(orderDoc.serviceId);
+                if (staticService) {
+                    const docsRequired = staticService.documents?.groups?.[0]?.items || [];
+                    serviceData = {
+                        $id: staticService.slug,
+                        name: staticService.title,
+                        shortDescription: staticService.hero?.description || '',
+                        description: staticService.overview?.description || '',
+                        category: staticService.category,
+                        estimatedDays: staticService.timeline,
+                        price: staticService.basePrice,
+                        documentRequired: docsRequired,
+                    };
+                }
+            }
+            setService(serviceData);
 
             // Load documents
             const docsResponse = await databases.listDocuments(
@@ -110,16 +136,12 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
             const timelineResponse = await databases.listDocuments(
                 appwriteConfig.databaseId,
                 appwriteConfig.collections.orderTimeline,
-                [
-                    Query.equal('orderId', params.id),
-                    Query.orderDesc('$createdAt')
-                ]
+                [Query.equal('orderId', params.id), Query.orderDesc('$createdAt')]
             );
             setTimeline(timelineResponse.documents);
 
             // Load certificates
             await loadCertificates();
-
         } catch (error) {
             console.error('Failed to load order details:', error);
         }
@@ -129,84 +151,60 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
         try {
             const response = await fetch(`/api/certificates?orderId=${params.id}`);
             const data = await response.json();
-
-            if (!response.ok) {
-                console.error('[Customer] Certificate API error:', response.status, data);
-                return;
-            }
-
             if (data.success) {
                 setCertificates(data.certificates);
             }
         } catch (error) {
-            console.error('[Customer] Failed to load certificates:', error);
+            console.error('Failed to load certificates:', error);
         }
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'completed':
-                return 'text-green-600 bg-green-50 border-green-200';
-            case 'processing':
-            case 'paid':
-                return 'text-blue-600 bg-blue-50 border-blue-200';
-            case 'new':
-                return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-            case 'cancelled':
-                return 'text-red-600 bg-red-50 border-red-200';
-            default:
-                return 'text-gray-600 bg-gray-50 border-gray-200';
-        }
+    // Calculate current step based on order status
+    const getCurrentStep = () => {
+        if (!order) return 0;
+        if (order.paymentStatus !== 'paid') return 0;
+        if (order.status === 'pending_docs' || documents.length === 0) return 1;
+        if (order.status === 'in_review') return 2;
+        if (['ready_for_filing', 'submitted', 'pending_approval'].includes(order.status)) return 3;
+        if (order.status === 'completed') return 4;
+        return 2; // Default to review stage
     };
 
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'completed':
-                return <CheckCircle className="h-5 w-5" />;
-            case 'processing':
-            case 'paid':
-                return <Clock className="h-5 w-5" />;
-            case 'cancelled':
-                return <XCircle className="h-5 w-5" />;
-            default:
-                return <AlertCircle className="h-5 w-5" />;
-        }
-    };
+    // Get action needed message and button
+    const getActionNeeded = () => {
+        if (!order) return null;
 
-    const getPaymentStatusColor = (status: string) => {
-        switch (status) {
-            case 'paid':
-                return 'text-green-600 bg-green-50 border-green-200';
-            case 'pending':
-                return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-            case 'failed':
-                return 'text-red-600 bg-red-50 border-red-200';
-            default:
-                return 'text-gray-600 bg-gray-50 border-gray-200';
+        if (order.paymentStatus !== 'paid') {
+            return {
+                type: 'warning',
+                message: 'Complete payment to proceed with your order',
+                action: 'payment'
+            };
         }
-    };
 
-    const getDocumentStatusColor = (status: string) => {
-        switch (status) {
-            case 'verified':
-                return 'text-green-600 bg-green-50 border-green-200';
-            case 'rejected':
-                return 'text-red-600 bg-red-50 border-red-200';
-            case 'pending':
-                return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-            default:
-                return 'text-gray-600 bg-gray-50 border-gray-200';
+        if (order.status === 'pending_docs' || (order.paymentStatus === 'paid' && documents.length === 0)) {
+            return {
+                type: 'warning',
+                message: 'Upload required documents to proceed',
+                action: 'upload'
+            };
         }
+
+        const rejectedDocs = documents.filter(d => d.status === 'rejected');
+        if (rejectedDocs.length > 0) {
+            return {
+                type: 'error',
+                message: `${rejectedDocs.length} document(s) need to be re-uploaded`,
+                action: 'reupload'
+            };
+        }
+
+        return null;
     };
 
     const handleDownloadDocument = async (fileId: string, fileName: string) => {
         try {
-            const result = storage.getFileDownload(
-                appwriteConfig.buckets.customerDocuments,
-                fileId
-            );
-
-            // Create a temporary link and trigger download
+            const result = storage.getFileDownload(appwriteConfig.buckets.customerDocuments, fileId);
             const link = document.createElement('a');
             link.href = result.toString();
             link.download = fileName;
@@ -219,440 +217,548 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
         }
     };
 
-    const handleDownloadInvoice = async () => {
+    const handleDownloadInvoice = () => {
         if (order?.invoiceFileId) {
-            try {
-                // Use API route to download invoice (handles authentication and permissions)
-                const link = document.createElement('a');
-                link.href = `/api/invoices/download/${order.invoiceFileId}`;
-                link.download = `invoice-${order.invoiceNumber || order.orderNumber}.pdf`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } catch (error) {
-                console.error('Invoice download failed:', error);
-                alert('Failed to download invoice');
-            }
+            const link = document.createElement('a');
+            link.href = `/api/invoices/download/${order.invoiceFileId}`;
+            link.download = `invoice-${order.invoiceNumber || order.orderNumber}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     };
 
     const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        }).format(new Date(dateString));
+    };
+
+    const formatDateTime = (dateString: string) => {
         return new Intl.DateTimeFormat('en-IN', {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
-        }).format(date);
+        }).format(new Date(dateString));
     };
+
+    const currentStep = getCurrentStep();
+    const actionNeeded = getActionNeeded();
+    const verifiedDocs = documents.filter(d => d.status === 'verified').length;
+    const pendingDocs = documents.filter(d => d.status === 'pending').length;
+    const rejectedDocs = documents.filter(d => d.status === 'rejected').length;
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading order details...</p>
+            <CustomerDashboardLayout>
+                <div className="flex items-center justify-center py-20">
+                    <div className="text-center">
+                        <div className="w-12 h-12 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <p className="text-neutral-600">Loading order details...</p>
+                    </div>
                 </div>
-            </div>
+            </CustomerDashboardLayout>
         );
     }
 
     if (!order) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Order Not Found</h1>
-                    <p className="text-gray-600 mb-6">The order you're looking for doesn't exist or has been removed.</p>
-                    <Link href="/dashboard" className="text-blue-600 hover:underline">
-                        ← Back to Dashboard
-                    </Link>
+            <CustomerDashboardLayout>
+                <div className="flex items-center justify-center py-20">
+                    <div className="text-center">
+                        <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+                        <h1 className="text-2xl font-bold text-neutral-900 mb-2">Order Not Found</h1>
+                        <p className="text-neutral-600 mb-6">The order you're looking for doesn't exist.</p>
+                        <Link href="/dashboard" className="text-brand-600 hover:underline">
+                            ← Back to Dashboard
+                        </Link>
+                    </div>
                 </div>
-            </div>
+            </CustomerDashboardLayout>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
-                                <ArrowLeft className="h-6 w-6" />
-                            </Link>
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900">Order #{order.orderNumber}</h1>
-                                <p className="text-sm text-gray-500">Placed on {formatDate(order.$createdAt)}</p>
-                            </div>
-                        </div>
-                        <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg border ${getStatusColor(order.status)}`}>
-                            {getStatusIcon(order.status)}
-                            <span className="font-semibold capitalize">{order.status}</span>
+        <CustomerDashboardLayout>
+            <div className="p-6 max-w-6xl mx-auto">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                        <Link href="/dashboard" className="p-2 hover:bg-neutral-100 rounded-lg transition-colors">
+                            <ArrowLeft className="h-5 w-5 text-neutral-600" />
+                        </Link>
+                        <div>
+                            <h1 className="text-2xl font-bold text-neutral-900">Order #{order.orderNumber}</h1>
+                            <p className="text-sm text-neutral-500">Placed on {formatDate(order.$createdAt)}</p>
                         </div>
                     </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => window.open(`mailto:support@lawethic.com?subject=Order ${order.orderNumber}`, '_blank')}
+                            className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                            title="Email Support"
+                        >
+                            <Mail className="h-5 w-5 text-neutral-600" />
+                        </button>
+                        <button
+                            onClick={() => window.open('tel:+911234567890', '_blank')}
+                            className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+                            title="Call Support"
+                        >
+                            <Phone className="h-5 w-5 text-neutral-600" />
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Progress Tracker */}
+                <div className="bg-white rounded-xl border border-neutral-200 p-6 mb-6">
+                    <div className="flex items-center justify-between relative">
+                        {/* Progress Line */}
+                        <div className="absolute top-5 left-0 right-0 h-0.5 bg-neutral-200 -z-0" />
+                        <div
+                            className="absolute top-5 left-0 h-0.5 bg-brand-600 -z-0 transition-all duration-500"
+                            style={{ width: `${(currentStep / (ORDER_STEPS.length - 1)) * 100}%` }}
+                        />
+
+                        {ORDER_STEPS.map((step, index) => {
+                            const Icon = step.icon;
+                            const isCompleted = index < currentStep;
+                            const isCurrent = index === currentStep;
+
+                            return (
+                                <div key={step.key} className="flex flex-col items-center z-10">
+                                    <div className={`
+                                        w-10 h-10 rounded-full flex items-center justify-center transition-all
+                                        ${isCompleted ? 'bg-brand-600 text-white' :
+                                            isCurrent ? 'bg-brand-100 text-brand-600 border-2 border-brand-600' :
+                                                'bg-neutral-100 text-neutral-400'}
+                                    `}>
+                                        {isCompleted ? (
+                                            <CheckCircle className="h-5 w-5" />
+                                        ) : (
+                                            <Icon className="h-5 w-5" />
+                                        )}
+                                    </div>
+                                    <span className={`text-xs mt-2 font-medium ${isCompleted || isCurrent ? 'text-neutral-900' : 'text-neutral-400'
+                                        }`}>
+                                        {step.label}
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Action Needed Banner */}
+                {actionNeeded && (
+                    <div className={`rounded-xl p-4 mb-6 flex items-center justify-between ${actionNeeded.type === 'error' ? 'bg-red-50 border border-red-200' :
+                            'bg-amber-50 border border-amber-200'
+                        }`}>
+                        <div className="flex items-center gap-3">
+                            <AlertCircle className={`h-5 w-5 ${actionNeeded.type === 'error' ? 'text-red-600' : 'text-amber-600'
+                                }`} />
+                            <span className={`font-medium ${actionNeeded.type === 'error' ? 'text-red-900' : 'text-amber-900'
+                                }`}>
+                                {actionNeeded.message}
+                            </span>
+                        </div>
+                        {actionNeeded.action === 'upload' && (
+                            <button
+                                onClick={() => setActiveTab('documents')}
+                                className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
+                            >
+                                Upload Documents
+                            </button>
+                        )}
+                    </div>
+                )}
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-6">
-                        {/* Service Information */}
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <div className="flex items-start space-x-4">
-                                <div className="flex-shrink-0">
-                                    <Package className="h-12 w-12 text-blue-600" />
+                        {/* Service Card */}
+                        <div className="bg-white rounded-xl border border-neutral-200 p-6">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <Package className="h-6 w-6 text-brand-600" />
                                 </div>
-                                <div className="flex-1">
-                                    <h2 className="text-xl font-bold text-gray-900 mb-2">{service?.name || 'Service'}</h2>
-                                    <p className="text-gray-600 mb-4">{service?.shortDescription || service?.description || 'No description available'}</p>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <p className="text-sm text-gray-500">Category</p>
-                                            <p className="font-medium text-gray-900">{service?.category || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500">Processing Time</p>
-                                            <p className="font-medium text-gray-900">{service?.estimatedDays ? `${service.estimatedDays} ` : 'N/A'}</p>
-                                        </div>
+                                <div className="flex-1 min-w-0">
+                                    <h2 className="text-lg font-semibold text-neutral-900">{service?.name || 'Service'}</h2>
+                                    <p className="text-sm text-neutral-600 mt-1 line-clamp-2">
+                                        {service?.shortDescription || service?.description}
+                                    </p>
+                                    <div className="flex items-center gap-4 mt-3 text-sm">
+                                        <span className="text-neutral-500">
+                                            <span className="font-medium text-neutral-900">{service?.category}</span>
+                                        </span>
+                                        <span className="text-neutral-300">•</span>
+                                        <span className="text-neutral-500">
+                                            Est. <span className="font-medium text-neutral-900">{service?.estimatedDays || 'N/A'}</span>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Payment Information */}
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <div className="flex items-center space-x-2 mb-4">
-                                <CreditCard className="h-5 w-5 text-gray-600" />
-                                <h3 className="text-lg font-bold text-gray-900">Payment Details</h3>
+                        {/* Tabs */}
+                        <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+                            <div className="flex border-b border-neutral-200">
+                                {[
+                                    { key: 'documents', label: 'Documents', count: documents.length },
+                                    { key: 'deliverables', label: 'Deliverables', count: certificates.length + (order.invoiceFileId ? 1 : 0) },
+                                    { key: 'timeline', label: 'Timeline', count: timeline.length }
+                                ].map(tab => (
+                                    <button
+                                        key={tab.key}
+                                        onClick={() => setActiveTab(tab.key as any)}
+                                        className={`flex-1 px-4 py-3 text-sm font-medium transition-colors relative ${activeTab === tab.key
+                                                ? 'text-brand-600 bg-brand-50'
+                                                : 'text-neutral-600 hover:bg-neutral-50'
+                                            }`}
+                                    >
+                                        {tab.label}
+                                        {tab.count > 0 && (
+                                            <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${activeTab === tab.key
+                                                    ? 'bg-brand-100 text-brand-700'
+                                                    : 'bg-neutral-100 text-neutral-600'
+                                                }`}>
+                                                {tab.count}
+                                            </span>
+                                        )}
+                                        {activeTab === tab.key && (
+                                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600" />
+                                        )}
+                                    </button>
+                                ))}
                             </div>
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                                    <span className="text-gray-600">Status</span>
-                                    <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getPaymentStatusColor(order.paymentStatus)}`}>
-                                        {order.paymentStatus}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Amount</span>
-                                    <span className="font-semibold text-gray-900">₹{order.amount?.toLocaleString('en-IN') || '0'}</span>
-                                </div>
-                                {order.razorpayOrderId && (
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Transaction ID</span>
-                                        <span className="text-sm text-gray-900 font-mono">{order.razorpayOrderId}</span>
+
+                            <div className="p-6">
+                                {/* Documents Tab */}
+                                {activeTab === 'documents' && (
+                                    <div className="space-y-4">
+                                        {/* Document Stats */}
+                                        {documents.length > 0 && (
+                                            <div className="flex items-center gap-4 pb-4 border-b border-neutral-100">
+                                                <span className="text-sm text-neutral-500">
+                                                    <span className="font-medium text-green-600">{verifiedDocs}</span> verified
+                                                </span>
+                                                <span className="text-sm text-neutral-500">
+                                                    <span className="font-medium text-amber-600">{pendingDocs}</span> pending
+                                                </span>
+                                                {rejectedDocs > 0 && (
+                                                    <span className="text-sm text-neutral-500">
+                                                        <span className="font-medium text-red-600">{rejectedDocs}</span> rejected
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* Upload Section */}
+                                        {order.paymentStatus === 'paid' && service?.documentRequired?.length > 0 && (
+                                            <DocumentUploadSection
+                                                orderId={params.id}
+                                                orderStatus={order.status}
+                                                documentRequired={service.documentRequired}
+                                                existingDocuments={documents}
+                                                onUploadSuccess={() => loadOrderDetails(user.$id)}
+                                                userId={user.$id}
+                                            />
+                                        )}
+
+                                        {/* Document List */}
+                                        {documents.length > 0 ? (
+                                            <div className="space-y-3">
+                                                {documents.map((doc) => (
+                                                    <div key={doc.$id} className="border border-neutral-200 rounded-lg overflow-hidden">
+                                                        <div className="flex items-center justify-between p-4">
+                                                            <div className="flex items-center gap-3 min-w-0">
+                                                                <FileText className="h-8 w-8 text-neutral-400 flex-shrink-0" />
+                                                                <div className="min-w-0">
+                                                                    <p className="font-medium text-neutral-900 truncate">
+                                                                        {doc.fileName || doc.name || 'Document'}
+                                                                    </p>
+                                                                    <div className="flex items-center gap-2 mt-1">
+                                                                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${doc.status === 'verified' ? 'bg-green-100 text-green-700' :
+                                                                                doc.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                                                                                    'bg-amber-100 text-amber-700'
+                                                                            }`}>
+                                                                            {doc.status === 'verified' && <CheckCircle className="h-3 w-3 mr-1" />}
+                                                                            {doc.status === 'rejected' && <XCircle className="h-3 w-3 mr-1" />}
+                                                                            {doc.status === 'pending' && <Clock className="h-3 w-3 mr-1" />}
+                                                                            {doc.status}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <button
+                                                                    onClick={() => handleDownloadDocument(doc.fileId, doc.fileName)}
+                                                                    className="p-2 text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+                                                                >
+                                                                    <Download className="h-4 w-4" />
+                                                                </button>
+                                                                {doc.status === 'rejected' && (
+                                                                    <button
+                                                                        onClick={() => setReuploadingDoc(doc)}
+                                                                        className="px-3 py-1.5 bg-brand-600 text-white rounded-lg text-sm hover:bg-brand-700 transition-colors"
+                                                                    >
+                                                                        Re-upload
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        {doc.status === 'rejected' && doc.rejectionReason && (
+                                                            <div className="bg-red-50 border-t border-red-100 px-4 py-3">
+                                                                <p className="text-sm text-red-700">
+                                                                    <span className="font-medium">Reason:</span> {doc.rejectionReason}
+                                                                </p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : order.paymentStatus !== 'paid' ? (
+                                            <div className="text-center py-8 text-neutral-500">
+                                                <FileText className="h-12 w-12 mx-auto mb-3 text-neutral-300" />
+                                                <p>Complete payment to upload documents</p>
+                                            </div>
+                                        ) : null}
                                     </div>
                                 )}
-                                {order.paymentStatus === 'pending' && service && user && (
-                                    <div className="mt-4 pt-4 border-t border-gray-200">
-                                        <PaymentButton
-                                            amount={order.amount}
-                                            orderId={order.$id}
-                                            orderNumber={order.orderNumber}
-                                            customerName={user.name || order.formData?.businessName || 'Customer'}
-                                            customerEmail={user.email || order.formData?.email || ''}
-                                            serviceName={service.name}
-                                            onSuccess={handlePaymentSuccess}
-                                        />
+
+                                {/* Deliverables Tab */}
+                                {activeTab === 'deliverables' && (
+                                    <div className="space-y-3">
+                                        {/* Invoice */}
+                                        <div className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                                    <Receipt className="h-5 w-5 text-green-600" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-neutral-900">Invoice</p>
+                                                    <p className="text-sm text-neutral-500">{order.invoiceNumber || 'Payment receipt'}</p>
+                                                </div>
+                                            </div>
+                                            {order.invoiceFileId ? (
+                                                <button
+                                                    onClick={handleDownloadInvoice}
+                                                    className="flex items-center gap-2 px-3 py-2 text-brand-600 hover:bg-brand-50 rounded-lg transition-colors text-sm font-medium"
+                                                >
+                                                    <Download className="h-4 w-4" />
+                                                    Download
+                                                </button>
+                                            ) : (
+                                                <span className="text-sm text-neutral-400">Pending</span>
+                                            )}
+                                        </div>
+
+                                        {/* Certificates */}
+                                        {certificates.length > 0 ? (
+                                            certificates.map((cert) => (
+                                                <div key={cert.id} className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 bg-brand-100 rounded-lg flex items-center justify-center">
+                                                            <Award className="h-5 w-5 text-brand-600" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-medium text-neutral-900">{cert.documentName}</p>
+                                                            <p className="text-sm text-neutral-500">
+                                                                {formatDate(cert.uploadedAt)}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <a
+                                                        href={cert.downloadUrl}
+                                                        className="flex items-center gap-2 px-3 py-2 text-brand-600 hover:bg-brand-50 rounded-lg transition-colors text-sm font-medium"
+                                                    >
+                                                        <Download className="h-4 w-4" />
+                                                        Download
+                                                    </a>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="flex items-center justify-between p-4 border border-dashed border-neutral-200 rounded-lg">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 bg-neutral-100 rounded-lg flex items-center justify-center">
+                                                        <Award className="h-5 w-5 text-neutral-400" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-medium text-neutral-600">Certificate</p>
+                                                        <p className="text-sm text-neutral-400">Will be available after completion</p>
+                                                    </div>
+                                                </div>
+                                                <span className="text-sm text-neutral-400">Pending</span>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
-                            </div>
-                        </div>
 
-                        {/* Document Upload Section - Show when payment is done but no documents uploaded */}
-                        {order.paymentStatus === 'paid' && documents.length === 0 && service?.documentRequired && (
-                            <DocumentUploadSection
-                                orderId={params.id}
-                                orderStatus={order.status}
-                                documentRequired={service.documentRequired}
-                                existingDocuments={documents}
-                                onUploadSuccess={() => loadOrderDetails(user.$id)}
-                                userId={user.$id}
-                            />
-                        )}
-
-                        {/* Documents Section */}
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <div className="flex items-center space-x-2 mb-4">
-                                <FileText className="h-5 w-5 text-gray-600" />
-                                <h3 className="text-lg font-bold text-gray-900">Uploaded Documents</h3>
-                            </div>
-                            {documents.length > 0 ? (
-                                <div className="space-y-4">
-                                    {documents.map((doc) => (
-                                        <div key={doc.$id} className="border border-gray-200 rounded-lg overflow-hidden">
-                                            <div className="flex items-center justify-between p-4 bg-white">
-                                                <div className="flex items-center space-x-3 flex-1">
-                                                    <FileText className="h-8 w-8 text-gray-400 flex-shrink-0" />
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="font-medium text-gray-900 truncate">{doc.fileName || doc.name || doc.documentType || 'Document'}</p>
-                                                        <div className="flex items-center space-x-2 mt-1">
-                                                            <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${doc.status === 'verified'
-                                                                ? 'bg-green-100 text-green-800 border border-green-200'
-                                                                : doc.status === 'rejected'
-                                                                    ? 'bg-red-100 text-red-800 border border-red-200'
-                                                                    : 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-                                                                }`}>
-                                                                {doc.status === 'verified' && <CheckCircle className="h-3 w-3 mr-1" />}
-                                                                {doc.status === 'rejected' && <XCircle className="h-3 w-3 mr-1" />}
-                                                                {doc.status === 'pending' && <Clock className="h-3 w-3 mr-1" />}
-                                                                {doc.status === 'verified' ? 'Verified' : doc.status === 'rejected' ? 'Rejected' : 'Pending Review'}
-                                                            </span>
-                                                            {doc.version && doc.version > 1 && (
-                                                                <span className="text-xs text-gray-500">
-                                                                    v{doc.version}
-                                                                </span>
+                                {/* Timeline Tab */}
+                                {activeTab === 'timeline' && (
+                                    <div>
+                                        {timeline.length > 0 ? (
+                                            <div className="space-y-4">
+                                                {timeline.map((entry, index) => (
+                                                    <div key={entry.$id} className="flex gap-4">
+                                                        <div className="flex flex-col items-center">
+                                                            <div className={`w-3 h-3 rounded-full ${index === 0 ? 'bg-brand-600' : 'bg-neutral-300'
+                                                                }`} />
+                                                            {index < timeline.length - 1 && (
+                                                                <div className="w-0.5 flex-1 bg-neutral-200 my-1" />
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1 pb-4">
+                                                            <p className="text-sm text-neutral-500">{formatDateTime(entry.$createdAt)}</p>
+                                                            <p className="font-medium text-neutral-900 capitalize mt-0.5">
+                                                                {entry.action?.replace(/_/g, ' ')}
+                                                            </p>
+                                                            {entry.details && (
+                                                                <p className="text-sm text-neutral-600 mt-1">{entry.details}</p>
                                                             )}
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div className="flex items-center space-x-2">
-                                                    <button
-                                                        onClick={() => handleDownloadDocument(doc.fileId, doc.fileName)}
-                                                        className="flex items-center space-x-1 text-blue-600 hover:text-blue-800 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
-                                                    >
-                                                        <Download className="h-4 w-4" />
-                                                        <span className="text-sm font-medium hidden sm:inline">Download</span>
-                                                    </button>
-                                                    {doc.status === 'rejected' && (
-                                                        <button
-                                                            onClick={() => setReuploadingDoc(doc)}
-                                                            className="flex items-center space-x-1 text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-lg transition-colors"
-                                                        >
-                                                            <Upload className="h-4 w-4" />
-                                                            <span className="text-sm font-medium hidden sm:inline">Re-upload</span>
-                                                        </button>
-                                                    )}
-                                                </div>
+                                                ))}
                                             </div>
-
-                                            {/* Rejection Reason - Prominent Display */}
-                                            {doc.status === 'rejected' && doc.rejectionReason && (
-                                                <div className="bg-red-50 border-t border-red-200 p-4">
-                                                    <div className="flex items-start space-x-2">
-                                                        <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-                                                        <div className="flex-1">
-                                                            <p className="text-sm font-medium text-red-900 mb-1">Rejection Reason:</p>
-                                                            <p className="text-sm text-red-800">{doc.rejectionReason}</p>
-                                                            <p className="text-xs text-red-700 mt-2">Please re-upload a corrected version of this document.</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <FileText className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-                                    <p>No documents uploaded yet</p>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Deliverables Section */}
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <div className="flex items-center space-x-2 mb-4">
-                                <Download className="h-5 w-5 text-gray-600" />
-                                <h3 className="text-lg font-bold text-gray-900">Deliverables</h3>
-                            </div>
-                            <div className="space-y-3">
-                                {/* Invoice */}
-                                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                                    <div className="flex items-center space-x-3">
-                                        <FileText className="h-8 w-8 text-gray-400" />
-                                        <div>
-                                            <p className="font-medium text-gray-900">Invoice</p>
-                                            <p className="text-sm text-gray-500">
-                                                {order.invoiceNumber || 'Payment receipt and details'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    {order.invoiceFileId ? (
-                                        <button
-                                            onClick={handleDownloadInvoice}
-                                            className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
-                                        >
-                                            <Download className="h-4 w-4" />
-                                            <span className="text-sm font-medium">Download</span>
-                                        </button>
-                                    ) : (
-                                        <span className="text-sm text-gray-500">Pending</span>
-                                    )}
-                                </div>
-
-                                {/* Certificates - Dynamic list */}
-                                {certificates.length > 0 ? (
-                                    certificates.map((cert) => (
-                                        <div key={cert.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                                            <div className="flex items-center space-x-3">
-                                                <FileText className="h-8 w-8 text-blue-600" />
-                                                <div>
-                                                    <p className="font-medium text-gray-900">{cert.documentName}</p>
-                                                    <p className="text-sm text-gray-500">
-                                                        {cert.documentType.replace(/_/g, ' ')} • {new Date(cert.uploadedAt).toLocaleDateString()}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <a
-                                                href={cert.downloadUrl}
-                                                className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
-                                            >
-                                                <Download className="h-4 w-4" />
-                                                <span className="text-sm font-medium">Download</span>
-                                            </a>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                                        <div className="flex items-center space-x-3">
-                                            <FileText className="h-8 w-8 text-gray-400" />
-                                            <div>
-                                                <p className="font-medium text-gray-900">Certificate</p>
-                                                <p className="text-sm text-gray-500">Registration/completion certificate</p>
-                                            </div>
-                                        </div>
-                                        {order.status === 'completed' ? (
-                                            <span className="text-sm text-yellow-600">Processing</span>
                                         ) : (
-                                            <span className="text-sm text-gray-500">Pending</span>
+                                            <div className="text-center py-8 text-neutral-500">
+                                                <Clock className="h-12 w-12 mx-auto mb-3 text-neutral-300" />
+                                                <p>No activity recorded yet</p>
+                                            </div>
                                         )}
                                     </div>
                                 )}
                             </div>
                         </div>
-
-                        {/* Order Timeline */}
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <div className="flex items-center space-x-2 mb-4">
-                                <Clock className="h-5 w-5 text-gray-600" />
-                                <h3 className="text-lg font-bold text-gray-900">Order Timeline</h3>
-                            </div>
-                            {timeline.length > 0 ? (
-                                <div className="space-y-4">
-                                    {timeline.map((entry, index) => (
-                                        <div key={entry.$id} className="flex space-x-4">
-                                            <div className="flex flex-col items-center">
-                                                <div className="w-3 h-3 rounded-full bg-blue-600"></div>
-                                                {index < timeline.length - 1 && (
-                                                    <div className="w-0.5 h-full bg-gray-300 my-1"></div>
-                                                )}
-                                            </div>
-                                            <div className="flex-1 pb-6">
-                                                <p className="text-sm text-gray-500 mb-1">{formatDate(entry.$createdAt)}</p>
-                                                <p className="font-medium text-gray-900 capitalize">{entry.action?.replace(/_/g, ' ')}</p>
-                                                {entry.details && (
-                                                    <p className="text-sm text-gray-600 mt-1">{entry.details}</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    <Clock className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-                                    <p>No activity recorded yet</p>
-                                </div>
-                            )}
-                        </div>
                     </div>
 
                     {/* Sidebar */}
                     <div className="space-y-6">
-                        {/* Customer Information */}
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">Your Information</h3>
+                        {/* Order Summary Card */}
+                        <div className="bg-white rounded-xl border border-neutral-200 p-6">
+                            <h3 className="font-semibold text-neutral-900 mb-4">Order Summary</h3>
                             <div className="space-y-3">
-                                {order.formData?.fullName && (
-                                    <div>
-                                        <p className="text-sm text-gray-500">Name</p>
-                                        <p className="font-medium text-gray-900">{order.formData.fullName}</p>
-                                    </div>
-                                )}
-                                {order.formData?.email && (
-                                    <div>
-                                        <p className="text-sm text-gray-500">Email</p>
-                                        <p className="font-medium text-gray-900">{order.formData.email}</p>
-                                    </div>
-                                )}
-                                {order.formData?.phone && (
-                                    <div>
-                                        <p className="text-sm text-gray-500">Phone</p>
-                                        <p className="font-medium text-gray-900">{order.formData.phone}</p>
-                                    </div>
-                                )}
-                                {order.formData?.businessName && (
-                                    <div>
-                                        <p className="text-sm text-gray-500">Business Name</p>
-                                        <p className="font-medium text-gray-900">{order.formData.businessName}</p>
-                                    </div>
-                                )}
+                                <div className="flex justify-between">
+                                    <span className="text-sm text-neutral-500">Status</span>
+                                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${order.status === 'completed' ? 'bg-green-100 text-green-700' :
+                                            order.status === 'on_hold' ? 'bg-red-100 text-red-700' :
+                                                'bg-brand-100 text-brand-700'
+                                        }`}>
+                                        {order.status.replace(/_/g, ' ')}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-sm text-neutral-500">Payment</span>
+                                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${order.paymentStatus === 'paid' ? 'bg-green-100 text-green-700' :
+                                            'bg-amber-100 text-amber-700'
+                                        }`}>
+                                        {order.paymentStatus}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-sm text-neutral-500">Amount</span>
+                                    <span className="font-semibold text-neutral-900">
+                                        ₹{order.amount?.toLocaleString('en-IN') || '0'}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-sm text-neutral-500">Date</span>
+                                    <span className="text-sm text-neutral-900">{formatDate(order.$createdAt)}</span>
+                                </div>
                             </div>
+
+                            {/* Payment Button if not paid */}
+                            {order.paymentStatus !== 'paid' && service && user && (
+                                <div className="mt-4 pt-4 border-t border-neutral-100">
+                                    <PaymentButton
+                                        amount={order.amount}
+                                        orderId={order.$id}
+                                        orderNumber={order.orderNumber}
+                                        customerName={user.name || order.formData?.fullName || 'Customer'}
+                                        customerEmail={user.email || order.formData?.email || ''}
+                                        serviceName={service.name}
+                                        onSuccess={handlePaymentSuccess}
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         {/* Quick Actions */}
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">Need Help?</h3>
-                            <div className="space-y-3">
-                                <a href="mailto:support@lawethic.com" className="w-full flex items-center justify-center space-x-2 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <Mail className="h-5 w-5 text-gray-600" />
-                                    <span className="font-medium text-gray-900">Email Support</span>
+                        <div className="bg-white rounded-xl border border-neutral-200 p-6">
+                            <h3 className="font-semibold text-neutral-900 mb-4">Quick Actions</h3>
+                            <div className="space-y-2">
+                                {order.invoiceFileId && (
+                                    <button
+                                        onClick={handleDownloadInvoice}
+                                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-neutral-50 rounded-lg transition-colors group"
+                                    >
+                                        <Receipt className="h-5 w-5 text-neutral-400 group-hover:text-brand-600" />
+                                        <span className="text-sm font-medium text-neutral-700">Download Invoice</span>
+                                        <ChevronRight className="h-4 w-4 text-neutral-300 ml-auto" />
+                                    </button>
+                                )}
+                                <a
+                                    href="mailto:support@lawethic.com"
+                                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-neutral-50 rounded-lg transition-colors group"
+                                >
+                                    <Mail className="h-5 w-5 text-neutral-400 group-hover:text-brand-600" />
+                                    <span className="text-sm font-medium text-neutral-700">Email Support</span>
+                                    <ChevronRight className="h-4 w-4 text-neutral-300 ml-auto" />
                                 </a>
-                                <a href="tel:+911234567890" className="w-full flex items-center justify-center space-x-2 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <Phone className="h-5 w-5 text-gray-600" />
-                                    <span className="font-medium text-gray-900">Call Support</span>
+                                <a
+                                    href="tel:+911234567890"
+                                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-neutral-50 rounded-lg transition-colors group"
+                                >
+                                    <Phone className="h-5 w-5 text-neutral-400 group-hover:text-brand-600" />
+                                    <span className="text-sm font-medium text-neutral-700">Call Support</span>
+                                    <ChevronRight className="h-4 w-4 text-neutral-300 ml-auto" />
                                 </a>
                             </div>
                         </div>
 
-                        {/* Help Resources */}
-                        <div className="bg-blue-50 rounded-lg border border-blue-200 p-6">
-                            <div className="flex items-start space-x-3">
-                                <HelpCircle className="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <h4 className="font-bold text-blue-900 mb-2">Common Questions</h4>
-                                    <ul className="space-y-2 text-sm text-blue-800">
-                                        <li>• Documents typically verified within 24 hours</li>
-                                        <li>• You'll receive email updates for all status changes</li>
-                                        <li>• Certificates delivered within 7-10 business days</li>
-                                        <li>• Contact support for urgent requests</li>
-                                    </ul>
+                        {/* Certificates Ready Banner */}
+                        {certificates.length > 0 && (
+                            <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                                <div className="flex items-center gap-3">
+                                    <Award className="h-6 w-6 text-green-600" />
+                                    <div>
+                                        <p className="font-medium text-green-900">Certificate Ready!</p>
+                                        <p className="text-sm text-green-700">Your certificate is available for download</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
-            </div>
 
-            {/* Floating Chat Button */}
-            {order && (
-                <FloatingChatButton
-                    orderId={order.$id}
-                    orderNumber={order.orderNumber || order.$id}
-                />
-            )}
+                {/* Floating Chat Button */}
+                {order && (
+                    <FloatingChatButton
+                        orderId={order.$id}
+                        orderNumber={order.orderNumber || order.$id}
+                    />
+                )}
 
-            {/* Document Re-upload Modal */}
-            {reuploadingDoc && (
-                <DocumentReupload
-                    documentId={reuploadingDoc.$id}
-                    documentName={reuploadingDoc.fileName || reuploadingDoc.name || 'Document'}
-                    orderId={params.id}
-                    rejectionReason={reuploadingDoc.rejectionReason || 'No reason provided'}
-                    onSuccess={() => {
-                        setReuploadingDoc(null);
-                        // Reload order details to show updated document
-                        if (user) {
+                {/* Document Re-upload Modal */}
+                {reuploadingDoc && (
+                    <DocumentReupload
+                        documentId={reuploadingDoc.$id}
+                        documentName={reuploadingDoc.fileName || reuploadingDoc.name || 'Document'}
+                        orderId={params.id}
+                        rejectionReason={reuploadingDoc.rejectionReason || 'No reason provided'}
+                        onSuccess={() => {
+                            setReuploadingDoc(null);
                             loadOrderDetails(user.$id);
-                        }
-                        alert('Document re-uploaded successfully! It will be reviewed shortly.');
-                    }}
-                    onClose={() => setReuploadingDoc(null)}
-                />
-            )}
-        </div>
+                            alert('Document re-uploaded successfully!');
+                        }}
+                        onClose={() => setReuploadingDoc(null)}
+                    />
+                )}
+            </div>
+        </CustomerDashboardLayout>
     );
 }

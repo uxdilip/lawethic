@@ -8,15 +8,24 @@ import { Service, Order, QuestionField } from '@lawethic/appwrite/types';
 import { CheckCircle, CreditCard, HelpCircle } from 'lucide-react';
 import { ID, Query } from 'appwrite';
 import PaymentButton from '@/components/PaymentButton';
-import { getServiceData } from '@/lib/services-static';
+import { getServiceBySlug } from '@/data/services';
 
 function CheckoutContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    // Support both old (category/slug) and new (service) URL formats
+    const serviceSlug = searchParams.get('service');
+    const legacyCategory = searchParams.get('category');
+    const legacySlug = searchParams.get('slug');
     const serviceId = searchParams.get('serviceId');
-    const category = searchParams.get('category');
-    const slug = searchParams.get('slug');
-    const selectedPackageName = searchParams.get('package');
+    const selectedPackageId = searchParams.get('package');
+
+    // Onboarding flow parameters
+    const fromOnboarding = searchParams.get('fromOnboarding') === 'true';
+    const onboardingName = searchParams.get('name');
+    const onboardingEmail = searchParams.get('email');
+    const onboardingPhone = searchParams.get('phone');
+    const onboardingAnswers = searchParams.get('answers');
 
     const [user, setUser] = useState<any>(null);
     const [service, setService] = useState<Service | null>(null);
@@ -34,7 +43,7 @@ function CheckoutContent() {
 
     useEffect(() => {
         init();
-    }, [serviceId, category, slug]);
+    }, [serviceSlug, legacyCategory, legacySlug, serviceId]);
 
     const init = async () => {
         setLoading(true);
@@ -51,66 +60,139 @@ function CheckoutContent() {
             return;
         }
 
-        // Step 2: Fetch service by slug or ID
+        // Step 2: Get service from static registry or Appwrite
         try {
-            let serviceResponse: any;
+            let staticService: any = null;
+            let appwriteService: any = null;
 
-            if (category && slug) {
-                // Fetch by slug (from service landing pages)
-                const services = await databases.listDocuments(
-                    appwriteConfig.databaseId,
-                    appwriteConfig.collections.services,
-                    [Query.equal('slug', slug), Query.equal('category', category)]
-                );
+            // Try new flat URL format first
+            const slug = serviceSlug || legacySlug;
 
-                if (services.documents.length === 0) {
-                    setError('Service not found. Please go back and select a service.');
-                    setLoading(false);
-                    return;
+            if (slug) {
+                // Get from static registry
+                staticService = getServiceBySlug(slug);
+
+                if (staticService) {
+                    console.log('✅ Service found in registry:', staticService.title);
+
+                    // Create a service-like object for the UI
+                    appwriteService = {
+                        $id: staticService.slug,
+                        slug: staticService.slug,
+                        name: staticService.title,
+                        category: staticService.categorySlug,
+                        price: staticService.basePrice,
+                        shortDescription: staticService.hero.description,
+                        estimatedDays: staticService.timeline,
+                    };
+                } else {
+                    // Fallback: try to fetch from Appwrite
+                    console.log('⚠️ Service not in registry, checking Appwrite...');
+                    const services = await databases.listDocuments(
+                        appwriteConfig.databaseId,
+                        appwriteConfig.collections.services,
+                        [Query.equal('slug', slug)]
+                    );
+
+                    if (services.documents.length > 0) {
+                        appwriteService = services.documents[0];
+                    }
                 }
-
-                serviceResponse = services.documents[0];
             } else if (serviceId) {
-                // Fetch by ID (legacy support)
-                serviceResponse = await databases.getDocument(
+                // Legacy: Fetch by ID from Appwrite
+                appwriteService = await databases.getDocument(
                     appwriteConfig.databaseId,
                     appwriteConfig.collections.services,
                     serviceId
                 );
-            } else {
-                setError('No service specified. Please select a service.');
+            }
+
+            if (!appwriteService && !staticService) {
+                setError('Service not found. Please go back and select a service.');
                 setLoading(false);
                 return;
             }
 
-            setService(serviceResponse as unknown as Service);
+            setService(appwriteService as unknown as Service);
 
             // Find selected package and calculate final price
             let packageData = null;
-            let price = serviceResponse.price; // Default to base price
+            let price = appwriteService?.price || staticService?.basePrice || 0;
 
-            // Fetch static service data to get packages (since Appwrite only has base service)
-            if (selectedPackageName && category && slug) {
-                const staticServiceData = await getServiceData(category, slug);
+            if (selectedPackageId && staticService?.packages) {
+                packageData = staticService.packages.find(
+                    (pkg: any) => pkg.id === selectedPackageId || pkg.name.toLowerCase() === selectedPackageId.toLowerCase()
+                );
 
-                if (staticServiceData?.packages) {
-                    packageData = staticServiceData.packages.find(
-                        (pkg: any) => pkg.name === selectedPackageName
-                    );
-
-                    if (packageData) {
-                        price = packageData.price;
-                        console.log('✅ Package found:', packageData.name, 'Price:', price);
-                    } else {
-                        console.warn('⚠️ Package not found:', selectedPackageName);
-                    }
+                if (packageData) {
+                    price = packageData.price;
+                    console.log('✅ Package found:', packageData.name, 'Price:', price);
                 } else {
-                    console.warn('⚠️ No packages in static data for:', category, slug);
+                    console.warn('⚠️ Package not found:', selectedPackageId);
                 }
             }
 
             setSelectedPackage(packageData);
             setFinalPrice(price);
+
+            // If coming from onboarding, create order and skip to payment
+            if (fromOnboarding) {
+                try {
+                    const userData = await account.get();
+
+                    // Parse onboarding answers if provided
+                    let parsedAnswers = {};
+                    if (onboardingAnswers) {
+                        try {
+                            parsedAnswers = JSON.parse(decodeURIComponent(onboardingAnswers));
+                        } catch (e) {
+                            console.warn('Failed to parse onboarding answers:', e);
+                        }
+                    }
+
+                    // Pre-populate form data from onboarding
+                    const onboardingFormData = {
+                        fullName: onboardingName || userData.name || '',
+                        email: onboardingEmail || userData.email || '',
+                        phone: onboardingPhone || userData.phone || '',
+                        businessName: onboardingName || userData.name || '',
+                        selectedPackage: packageData?.name || selectedPackageId || 'Standard',
+                        packagePrice: price,
+                        onboardingAnswers: parsedAnswers,
+                    };
+
+                    setFormData(onboardingFormData);
+                    setQuestionAnswers(parsedAnswers);
+
+                    // Create order automatically
+                    const orderNum = `ORD-${Date.now()}`;
+                    setOrderNumber(orderNum);
+
+                    const orderData = {
+                        orderNumber: orderNum,
+                        customerId: userData.$id,
+                        serviceId: appwriteService.$id || staticService?.slug,
+                        status: 'new',
+                        paymentStatus: 'pending',
+                        amount: price,
+                        formData: JSON.stringify(onboardingFormData),
+                    };
+
+                    const order = await databases.createDocument(
+                        appwriteConfig.databaseId,
+                        appwriteConfig.collections.orders,
+                        ID.unique(),
+                        orderData
+                    );
+
+                    setOrderId(order.$id);
+                    setStep(3); // Skip directly to payment
+                    console.log('✅ Onboarding flow: Order created, skipping to payment');
+                } catch (onboardingError: any) {
+                    console.error('Failed to process onboarding data:', onboardingError);
+                    setError('Failed to create order. Please try again.');
+                }
+            }
         } catch (serviceError: any) {
             console.error('Failed to load service:', serviceError);
             setError('Failed to load service details. Please try again.');
@@ -142,7 +224,7 @@ function CheckoutContent() {
                 ...formData,
                 email: user.email,
                 fullName: user.name || formData.businessName,
-                selectedPackage: selectedPackageName || 'Standard',
+                selectedPackage: selectedPackage?.name || selectedPackageId || 'Standard',
                 packagePrice: finalPrice,
             };
 

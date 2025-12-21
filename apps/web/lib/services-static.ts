@@ -1,18 +1,22 @@
+/**
+ * DEPRECATED: Use @/data/services instead
+ * 
+ * This file is kept for backward compatibility.
+ * All new code should import from @/data/services
+ * 
+ * Example:
+ * import { getServiceBySlug, getAllServices } from '@/data/services'
+ */
+
 import { NAVIGATION_STRUCTURE } from '@/data/navigation'
 import { CATEGORIES } from '@/data/categories'
-import { ServiceData, NavigationService, CategoryHubData } from '@/types/service'
-import privateLimitedCompany from '@/data/services/company-registration/private-limited-company'
-
-/**
- * Service Registry - Map service slugs to their data
- * Add new services here as you create them
- */
-const SERVICE_REGISTRY: Record<string, ServiceData> = {
-    'company-registration/private-limited-company': privateLimitedCompany,
-    // Add more services here:
-    // 'company-registration/llp': llpService,
-    // 'gst-registration/gst-registration': gstService,
-}
+import { NavigationService, CategoryHubData } from '@/types/service'
+import {
+    getServiceBySlug as getServiceBySlugNew,
+    getAllServices as getAllServicesNew,
+    getAllServiceSlugs,
+    Service
+} from '@/data/services'
 
 /**
  * Get navigation structure for mega menu (instant, no database call)
@@ -23,6 +27,7 @@ export function getNavigationData() {
 
 /**
  * Get all services across all categories
+ * @deprecated Use getAllServices from @/data/services instead
  */
 export function getAllServices(): NavigationService[] {
     const services: NavigationService[] = []
@@ -39,15 +44,35 @@ export function getAllServices(): NavigationService[] {
 }
 
 /**
- * Get service data by category and slug
+ * Get service data by slug (new flat structure)
+ * @deprecated Use getServiceBySlug from @/data/services instead
+ */
+export function getServiceBySlug(slug: string): Service | undefined {
+    return getServiceBySlugNew(slug)
+}
+
+/**
+ * Get service data by category and slug (legacy support)
+ * @deprecated Use getServiceBySlug from @/data/services instead
  */
 export async function getServiceData(
     category: string,
     slug: string
-): Promise<ServiceData | null> {
-    const key = `${category}/${slug}`
-    return SERVICE_REGISTRY[key] || null
-}/**
+): Promise<Service | null> {
+    // Try flat slug first (new structure)
+    let service = getServiceBySlugNew(slug)
+    if (service) return service
+
+    // Try with category prefix for backward compatibility
+    const fullSlug = `${slug}-${category}`.replace(/-+/g, '-')
+    service = getServiceBySlugNew(fullSlug)
+    if (service) return service
+
+    // Not found
+    return null
+}
+
+/**
  * Get all services in a specific category
  */
 export function getServicesForCategory(categorySlug: string): NavigationService[] {
@@ -79,21 +104,13 @@ export function getAllCategorySlugs(): string[] {
 
 /**
  * Get all service paths for static generation
- * Returns array of { category, slug } objects
+ * @deprecated Use getAllServiceSlugs from @/data/services instead
  */
 export function getAllServicePaths(): { category: string; slug: string }[] {
-    const paths: { category: string; slug: string }[] = []
-
-    NAVIGATION_STRUCTURE.forEach(parent => {
-        parent.children?.forEach(category => {
-            category.services?.forEach(service => {
-                paths.push({
-                    category: category.id,
-                    slug: service.slug
-                })
-            })
-        })
-    })
-
-    return paths
+    // For backward compatibility, return in old format
+    const services = getAllServicesNew()
+    return services.map(s => ({
+        category: s.categorySlug,
+        slug: s.slug
+    }))
 }

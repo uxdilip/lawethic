@@ -6,6 +6,40 @@ import { renderToBuffer } from '@react-pdf/renderer';
 import { InvoiceTemplate } from './invoice-template';
 import React from 'react';
 import { sendInvoiceEmail } from '../email/email-service';
+import { getServiceBySlug } from '@/data/services';
+
+/**
+ * Helper to get service data from either Appwrite or static registry
+ */
+async function getServiceData(serviceId: string) {
+    // First try Appwrite (for legacy orders with document IDs)
+    try {
+        const service = await databases.getDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.collections.services,
+            serviceId
+        );
+        return service;
+    } catch (error) {
+        // If not found in Appwrite, try static registry (for orders using slug)
+        console.log('[Invoice] Service not in Appwrite, checking static registry for:', serviceId);
+        const staticService = getServiceBySlug(serviceId);
+        if (staticService) {
+            console.log('[Invoice] ✅ Service found in static registry:', staticService.title);
+            return {
+                $id: staticService.slug,
+                name: staticService.title,
+                shortDescription: staticService.hero?.description || '',
+                description: staticService.overview?.description || '',
+                category: staticService.category,
+                estimatedDays: staticService.timeline,
+                price: staticService.basePrice,
+                features: staticService.packages?.[0]?.inclusions || [],
+            };
+        }
+        throw new Error(`Service not found: ${serviceId}`);
+    }
+}
 
 /**
  * Generate next invoice number for the current year
@@ -80,12 +114,8 @@ export async function generateInvoice(orderId: string): Promise<{ invoiceNumber:
             order.formData = JSON.parse(order.formData);
         }
 
-        // 2. Fetch service details
-        const service = await databases.getDocument(
-            appwriteConfig.databaseId,
-            appwriteConfig.collections.services,
-            order.serviceId
-        );
+        // 2. Fetch service details (works with both Appwrite IDs and slugs)
+        const service = await getServiceData(order.serviceId);
 
         // 3. Generate invoice number
         const invoiceNumber = await generateInvoiceNumber();
@@ -119,9 +149,9 @@ export async function generateInvoice(orderId: string): Promise<{ invoiceNumber:
         };
 
         // 5. Generate PDF
-        // @ts-ignore - renderToBuffer types are incorrect
         const pdfBuffer = await renderToBuffer(
-            React.createElement(InvoiceTemplate, { data: invoiceData })
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            React.createElement(InvoiceTemplate, { data: invoiceData }) as any
         );
 
         // 6. Create bucket if it doesn't exist (will fail silently if exists)

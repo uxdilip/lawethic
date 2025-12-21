@@ -31,7 +31,7 @@ export function ServicesList({ services, subCategory }: ServicesListProps) {
             <div className="flex items-center justify-between mb-3">
                 <h4 className="font-semibold text-base">{subCategory.title}</h4>
                 <Link
-                    href={subCategory.href}
+                    href="/services"
                     className="text-xs text-primary hover:underline flex items-center gap-1"
                 >
                     View All
@@ -39,7 +39,7 @@ export function ServicesList({ services, subCategory }: ServicesListProps) {
                 </Link>
             </div>
 
-            {/* Services List - Simple */}
+            {/* Services List - Flat URLs */}
             <div className="space-y-1">
                 {services.map((service, i) => (
                     <motion.div
@@ -49,7 +49,7 @@ export function ServicesList({ services, subCategory }: ServicesListProps) {
                         transition={{ delay: i * 0.05, duration: 0.2 }}
                     >
                         <Link
-                            href={`${subCategory.href}/${service.slug}`}
+                            href={`/services/${service.slug}`}
                             className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-accent transition-colors group"
                         >
                             <span className="text-sm font-medium group-hover:text-primary transition-colors">
@@ -64,7 +64,7 @@ export function ServicesList({ services, subCategory }: ServicesListProps) {
             {/* View All Link (bottom) */}
             {services.length >= 6 && (
                 <Link
-                    href={subCategory.href}
+                    href="/services"
                     className="block text-center py-2 text-sm text-primary hover:underline font-medium"
                 >
                     View all {subCategory.title} services →
