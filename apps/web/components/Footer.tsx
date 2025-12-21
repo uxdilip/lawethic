@@ -71,7 +71,7 @@ export default function Footer() {
                 {/* Bottom bar */}
                 <div className="mt-12 pt-8 border-t border-brand-500 flex flex-col sm:flex-row items-center justify-center gap-4">
                     <p className="text-sm text-brand-200">
-                        © {new Date().getFullYear()} LawEthic. All rights reserved.
+                        © {new Date().getFullYear()} LAWethic. All rights reserved.
                     </p>
                 </div>
             </div>

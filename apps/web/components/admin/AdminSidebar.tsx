@@ -68,14 +68,9 @@ export default function AdminSidebar({ onCommandOpen, onCollapseChange }: Sideba
             {/* Logo Section */}
             <div className="h-16 flex items-center justify-between px-4 border-b border-neutral-200">
                 {!collapsed && (
-                    <Link href="/admin/dashboard" className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center">
-                            <span className="text-white font-bold text-sm">LE</span>
-                        </div>
-                        <span className="font-semibold text-neutral-900">
-                            <span className="font-playfair">LAW</span>
-                            <span className="font-montserrat">ethic</span>
-                        </span>
+                    <Link href="/admin/dashboard" className="text-2xl font-bold text-neutral-900">
+                        <span className="font-playfair">LAW</span>
+                        <span className="font-montserrat">ethic</span>
                     </Link>
                 )}
 
