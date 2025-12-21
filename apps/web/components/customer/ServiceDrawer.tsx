@@ -66,7 +66,7 @@ export default function ServiceDrawer({ service, open, onClose }: ServiceDrawerP
                                 className={cn(
                                     "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
                                     activeTab === tab.id
-                                        ? "border-blue-600 text-blue-600"
+                                        ? "border-brand-600 text-brand-600"
                                         : "border-transparent text-gray-500 hover:text-gray-700"
                                 )}
                             >
@@ -100,7 +100,7 @@ export default function ServiceDrawer({ service, open, onClose }: ServiceDrawerP
                         </Button>
                         <Button
                             asChild
-                            className="flex-1 bg-blue-600 hover:bg-blue-700"
+                            className="flex-1 bg-brand-600 hover:bg-brand-700"
                         >
                             <Link href={`/onboarding?service=${service.slug}&skipLead=true`}>
                                 Avail Service
@@ -162,7 +162,7 @@ function OverviewTab({ service }: { service: Service }) {
                     <ul className="space-y-2">
                         {service.eligibility.entities.map((entity, idx) => (
                             <li key={idx} className="flex items-start gap-2.5 text-sm text-gray-600">
-                                <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                                <CheckCircle2 className="w-4 h-4 text-brand-500 flex-shrink-0 mt-0.5" />
                                 <span>{entity.name}</span>
                             </li>
                         ))}
@@ -203,14 +203,14 @@ function ProcessTab({ service }: { service: Service }) {
                     <div className="space-y-4">
                         {service.process.map((step, idx) => (
                             <div key={idx} className="flex gap-3">
-                                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-semibold">
+                                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-sm font-semibold">
                                     {step.step}
                                 </div>
                                 <div className="flex-1 pt-0.5">
                                     <p className="text-sm font-medium text-gray-900">{step.title}</p>
                                     <p className="text-sm text-gray-500 mt-0.5">{step.description}</p>
                                     {step.duration && (
-                                        <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                                        <p className="text-xs text-brand-600 mt-1 flex items-center gap-1">
                                             <Clock className="w-3 h-3" />
                                             {step.duration}
                                         </p>

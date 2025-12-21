@@ -47,8 +47,9 @@ export default function Header({ navigationData }: { navigationData?: Navigation
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                 {/* Logo */}
                 <div className="flex items-center gap-8">
-                    <Link href="/" className="text-2xl font-bold text-blue-600">
-                        LawEthic
+                    <Link href="/" className="text-2xl font-bold text-brand-600">
+                        <span className="font-playfair">LAW</span>
+                        <span className="font-montserrat">ethic</span>
                     </Link>
 
                     {/* Desktop Navigation with Mega Menu */}
@@ -99,12 +100,12 @@ export default function Header({ navigationData }: { navigationData?: Navigation
                         </>
                     ) : (
                         <>
-                            <Link href="/login" className="px-4 py-2 text-gray-600 hover:text-blue-600 hidden md:block">
+                            <Link href="/login" className="px-4 py-2 text-neutral-600 hover:text-brand-600 hidden md:block">
                                 Login
                             </Link>
                             <Link
                                 href="/signup"
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hidden md:block"
+                                className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 hidden md:block"
                             >
                                 Sign Up
                             </Link>

@@ -301,7 +301,7 @@ function OnboardingContent() {
     if (checkingAuth) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
             </div>
         );
     }
@@ -311,7 +311,7 @@ function OnboardingContent() {
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
                     <h1 className="text-2xl font-bold mb-4">Service not found</h1>
-                    <Link href="/services" className="text-blue-600 hover:underline">
+                    <Link href="/services" className="text-brand-600 hover:underline">
                         Browse Services
                     </Link>
                 </div>
@@ -340,7 +340,7 @@ function OnboardingContent() {
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                         <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            className="bg-brand-600 h-2 rounded-full transition-all duration-300"
                             style={{ width: `${(getStepNumber() / getTotalSteps()) * 100}%` }}
                         />
                     </div>
@@ -360,9 +360,9 @@ function OnboardingContent() {
                     <div className="grid lg:grid-cols-5 gap-8">
                         {/* Left Panel - Service Info */}
                         <div className="lg:col-span-2">
-                            <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-6 text-white sticky top-24">
+                            <div className="bg-gradient-to-br from-brand-600 to-brand-800 rounded-2xl p-6 text-white sticky top-24">
                                 <h2 className="text-2xl font-bold mb-4">{service.title}</h2>
-                                <p className="text-blue-100 mb-6">{service.hero?.description}</p>
+                                <p className="text-brand-100 mb-6">{service.hero?.description}</p>
 
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-3">
@@ -371,7 +371,7 @@ function OnboardingContent() {
                                         </div>
                                         <div>
                                             <p className="font-medium">Quick Processing</p>
-                                            <p className="text-sm text-blue-200">{service.timeline || '7-10 days'}</p>
+                                            <p className="text-sm text-brand-200">{service.timeline || '7-10 days'}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
@@ -380,7 +380,7 @@ function OnboardingContent() {
                                         </div>
                                         <div>
                                             <p className="font-medium">100% Secure</p>
-                                            <p className="text-sm text-blue-200">Your data is protected</p>
+                                            <p className="text-sm text-brand-200">Your data is protected</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
@@ -389,7 +389,7 @@ function OnboardingContent() {
                                         </div>
                                         <div>
                                             <p className="font-medium">Expert Support</p>
-                                            <p className="text-sm text-blue-200">Dedicated assistance</p>
+                                            <p className="text-sm text-brand-200">Dedicated assistance</p>
                                         </div>
                                     </div>
                                 </div>
@@ -468,7 +468,7 @@ function OnboardingContent() {
                                         Already have an account?{' '}
                                         <button
                                             onClick={() => setShowLoginModal(true)}
-                                            className="text-blue-600 hover:underline font-medium"
+                                            className="text-brand-600 hover:underline font-medium"
                                         >
                                             Sign in
                                         </button>
@@ -484,14 +484,14 @@ function OnboardingContent() {
                     <div className="grid lg:grid-cols-5 gap-8">
                         {/* Left Panel */}
                         <div className="lg:col-span-2">
-                            <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-6 text-white sticky top-24">
+                            <div className="bg-gradient-to-br from-brand-600 to-brand-800 rounded-2xl p-6 text-white sticky top-24">
                                 <h2 className="text-2xl font-bold mb-4">{service.title}</h2>
-                                <p className="text-blue-100 mb-6">
+                                <p className="text-brand-100 mb-6">
                                     Help us understand your requirements better
                                 </p>
 
                                 <div className="bg-white/10 rounded-xl p-4">
-                                    <p className="text-sm text-blue-100">
+                                    <p className="text-sm text-brand-100">
                                         Your answers help us recommend the right package and prepare
                                         for your application.
                                     </p>
@@ -530,7 +530,7 @@ function OnboardingContent() {
                                                             className={cn(
                                                                 "p-4 rounded-xl border-2 text-left transition-all",
                                                                 questionAnswers[q.id] === optionValue
-                                                                    ? "border-blue-600 bg-blue-50 text-blue-900"
+                                                                    ? "border-brand-600 bg-brand-50 text-brand-900"
                                                                     : "border-gray-200 hover:border-gray-300"
                                                             )}
                                                         >
@@ -538,7 +538,7 @@ function OnboardingContent() {
                                                                 <div className={cn(
                                                                     "w-5 h-5 rounded-full border-2 flex items-center justify-center",
                                                                     questionAnswers[q.id] === optionValue
-                                                                        ? "border-blue-600 bg-blue-600"
+                                                                        ? "border-brand-600 bg-brand-600"
                                                                         : "border-gray-300"
                                                                 )}>
                                                                     {questionAnswers[q.id] === optionValue && (
@@ -612,15 +612,15 @@ function OnboardingContent() {
                                         key={pkg.id}
                                         className={cn(
                                             "relative bg-white rounded-2xl border-2 transition-all duration-200",
-                                            isPopular && "border-blue-600 shadow-xl scale-105",
-                                            isSelected && "ring-2 ring-blue-600 ring-offset-2",
+                                            isPopular && "border-brand-600 shadow-xl scale-105",
+                                            isSelected && "ring-2 ring-brand-600 ring-offset-2",
                                             !isPopular && !isSelected && "border-gray-200 hover:border-gray-300"
                                         )}
                                     >
                                         {/* Popular Badge */}
                                         {isPopular && (
                                             <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                                                <span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                                                <span className="bg-brand-600 text-white px-4 py-1 rounded-full text-sm font-medium flex items-center gap-1">
                                                     <Star className="w-3 h-3 fill-current" />
                                                     Most Popular
                                                 </span>
@@ -653,8 +653,8 @@ function OnboardingContent() {
 
                                             {/* Highlight */}
                                             {pkg.highlight && (
-                                                <div className="bg-blue-50 rounded-lg p-3 mb-6">
-                                                    <p className="text-sm text-blue-800 font-medium text-center">
+                                                <div className="bg-brand-50 rounded-lg p-3 mb-6">
+                                                    <p className="text-sm text-brand-800 font-medium text-center">
                                                         {pkg.highlight}
                                                     </p>
                                                 </div>
@@ -666,7 +666,7 @@ function OnboardingContent() {
                                                 className={cn(
                                                     "w-full h-12",
                                                     isPopular
-                                                        ? "bg-blue-600 hover:bg-blue-700"
+                                                        ? "bg-brand-600 hover:bg-brand-700"
                                                         : "bg-gray-900 hover:bg-gray-800"
                                                 )}
                                             >
@@ -754,14 +754,14 @@ function OnboardingContent() {
                             <div className="p-6">
                                 <div className="flex justify-between items-center mb-6">
                                     <span className="text-lg font-semibold">Total Amount</span>
-                                    <span className="text-3xl font-bold text-blue-600">
+                                    <span className="text-3xl font-bold text-brand-600">
                                         ₹{selectedPackage?.price?.toLocaleString()}
                                     </span>
                                 </div>
 
                                 {loading ? (
                                     <div className="flex items-center justify-center py-8">
-                                        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                                        <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
                                         <span className="ml-3 text-gray-600">Creating your order...</span>
                                     </div>
                                 ) : orderId ? (
@@ -849,9 +849,9 @@ function OnboardingContent() {
                                 </div>
                             </div>
 
-                            <div className="bg-blue-50 rounded-xl p-4 mb-6">
-                                <h4 className="font-medium text-blue-900 mb-2">What's Next?</h4>
-                                <ul className="text-sm text-blue-800 space-y-1 text-left">
+                            <div className="bg-brand-50 rounded-xl p-4 mb-6">
+                                <h4 className="font-medium text-brand-900 mb-2">What's Next?</h4>
+                                <ul className="text-sm text-brand-800 space-y-1 text-left">
                                     <li className="flex items-start gap-2">
                                         <span className="font-bold">1.</span>
                                         <span>You'll receive a confirmation email shortly</span>
@@ -901,7 +901,7 @@ export default function OnboardingPage() {
     return (
         <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
             </div>
         }>
             <OnboardingContent />

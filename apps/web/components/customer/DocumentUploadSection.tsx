@@ -181,7 +181,7 @@ export default function DocumentUploadSection({
     return (
         <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-xl font-semibold mb-4 flex items-center">
-                <Upload className="h-6 w-6 text-blue-600 mr-2" />
+                <Upload className="h-6 w-6 text-brand-600 mr-2" />
                 Upload Required Documents
             </h3>
 
@@ -191,7 +191,7 @@ export default function DocumentUploadSection({
                 <ul className="space-y-1">
                     {documentRequired.map((doc, index) => (
                         <li key={index} className="flex items-center text-sm text-gray-600">
-                            <FileText className="h-4 w-4 text-blue-500 mr-2" />
+                            <FileText className="h-4 w-4 text-brand-500 mr-2" />
                             {doc}
                         </li>
                     ))}
@@ -219,12 +219,12 @@ export default function DocumentUploadSection({
                         onDragLeave={handleDrag}
                         onDragOver={handleDrag}
                         onDrop={handleDrop}
-                        className={`border-2 border-dashed rounded-lg p-8 text-center mb-4 transition-colors ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+                        className={`border-2 border-dashed rounded-lg p-8 text-center mb-4 transition-colors ${dragActive ? 'border-brand-500 bg-brand-50' : 'border-gray-300 hover:border-gray-400'
                             }`}
                     >
                         <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                         <label className="cursor-pointer">
-                            <span className="text-blue-600 hover:text-blue-700 font-medium">
+                            <span className="text-brand-600 hover:text-brand-700 font-medium">
                                 Click to upload
                             </span>
                             <span className="text-gray-600"> or drag and drop</span>
@@ -248,7 +248,7 @@ export default function DocumentUploadSection({
                                 {selectedFiles.map((file, index) => (
                                     <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
                                         <div className="flex items-center flex-1">
-                                            <FileText className="h-5 w-5 text-blue-500 mr-3" />
+                                            <FileText className="h-5 w-5 text-brand-500 mr-3" />
                                             <div className="flex-1">
                                                 <p className="text-sm text-gray-700 font-medium">{file.name}</p>
                                                 <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(2)} KB</p>
@@ -271,7 +271,7 @@ export default function DocumentUploadSection({
                     <button
                         type="submit"
                         disabled={uploading || selectedFiles.length === 0}
-                        className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center"
+                        className="w-full bg-brand-600 text-white px-6 py-3 rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center"
                     >
                         {uploading ? (
                             <>

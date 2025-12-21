@@ -70,7 +70,7 @@ export default function OrdersPage() {
                 return 'text-green-600 bg-green-50';
             case 'processing':
             case 'paid':
-                return 'text-blue-600 bg-blue-50';
+                return 'text-brand-600 bg-brand-50';
             case 'new':
                 return 'text-yellow-600 bg-yellow-50';
             default:
@@ -93,7 +93,7 @@ export default function OrdersPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600"></div>
             </div>
         );
     }
@@ -115,7 +115,7 @@ export default function OrdersPage() {
                         placeholder="Search orders..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                        className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white"
                     />
                 </div>
             </div>
@@ -130,7 +130,7 @@ export default function OrdersPage() {
                             className={cn(
                                 "px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors",
                                 activeFilter === filter.id
-                                    ? "border-blue-600 text-blue-600"
+                                    ? "border-brand-600 text-brand-600"
                                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                             )}
                         >
@@ -154,7 +154,7 @@ export default function OrdersPage() {
                     {orders.length === 0 && (
                         <Link
                             href="/dashboard/services"
-                            className="inline-block px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                            className="inline-block px-6 py-2.5 bg-brand-600 text-white rounded-lg hover:bg-brand-700 font-medium transition-colors"
                         >
                             Browse Services
                         </Link>
@@ -234,7 +234,7 @@ export default function OrdersPage() {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <Link
                                                 href={`/orders/${order.$id}`}
-                                                className="text-blue-600 hover:text-blue-700"
+                                                className="text-brand-600 hover:text-brand-700"
                                             >
                                                 View Details
                                             </Link>

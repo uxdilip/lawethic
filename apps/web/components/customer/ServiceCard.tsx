@@ -30,7 +30,7 @@ export default function ServiceCard({ service, onViewDetails }: ServiceCardProps
                         className={cn(
                             "mb-3 text-xs font-medium",
                             service.badge === 'Most Popular'
-                                ? "bg-blue-50 text-blue-700 border-blue-200"
+                                ? "bg-brand-50 text-brand-700 border-brand-200"
                                 : service.badge === 'New'
                                     ? "bg-green-50 text-green-700 border-green-200"
                                     : "bg-orange-50 text-orange-700 border-orange-200"
@@ -41,7 +41,7 @@ export default function ServiceCard({ service, onViewDetails }: ServiceCardProps
                 )}
 
                 {/* Title */}
-                <h3 className="font-semibold text-gray-900 leading-snug mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
+                <h3 className="font-semibold text-gray-900 leading-snug mb-2 group-hover:text-brand-600 transition-colors line-clamp-2">
                     {service.shortTitle || service.title}
                 </h3>
 
@@ -74,7 +74,7 @@ export default function ServiceCard({ service, onViewDetails }: ServiceCardProps
                     </div>
 
                     <button
-                        className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 group-hover:gap-2 transition-all"
+                        className="flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700 group-hover:gap-2 transition-all"
                         onClick={(e) => {
                             e.stopPropagation();
                             onViewDetails();
