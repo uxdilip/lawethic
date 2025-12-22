@@ -270,6 +270,7 @@ function OnboardingContent() {
                 name: prev.name || userData.name || '',
                 email: prev.email || userData.email || '',
                 phone: prev.phone || userData.phone || '',
+                city: prev.city || '',
             }));
             // Move to payment
             setCurrentStep('payment');
