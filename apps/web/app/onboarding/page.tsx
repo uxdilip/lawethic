@@ -88,6 +88,7 @@ function OnboardingContent() {
                     name: userData.name || '',
                     email: userData.email || '',
                     phone: userData.phone || '',
+                    city: '',
                 });
 
                 // If logged in and skipLead is true, skip to questions or packages
