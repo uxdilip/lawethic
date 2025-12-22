@@ -52,6 +52,7 @@ function OnboardingContent() {
         name: '',
         email: '',
         phone: '',
+        city: '',
     });
     const [questionAnswers, setQuestionAnswers] = useState<Record<string, string>>({});
     const [selectedPackage, setSelectedPackage] = useState<any>(null);
@@ -170,6 +171,7 @@ function OnboardingContent() {
                     name: leadData.name,
                     email: leadData.email,
                     phone: leadData.phone,
+                    city: leadData.city,
                     serviceSlug: serviceSlug,
                     source: 'onboarding',
                 }),
@@ -442,6 +444,20 @@ function OnboardingContent() {
                                             value={leadData.phone}
                                             onChange={(e) => setLeadData(prev => ({ ...prev, phone: e.target.value }))}
                                             placeholder="Enter your phone number"
+                                            required
+                                            className="h-12"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            City / Pincode *
+                                        </label>
+                                        <Input
+                                            type="text"
+                                            value={leadData.city}
+                                            onChange={(e) => setLeadData(prev => ({ ...prev, city: e.target.value }))}
+                                            placeholder="Enter your city or pincode"
                                             required
                                             className="h-12"
                                         />
@@ -892,6 +908,12 @@ function OnboardingContent() {
                 open={showLoginModal}
                 onClose={() => setShowLoginModal(false)}
                 onSuccess={handleLoginSuccess}
+                defaultMode="signup"
+                initialData={{
+                    name: leadData.name,
+                    email: leadData.email,
+                    phone: leadData.phone,
+                }}
             />
         </div>
     );

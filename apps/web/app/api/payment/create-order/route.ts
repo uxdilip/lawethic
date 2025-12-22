@@ -1,8 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { razorpay, formatAmountForRazorpay } from '@/lib/razorpay';
+import { getRazorpay, formatAmountForRazorpay } from '@/lib/razorpay';
 
 export async function POST(request: NextRequest) {
     try {
+        // Get Razorpay instance (lazy initialization)
+        const razorpay = getRazorpay();
+
+        if (!razorpay) {
+            console.error('[Payment] Razorpay not configured - missing API keys', {
+                hasKeyId: !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                hasKeySecret: !!process.env.RAZORPAY_KEY_SECRET,
+            });
+            return NextResponse.json(
+                { error: 'Payment service not configured. Please contact support.' },
+                { status: 503 }
+            );
+        }
+
         const body = await request.json();
         const { amount, orderId, customerName, customerEmail } = body;
 

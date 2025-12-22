@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { account } from '@lawethic/appwrite';
 import { ID } from 'appwrite';
@@ -20,23 +20,50 @@ interface LoginModalProps {
     onClose: () => void;
     onSuccess: () => void;
     redirectPath?: string;
+    defaultMode?: 'login' | 'signup';
+    initialData?: {
+        name?: string;
+        email?: string;
+        phone?: string;
+    };
 }
 
 type Mode = 'login' | 'signup';
 
-export default function LoginModal({ open, onClose, onSuccess, redirectPath }: LoginModalProps) {
+export default function LoginModal({
+    open,
+    onClose,
+    onSuccess,
+    redirectPath,
+    defaultMode = 'login',
+    initialData
+}: LoginModalProps) {
     const router = useRouter();
-    const [mode, setMode] = useState<Mode>('login');
+    const [mode, setMode] = useState<Mode>(defaultMode);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
     const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
+        name: initialData?.name || '',
+        email: initialData?.email || '',
+        phone: initialData?.phone || '',
         password: '',
     });
+
+    // Update form data when initialData changes (modal opens with new data)
+    React.useEffect(() => {
+        if (initialData) {
+            setFormData(prev => ({
+                ...prev,
+                name: initialData.name || prev.name,
+                email: initialData.email || prev.email,
+                phone: initialData.phone || prev.phone,
+            }));
+        }
+        // Reset mode to defaultMode when modal opens
+        setMode(defaultMode);
+    }, [initialData, defaultMode, open]);
 
     const handleChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -108,6 +135,9 @@ export default function LoginModal({ open, onClose, onSuccess, redirectPath }: L
 
     const handleSubmit = mode === 'login' ? handleLogin : handleSignup;
 
+    // Check if we have pre-filled data
+    const hasPrefilledData = initialData && (initialData.name || initialData.email);
+
     return (
         <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
             <DialogContent className="sm:max-w-md p-0 overflow-hidden">
@@ -118,7 +148,9 @@ export default function LoginModal({ open, onClose, onSuccess, redirectPath }: L
                     <p className="text-center text-neutral-500 mt-2">
                         {mode === 'login'
                             ? 'Login to continue with your order'
-                            : 'Sign up to continue with your order'
+                            : hasPrefilledData
+                                ? 'Just set a password to create your account'
+                                : 'Sign up to continue with your order'
                         }
                     </p>
                 </DialogHeader>

@@ -6,17 +6,35 @@ import { appwriteConfig } from '@lawethic/appwrite/config';
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { name, email, phone, city, service, category, package: selectedPackage } = body;
+        const {
+            name,
+            email,
+            phone,
+            mobile,  // Accept both phone and mobile
+            city,
+            service,
+            serviceName,  // Accept both service and serviceName
+            serviceSlug,
+            category,
+            source,
+            package: selectedPackage
+        } = body;
 
-        // Validate required fields
-        if (!name || !email || !phone || !city || !service || !category) {
+        // Use phone or mobile (whichever is provided)
+        const phoneNumber = phone || mobile;
+        // Use service or serviceName or serviceSlug
+        const serviceFinal = service || serviceName || serviceSlug;
+
+        // Validate required fields (category is now optional)
+        if (!name || !email || !phoneNumber || !serviceFinal) {
+            console.error('Lead validation failed:', { name, email, phoneNumber, serviceFinal });
             return NextResponse.json(
-                { error: 'All fields are required' },
+                { error: 'Name, email, phone, and service are required' },
                 { status: 400 }
             );
         }
 
-        // Create lead in database
+        // Create lead in database (only include fields that exist in collection)
         const lead = await serverDatabases.createDocument(
             appwriteConfig.databaseId,
             appwriteConfig.collections.leads,
@@ -24,10 +42,10 @@ export async function POST(request: NextRequest) {
             {
                 name,
                 email,
-                phone,
-                city,
-                service,
-                category,
+                phone: phoneNumber,
+                city: city || '',
+                service: serviceFinal,
+                category: category || 'general',
                 package: selectedPackage || 'Basic',
                 status: 'new',
             }
