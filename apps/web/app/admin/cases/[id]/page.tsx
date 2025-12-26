@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { databases, storage } from '@lawethic/appwrite/client';
+import { databases, storage, account } from '@lawethic/appwrite/client';
 import { appwriteConfig } from '@lawethic/appwrite/config';
 import { Query } from 'appwrite';
 import AdminLayout from '@/components/AdminLayout';
@@ -11,6 +11,7 @@ import Link from 'next/link';
 import CertificateUpload, { CertificateList } from '@/components/admin/CertificateUpload';
 import FloatingChatButton from '@/components/chat/FloatingChatButton';
 import AssignmentDropdown from '@/components/admin/AssignmentDropdown';
+import { SendQuestionnaireButton } from '@/components/admin/SendQuestionnaireButton';
 import { getServiceBySlug } from '@/data/services';
 import {
     ArrowLeft,
@@ -31,7 +32,8 @@ import {
     History,
     AlertCircle,
     ExternalLink,
-    Copy
+    Copy,
+    FileQuestion
 } from 'lucide-react';
 
 interface CaseDetailProps {
@@ -40,7 +42,7 @@ interface CaseDetailProps {
     };
 }
 
-type TabType = 'overview' | 'documents' | 'timeline';
+type TabType = 'overview' | 'documents' | 'timeline' | 'questionnaires';
 
 export default function CaseDetailPage({ params }: CaseDetailProps) {
     const router = useRouter();
@@ -49,6 +51,8 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
     const [documents, setDocuments] = useState<any[]>([]);
     const [certificates, setCertificates] = useState<any[]>([]);
     const [timeline, setTimeline] = useState<any[]>([]);
+    const [questionnaires, setQuestionnaires] = useState<any[]>([]);
+    const [currentUser, setCurrentUser] = useState<any>(null);
     const [showCertificateUpload, setShowCertificateUpload] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -58,7 +62,17 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
 
     useEffect(() => {
         loadCaseDetails();
+        loadCurrentUser();
     }, [params.id]);
+
+    const loadCurrentUser = async () => {
+        try {
+            const user = await account.get();
+            setCurrentUser(user);
+        } catch (error) {
+            console.error('Failed to load current user:', error);
+        }
+    };
 
     const loadCaseDetails = async () => {
         try {
@@ -121,6 +135,9 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
 
             // Load certificates
             await loadCertificates();
+
+            // Load questionnaires
+            await loadQuestionnaires();
         } catch (error) {
             console.error('Failed to load case details:', error);
         } finally {
@@ -140,9 +157,26 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
         }
     };
 
+    const loadQuestionnaires = async () => {
+        try {
+            const response = await fetch(`/api/questionnaires/${params.id}`);
+            const data = await response.json();
+            if (data.success) {
+                setQuestionnaires(data.questionnaires);
+            }
+        } catch (error) {
+            console.error('Failed to load questionnaires:', error);
+        }
+    };
+
     const handleCertificateUploadSuccess = () => {
         setShowCertificateUpload(false);
         loadCertificates();
+    };
+
+    const handleQuestionnairesSent = () => {
+        loadQuestionnaires();
+        loadCaseDetails();
     };
 
     const handleStatusUpdate = async () => {
@@ -422,26 +456,27 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                         <div className="lg:col-span-2">
                             <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
                                 {/* Tab Headers */}
-                                <div className="flex border-b border-neutral-200">
+                                <div className="flex border-b border-neutral-200 overflow-x-auto">
                                     {[
                                         { key: 'overview', label: 'Overview', icon: Package },
                                         { key: 'documents', label: 'Documents', icon: FileText, count: documents.length },
+                                        { key: 'questionnaires', label: 'Questionnaires', icon: FileQuestion, count: questionnaires.length },
                                         { key: 'timeline', label: 'Timeline', icon: History, count: timeline.length }
                                     ].map(tab => (
                                         <button
                                             key={tab.key}
                                             onClick={() => setActiveTab(tab.key as TabType)}
                                             className={`flex items-center gap-2 px-5 py-3.5 text-sm font-medium transition-colors relative ${activeTab === tab.key
-                                                    ? 'text-brand-600 bg-brand-50'
-                                                    : 'text-neutral-600 hover:bg-neutral-50'
+                                                ? 'text-brand-600 bg-brand-50'
+                                                : 'text-neutral-600 hover:bg-neutral-50'
                                                 }`}
                                         >
                                             <tab.icon className="h-4 w-4" />
                                             {tab.label}
                                             {tab.count !== undefined && tab.count > 0 && (
                                                 <span className={`px-2 py-0.5 rounded-full text-xs ${activeTab === tab.key
-                                                        ? 'bg-brand-100 text-brand-700'
-                                                        : 'bg-neutral-100 text-neutral-600'
+                                                    ? 'bg-brand-100 text-brand-700'
+                                                    : 'bg-neutral-100 text-neutral-600'
                                                     }`}>
                                                     {tab.count}
                                                 </span>
@@ -669,6 +704,131 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                                                 <div className="text-center py-12 text-neutral-500">
                                                     <Clock className="h-12 w-12 mx-auto mb-3 text-neutral-300" />
                                                     <p>No activity recorded yet</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Questionnaires Tab */}
+                                    {activeTab === 'questionnaires' && (
+                                        <div>
+                                            <div className="flex items-center justify-between mb-4">
+                                                <p className="text-sm text-neutral-500">
+                                                    Send questionnaires to collect additional information from the client
+                                                </p>
+                                                {currentUser && (
+                                                    <SendQuestionnaireButton
+                                                        orderId={params.id}
+                                                        serviceSlug={order?.serviceId}
+                                                        userId={currentUser.$id}
+                                                        userName={currentUser.name || currentUser.email}
+                                                        onSent={handleQuestionnairesSent}
+                                                    />
+                                                )}
+                                            </div>
+
+                                            {questionnaires.length > 0 ? (
+                                                <div className="space-y-4">
+                                                    {questionnaires.map((q) => (
+                                                        <div
+                                                            key={q.$id}
+                                                            className={`border rounded-lg p-4 ${q.status === 'pending'
+                                                                ? 'border-amber-200 bg-amber-50'
+                                                                : q.status === 'submitted'
+                                                                    ? 'border-blue-200 bg-blue-50'
+                                                                    : 'border-neutral-200 bg-neutral-50'
+                                                                }`}
+                                                        >
+                                                            <div className="flex items-start justify-between">
+                                                                <div>
+                                                                    <h4 className="font-medium text-neutral-900">
+                                                                        {q.templateName}
+                                                                    </h4>
+                                                                    <p className="text-sm text-neutral-600 mt-1">
+                                                                        Sent by {q.sentByName} on {formatDateTime(q.sentAt)}
+                                                                    </p>
+                                                                    {q.notes && (
+                                                                        <p className="text-sm text-neutral-500 mt-2 italic">
+                                                                            Note: {q.notes}
+                                                                        </p>
+                                                                    )}
+                                                                </div>
+                                                                <span className={`px-2 py-1 rounded text-xs font-medium ${q.status === 'pending'
+                                                                    ? 'bg-amber-100 text-amber-700'
+                                                                    : q.status === 'submitted'
+                                                                        ? 'bg-blue-100 text-blue-700'
+                                                                        : 'bg-neutral-100 text-neutral-600'
+                                                                    }`}>
+                                                                    {q.status}
+                                                                </span>
+                                                            </div>
+
+                                                            {/* Show submitted responses by section */}
+                                                            {q.status !== 'pending' && q.responseData && (
+                                                                <div className="mt-4 pt-4 border-t border-neutral-200 space-y-4">
+                                                                    {q.template?.sections ? (
+                                                                        // Section-wise display
+                                                                        q.template.sections.map((section: any) => {
+                                                                            const sectionFields = section.fields.filter((f: any) => q.responseData[f.id] !== undefined);
+                                                                            if (sectionFields.length === 0) return null;
+                                                                            return (
+                                                                                <div key={section.id} className="bg-white rounded-lg border border-neutral-100 overflow-hidden">
+                                                                                    <div className="bg-neutral-50 px-3 py-2 border-b border-neutral-100">
+                                                                                        <h5 className="text-sm font-medium text-neutral-700">
+                                                                                            {section.title}
+                                                                                        </h5>
+                                                                                    </div>
+                                                                                    <div className="p-3 grid grid-cols-2 gap-3">
+                                                                                        {sectionFields.map((field: any) => (
+                                                                                            <div key={field.id} className="text-sm">
+                                                                                                <p className="text-xs text-neutral-500 mb-0.5">{field.label}</p>
+                                                                                                <p className="font-medium text-neutral-900">
+                                                                                                    {Array.isArray(q.responseData[field.id])
+                                                                                                        ? q.responseData[field.id].join(', ')
+                                                                                                        : q.responseData[field.id] || '-'}
+                                                                                                </p>
+                                                                                            </div>
+                                                                                        ))}
+                                                                                    </div>
+                                                                                </div>
+                                                                            );
+                                                                        })
+                                                                    ) : (
+                                                                        // Fallback: flat display if no template
+                                                                        <div className="bg-white rounded-lg p-3">
+                                                                            <h5 className="text-sm font-medium text-neutral-700 mb-2">Responses:</h5>
+                                                                            <div className="grid grid-cols-2 gap-2">
+                                                                                {Object.entries(q.responseData).map(([key, value]: [string, any]) => (
+                                                                                    <div key={key}>
+                                                                                        <p className="text-xs text-neutral-500">
+                                                                                            {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                                                                                        </p>
+                                                                                        <p className="text-sm font-medium text-neutral-900">
+                                                                                            {Array.isArray(value) ? value.join(', ') : value || '-'}
+                                                                                        </p>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+
+                                                            {q.status === 'pending' && q.submittedAt && (
+                                                                <p className="text-sm text-green-600 mt-2">
+                                                                    Submitted on {formatDateTime(q.submittedAt)}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="text-center py-12 text-neutral-500">
+                                                    <FileQuestion className="h-12 w-12 mx-auto mb-3 text-neutral-300" />
+                                                    <p>No questionnaires sent yet</p>
+                                                    <p className="text-sm mt-1">
+                                                        Click "Send Questionnaire" to request information from the client
+                                                    </p>
                                                 </div>
                                             )}
                                         </div>
