@@ -32,14 +32,21 @@ export async function sendEmail(options: EmailOptions) {
 
         const client = getResendClient();
 
-        // In development with Resend test mode, send to verified email only
-        const isDevelopment = process.env.NODE_ENV !== 'production';
+        // Control whether to send to real users or test email
+        // Set EMAIL_SEND_TO_REAL_USERS=true in .env.local to send to actual users
+        // When domain is verified in Resend, you can enable this
+        const sendToRealUsers = process.env.EMAIL_SEND_TO_REAL_USERS === 'true';
         const originalRecipients = Array.isArray(options.to) ? options.to : [options.to];
         const testEmail = process.env.RESEND_TEST_EMAIL || 'dk81520826@gmail.com';
 
+        // Log email routing for debugging
+        if (!sendToRealUsers) {
+            console.log(`[Email] Test mode: Redirecting email from ${originalRecipients.join(', ')} to ${testEmail}`);
+        }
+
         const emailData: any = {
-            from: process.env.EMAIL_FROM || 'LAWethic <onboarding@resend.dev>',
-            to: isDevelopment ? [testEmail] : originalRecipients,
+            from: process.env.EMAIL_FROM || 'LAWethic <noreply@lawethic.com>',
+            to: sendToRealUsers ? originalRecipients : [testEmail],
             subject: options.subject,
         };
 
