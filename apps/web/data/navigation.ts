@@ -10,66 +10,6 @@ import { NavigationParent } from '@/types/service'
  */
 export const NAVIGATION_STRUCTURE: NavigationParent[] = [
     {
-        id: 'business-registration',
-        title: 'Business Registration',
-        href: '#',
-        children: [
-            {
-                id: 'company-registration',
-                title: 'Company Registration',
-                description: 'Register your company online',
-                icon: 'Building2',
-                href: '/services',
-                services: [
-                    {
-                        slug: 'private-limited-company-registration',
-                        title: 'Private Limited Company',
-                        price: 999,
-                        timeline: '14-21 days',
-                        badge: '✓ Most Popular'
-                    },
-                    {
-                        slug: 'llp-registration',
-                        title: 'LLP Registration',
-                        price: 1999,
-                        timeline: '10-15 days',
-                        badge: null
-                    },
-                    {
-                        slug: 'one-person-company-registration',
-                        title: 'One Person Company (OPC)',
-                        price: 1499,
-                        timeline: '10-15 days',
-                        badge: '✓ For Solo Founders'
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        id: 'tax-compliance',
-        title: 'Tax & Compliance',
-        href: '#',
-        children: [
-            {
-                id: 'gst-registration',
-                title: 'GST Registration',
-                description: 'Register for GST and stay compliant',
-                icon: 'FileText',
-                href: '/services',
-                services: [
-                    {
-                        slug: 'gst-registration',
-                        title: 'GST Registration',
-                        price: 999,
-                        timeline: '3-5 days',
-                        badge: null
-                    }
-                ]
-            }
-        ]
-    },
-    {
         id: 'trademark-ip',
         title: 'Trademark & IP',
         href: '#',
@@ -98,12 +38,26 @@ export const NAVIGATION_STRUCTURE: NavigationParent[] = [
         href: '#',
         children: [
             {
-                id: 'msme-licenses',
-                title: 'MSME & Business Licenses',
+                id: 'licenses',
+                title: 'Licenses & Registrations',
                 description: 'Essential licenses for your business',
                 icon: 'FileCheck',
                 href: '/services',
                 services: [
+                    {
+                        slug: 'trade-license',
+                        title: 'Trade License',
+                        price: 2499,
+                        timeline: '7-12 days',
+                        badge: '✓ Essential'
+                    },
+                    {
+                        slug: 'fssai-registration',
+                        title: 'FSSAI Food License',
+                        price: 1999,
+                        timeline: '5-7 days',
+                        badge: '✓ Food Business'
+                    },
                     {
                         slug: 'udyam-registration',
                         title: 'Udyam Registration',
@@ -117,13 +71,6 @@ export const NAVIGATION_STRUCTURE: NavigationParent[] = [
                         price: 499,
                         timeline: '1-2 days',
                         badge: null
-                    },
-                    {
-                        slug: 'fssai-registration',
-                        title: 'FSSAI Food License',
-                        price: 1999,
-                        timeline: '5-7 days',
-                        badge: '✓ Food Business'
                     },
                     {
                         slug: 'iec-registration',

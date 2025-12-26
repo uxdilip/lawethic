@@ -3,9 +3,9 @@ import { Client, Storage, Databases, ID, Query } from 'node-appwrite';
 import { sendCertificateReadyEmail } from '@/lib/email/email-service';
 
 const client = new Client()
-    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
-    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!)
-    .setKey(process.env.APPWRITE_API_KEY!);
+    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
+    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT || '')
+    .setKey(process.env.APPWRITE_API_KEY || '');
 
 const storage = new Storage(client);
 const databases = new Databases(client);

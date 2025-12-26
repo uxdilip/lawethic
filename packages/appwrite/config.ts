@@ -14,6 +14,7 @@ export const appwriteConfig = {
         payments: process.env.NEXT_PUBLIC_COLLECTION_PAYMENTS || 'payments',
         orderTimeline: process.env.NEXT_PUBLIC_COLLECTION_ORDER_TIMELINE || 'order_timeline',
         leads: process.env.NEXT_PUBLIC_COLLECTION_LEADS || 'leads',
+        questionnaireRequests: process.env.NEXT_PUBLIC_COLLECTION_QUESTIONNAIRE_REQUESTS || 'questionnaire_requests',
     },
     buckets: {
         customerDocuments: process.env.NEXT_PUBLIC_BUCKET_CUSTOMER_DOCUMENTS || 'customer-documents',

@@ -11,8 +11,6 @@ import { cn } from '@/lib/utils';
 // Category tabs configuration
 const CATEGORY_TABS = [
     { id: 'all', label: 'All Services' },
-    { id: 'company-registration', label: 'Company Registration' },
-    { id: 'gst-registration', label: 'Taxation & GST' },
     { id: 'trademark-registration', label: 'Trademark & IP' },
     { id: 'licenses-registrations', label: 'Licenses & Registrations' },
 ];

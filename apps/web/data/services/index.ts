@@ -6,7 +6,7 @@
  * To add a new service, simply add an object to the SERVICES array.
  *
  * The URL will be: /services/{slug}
- * Example: /services/private-limited-company-registration
+ * Example: /services/trademark-registration
  */
 
 // ===========================================
@@ -211,631 +211,6 @@ export interface Service {
  * Add new services here - that's it!
  */
 export const SERVICES: Service[] = [
-    // ============================================
-    // COMPANY REGISTRATION
-    // ============================================
-    {
-        slug: 'private-limited-company-registration',
-        title: 'Private Limited Company Registration',
-        shortTitle: 'Pvt Ltd Registration',
-        category: 'Company Registration',
-        categorySlug: 'company-registration',
-        basePrice: 999,
-        timeline: '14-21 days',
-        badge: 'Most Popular',
-
-        metaTitle: 'Private Limited Company Registration Online @ ₹999 | LawEthic',
-        metaDescription: 'Register your Private Limited Company in India with LawEthic. Expert filing, transparent pricing from ₹999, incorporation in 14-21 days. 100% online process.',
-        keywords: ['private limited company', 'company registration', 'pvt ltd registration', 'incorporation', 'startup registration'],
-
-        hero: {
-            badge: 'Most Popular',
-            title: 'Private Limited Company Registration @ ₹999',
-            description: 'Register your Private Limited Company in India with expert assistance. Get incorporation certificate in 14-21 days.',
-            highlights: [
-                'Expert filing in 2 days',
-                'Transparent pricing starting at ₹999 + Govt Fee',
-                'Complete compliance handling',
-                'Incorporation in 14-21 days'
-            ],
-            trustSignals: {
-                rating: '4.5/5 Google Rating',
-                served: '10,000+ Companies Registered',
-                certified: 'MCA Certified Experts'
-            }
-        },
-
-        packages: [
-            {
-                id: 'starter',
-                name: 'Starter',
-                price: 999,
-                originalPrice: 1499,
-                discount: '33% off',
-                timeline: '21 days',
-                featured: false,
-                inclusions: [
-                    'Company name filed in 4-7 days',
-                    'DSC for 2 Directors in 7-10 days',
-                    'SPICe+ form filing in 21 days',
-                    'Incorporation Certificate in 40 days',
-                    'Company PAN+TAN',
-                    'DIN for Directors'
-                ],
-                exclusions: [
-                    'Government fees (₹4,000-8,000)',
-                    'Quick processing',
-                    'Trademark registration',
-                    'MSME registration'
-                ]
-            },
-            {
-                id: 'standard',
-                name: 'Standard',
-                price: 1499,
-                originalPrice: 2999,
-                discount: '50% off',
-                timeline: '14-21 days',
-                featured: true,
-                inclusions: [
-                    'Expert assisted process',
-                    'Company name filed in 2-3 days',
-                    'DSC for 2 Directors in 3-4 days',
-                    'SPICe+ form filing in 10 days',
-                    'Incorporation Certificate in 14-21 days',
-                    'Company PAN+TAN',
-                    'DIN for directors',
-                    'Welcome Kit with Compliance Checklist'
-                ],
-                exclusions: [
-                    'Government fees (₹4,000-8,000)',
-                    'Trademark registration',
-                    'MSME registration'
-                ]
-            },
-            {
-                id: 'pro',
-                name: 'Pro',
-                price: 3499,
-                originalPrice: 4999,
-                discount: '30% off',
-                timeline: '8-14 days',
-                featured: false,
-                emiAvailable: true,
-                inclusions: [
-                    'Expert-assisted process',
-                    'Company name filed in 0-1 day',
-                    'DSC for 2 Directors in 1-2 days',
-                    'SPICe+ form filing in 5 days',
-                    'Incorporation Certificate in 8-14 days',
-                    'Company PAN+TAN',
-                    'DIN for Directors',
-                    'Welcome Kit with Compliance Checklist',
-                    'Quick Trademark Filing in 1 day',
-                    'MSME registration Free'
-                ],
-                exclusions: [
-                    'Government fees (₹4,000-8,000)'
-                ]
-            }
-        ],
-
-        process: [
-            {
-                step: 1,
-                title: 'Name Approval',
-                description: 'We file your proposed company names with MCA for approval. Choose 3 name options and we handle the rest.',
-                duration: '2-3 days'
-            },
-            {
-                step: 2,
-                title: 'Digital Signature Certificate',
-                description: 'DSC obtained for 2 directors required for signing digital documents with the government.',
-                duration: '3-4 days'
-            },
-            {
-                step: 3,
-                title: 'SPICe+ Form Filing',
-                description: 'Complete incorporation application submitted to MCA including MOA, AOA, and other required documents.',
-                duration: '10 days'
-            },
-            {
-                step: 4,
-                title: 'Incorporation Certificate',
-                description: 'Your company is officially registered! Receive Certificate of Incorporation, PAN, TAN, and DIN.',
-                duration: '14-21 days'
-            }
-        ],
-
-        documents: {
-            groups: [
-                {
-                    entityType: 'All Directors',
-                    items: [
-                        'PAN Card',
-                        'Aadhaar Card',
-                        'Passport-size photograph',
-                        'Address Proof (utility bill, bank statement, or passport)',
-                        'Bank statement (last 2 months)'
-                    ]
-                },
-                {
-                    entityType: 'For Company',
-                    items: [
-                        'Registered office address proof (NOC from property owner)',
-                        'Rent agreement (if rented property)',
-                        'Utility bill of registered office'
-                    ]
-                }
-            ]
-        },
-
-        faqs: [
-            {
-                question: 'How long does Private Limited Company registration take?',
-                answer: 'Typically 14-21 days in a straightforward case without objections. With our Pro package, it can be completed in 8-14 days.'
-            },
-            {
-                question: 'What is the minimum capital required?',
-                answer: 'There is no minimum capital requirement for Private Limited Companies in India. You can start with as little as ₹1,000.'
-            },
-            {
-                question: 'How many directors are required?',
-                answer: 'Minimum 2 directors are required. Maximum limit is 15 directors (can be increased with special resolution). At least one director must be an Indian resident.'
-            },
-            {
-                question: 'What are the annual compliance requirements?',
-                answer: 'Private Limited Companies must file annual returns (Form MGT-7), financial statements (Form AOC-4), conduct board meetings, maintain statutory registers, and file income tax returns.'
-            },
-            {
-                question: 'Can foreigners be directors or shareholders?',
-                answer: 'Yes, foreigners can be directors and shareholders. However, at least one director must be an Indian resident. Foreign investment may require RBI/FIPB approval in certain sectors.'
-            },
-            {
-                question: 'What is the difference between Private and Public Limited Company?',
-                answer: 'Private Limited has minimum 2 and maximum 200 shareholders, cannot raise funds from public. Public Limited can have unlimited shareholders and can raise funds through public issue.'
-            }
-        ],
-
-        relatedServices: ['llp-registration', 'one-person-company-registration', 'partnership-firm-registration']
-    },
-
-    // ============================================
-    // LLP REGISTRATION
-    // ============================================
-    {
-        slug: 'llp-registration',
-        title: 'Limited Liability Partnership (LLP) Registration',
-        shortTitle: 'LLP Registration',
-        category: 'Company Registration',
-        categorySlug: 'company-registration',
-        basePrice: 1999,
-        timeline: '10-15 days',
-        badge: null,
-
-        metaTitle: 'LLP Registration Online @ ₹1999 | Limited Liability Partnership | LawEthic',
-        metaDescription: 'Register your LLP in India with LawEthic. Limited liability with partnership flexibility. Expert filing from ₹1999, registration in 10-15 days.',
-        keywords: ['llp registration', 'limited liability partnership', 'llp india', 'register llp online'],
-
-        hero: {
-            title: 'LLP Registration @ ₹1999',
-            description: 'Register your Limited Liability Partnership in India. Best for professionals and small businesses wanting liability protection.',
-            highlights: [
-                'Limited liability protection',
-                'No minimum capital required',
-                'Lower compliance burden than Pvt Ltd',
-                'Registration in 10-15 days'
-            ],
-            trustSignals: {
-                rating: '4.5/5 Google Rating',
-                served: '5,000+ LLPs Registered',
-                certified: 'MCA Certified Experts'
-            }
-        },
-
-        packages: [
-            {
-                id: 'basic',
-                name: 'Basic',
-                price: 1999,
-                originalPrice: 2999,
-                discount: '33% off',
-                timeline: '15 days',
-                featured: false,
-                inclusions: [
-                    'LLP Name Reservation',
-                    'DSC for 2 Partners',
-                    'DPIN for 2 Partners',
-                    'LLP Agreement Drafting',
-                    'Certificate of Incorporation',
-                    'LLP PAN & TAN'
-                ],
-                exclusions: [
-                    'Government fees (₹1,500-2,000)',
-                    'Quick processing'
-                ]
-            },
-            {
-                id: 'standard',
-                name: 'Standard',
-                price: 2999,
-                originalPrice: 4999,
-                discount: '40% off',
-                timeline: '10-12 days',
-                featured: true,
-                inclusions: [
-                    'Everything in Basic',
-                    'Priority processing',
-                    'Customized LLP Agreement',
-                    'GST Registration',
-                    'Compliance calendar'
-                ],
-                exclusions: [
-                    'Government fees (₹1,500-2,000)'
-                ]
-            }
-        ],
-
-        process: [
-            {
-                step: 1,
-                title: 'Name Reservation',
-                description: 'Reserve your LLP name through RUN-LLP form with MCA.',
-                duration: '2-3 days'
-            },
-            {
-                step: 2,
-                title: 'DSC & DPIN',
-                description: 'Digital Signature Certificate and Designated Partner Identification Number for partners.',
-                duration: '3-4 days'
-            },
-            {
-                step: 3,
-                title: 'Filing FiLLiP Form',
-                description: 'Incorporation form submitted with LLP Agreement and all required documents.',
-                duration: '5-7 days'
-            },
-            {
-                step: 4,
-                title: 'LLP Incorporation',
-                description: 'Receive Certificate of Incorporation, PAN, and TAN.',
-                duration: '10-15 days'
-            }
-        ],
-
-        documents: {
-            groups: [
-                {
-                    entityType: 'All Partners',
-                    items: [
-                        'PAN Card',
-                        'Aadhaar Card',
-                        'Passport Photo',
-                        'Address Proof (Bank statement or utility bill)'
-                    ]
-                },
-                {
-                    entityType: 'For LLP',
-                    items: [
-                        'Office Address Proof (Rent agreement or ownership proof)',
-                        'NOC from Owner (if rented premises)'
-                    ]
-                }
-            ]
-        },
-
-        faqs: [
-            {
-                question: 'What is the minimum requirement to form an LLP?',
-                answer: 'Minimum 2 designated partners required. There is no maximum limit. At least one partner must be an Indian resident.'
-            },
-            {
-                question: 'What is the difference between LLP and Private Limited?',
-                answer: 'LLP has lower compliance, no minimum capital, and profits are taxed at partner level. Pvt Ltd is better for raising external funding and has clearer ownership structure.'
-            },
-            {
-                question: 'Is there any minimum capital requirement?',
-                answer: 'No, there is no minimum capital requirement for LLP registration in India.'
-            },
-            {
-                question: 'What are the annual compliance requirements?',
-                answer: 'LLPs must file Form 11 (Annual Return) and Form 8 (Statement of Account) every year.'
-            }
-        ],
-
-        relatedServices: ['private-limited-company-registration', 'partnership-firm-registration']
-    },
-
-    // ============================================
-    // ONE PERSON COMPANY
-    // ============================================
-    {
-        slug: 'one-person-company-registration',
-        title: 'One Person Company (OPC) Registration',
-        shortTitle: 'OPC Registration',
-        category: 'Company Registration',
-        categorySlug: 'company-registration',
-        basePrice: 1499,
-        timeline: '10-15 days',
-        badge: 'For Solo Entrepreneurs',
-
-        metaTitle: 'One Person Company Registration @ ₹1499 | OPC Registration Online | LawEthic',
-        metaDescription: 'Register One Person Company (OPC) in India. Perfect for solo entrepreneurs. Limited liability with single ownership. Registration in 10-15 days.',
-        keywords: ['opc registration', 'one person company', 'single owner company', 'opc india'],
-
-        hero: {
-            badge: 'For Solo Entrepreneurs',
-            title: 'One Person Company Registration @ ₹1499',
-            description: 'Start your company as a single owner with limited liability protection. Perfect for solo entrepreneurs.',
-            highlights: [
-                'Single member ownership',
-                'Limited liability protection',
-                'Separate legal entity',
-                'Easy to convert to Pvt Ltd later'
-            ],
-            trustSignals: {
-                rating: '4.5/5 Google Rating',
-                served: '3,000+ OPCs Registered',
-                certified: 'MCA Certified Experts'
-            }
-        },
-
-        packages: [
-            {
-                id: 'basic',
-                name: 'Basic',
-                price: 1499,
-                originalPrice: 2499,
-                discount: '40% off',
-                timeline: '15 days',
-                featured: false,
-                inclusions: [
-                    'Name Reservation',
-                    'DSC for Director',
-                    'DIN for Director',
-                    'MOA & AOA Drafting',
-                    'Certificate of Incorporation',
-                    'PAN & TAN'
-                ],
-                exclusions: [
-                    'Government fees (₹3,000-5,000)'
-                ]
-            },
-            {
-                id: 'complete',
-                name: 'Complete',
-                price: 2499,
-                originalPrice: 3999,
-                discount: '38% off',
-                timeline: '10-12 days',
-                featured: true,
-                inclusions: [
-                    'Everything in Basic',
-                    'Priority processing',
-                    'GST Registration',
-                    'Current Account Opening Support',
-                    'Compliance Calendar'
-                ],
-                exclusions: [
-                    'Government fees (₹3,000-5,000)'
-                ]
-            }
-        ],
-
-        process: [
-            {
-                step: 1,
-                title: 'Name Approval',
-                description: 'Reserve your company name with MCA through RUN form.',
-                duration: '2-3 days'
-            },
-            {
-                step: 2,
-                title: 'DSC & DIN',
-                description: 'Obtain Digital Signature and Director Identification Number.',
-                duration: '3-4 days'
-            },
-            {
-                step: 3,
-                title: 'SPICe+ Filing',
-                description: 'Submit incorporation form with MOA, AOA, and nominee details.',
-                duration: '5-7 days'
-            },
-            {
-                step: 4,
-                title: 'Incorporation',
-                description: 'Receive Certificate of Incorporation, PAN, TAN, and DIN.',
-                duration: '10-15 days'
-            }
-        ],
-
-        documents: {
-            groups: [
-                {
-                    entityType: 'Member',
-                    items: [
-                        'PAN Card',
-                        'Aadhaar Card',
-                        'Passport Photo',
-                        'Address Proof (Bank statement or utility bill)'
-                    ]
-                },
-                {
-                    entityType: 'Nominee',
-                    items: [
-                        'Nominee PAN Card',
-                        'Nominee Aadhaar Card'
-                    ]
-                },
-                {
-                    entityType: 'For Company',
-                    items: [
-                        'Office Address Proof (Rent agreement or ownership proof)'
-                    ]
-                }
-            ]
-        },
-
-        faqs: [
-            {
-                question: 'Who can register an OPC?',
-                answer: 'Only a natural person who is an Indian citizen and resident in India can incorporate an OPC. The person must have stayed in India for at least 182 days in the preceding year.'
-            },
-            {
-                question: 'Is nominee mandatory for OPC?',
-                answer: 'Yes, you need to appoint a nominee who will become the member in case of death or incapacity of the original member.'
-            },
-            {
-                question: 'Can OPC be converted to Private Limited?',
-                answer: 'Yes, OPC can be converted to Private Limited Company voluntarily or mandatorily when turnover exceeds ₹2 crore or paid-up capital exceeds ₹50 lakhs.'
-            }
-        ],
-
-        relatedServices: ['private-limited-company-registration', 'llp-registration']
-    },
-
-    // ============================================
-    // GST REGISTRATION
-    // ============================================
-    {
-        slug: 'gst-registration',
-        title: 'GST Registration',
-        shortTitle: 'GST Registration',
-        category: 'Tax & Compliance',
-        categorySlug: 'gst-registration',
-        basePrice: 999,
-        timeline: '3-5 days',
-        badge: null,
-
-        metaTitle: 'GST Registration Online @ ₹999 | Quick GST Number | LawEthic',
-        metaDescription: 'Get GST Registration in 3-5 days. Expert assistance for GST number application. 100% online process. Starting at ₹999.',
-        keywords: ['gst registration', 'gst number', 'gstin', 'gst application', 'gst certificate'],
-
-        hero: {
-            title: 'GST Registration @ ₹999',
-            description: 'Get your GST number quickly with expert assistance. Required for businesses with turnover above ₹40 lakhs.',
-            highlights: [
-                'GST Number in 3-5 days',
-                'Expert document verification',
-                'ARN tracking & updates',
-                '100% online process'
-            ],
-            trustSignals: {
-                rating: '4.5/5 Google Rating',
-                served: '20,000+ GST Registrations',
-                certified: 'GST Certified Experts'
-            }
-        },
-
-        packages: [
-            {
-                id: 'basic',
-                name: 'Basic',
-                price: 999,
-                originalPrice: 1499,
-                discount: '33% off',
-                timeline: '5-7 days',
-                featured: false,
-                inclusions: [
-                    'GST Application Filing',
-                    'Document Verification',
-                    'ARN Generation',
-                    'GSTIN Certificate',
-                    'Login Credentials'
-                ],
-                exclusions: [
-                    'GST Return Filing',
-                    'Priority processing'
-                ]
-            },
-            {
-                id: 'express',
-                name: 'Express',
-                price: 1499,
-                originalPrice: 2499,
-                discount: '40% off',
-                timeline: '3-5 days',
-                featured: true,
-                inclusions: [
-                    'Everything in Basic',
-                    'Priority processing',
-                    'First GST Return Filing (GSTR-1)',
-                    'GST Software Setup',
-                    'Dedicated Support'
-                ]
-            }
-        ],
-
-        process: [
-            {
-                step: 1,
-                title: 'Document Collection',
-                description: 'Submit your business and identity documents through our portal.',
-                duration: '1 day'
-            },
-            {
-                step: 2,
-                title: 'Application Filing',
-                description: 'We file your GST application on the government portal.',
-                duration: '1-2 days'
-            },
-            {
-                step: 3,
-                title: 'ARN Generation',
-                description: 'Application Reference Number received for tracking.',
-                duration: 'Same day'
-            },
-            {
-                step: 4,
-                title: 'GSTIN Allotment',
-                description: 'Receive your 15-digit GST Number and certificate.',
-                duration: '3-5 days'
-            }
-        ],
-
-        documents: {
-            groups: [
-                {
-                    entityType: 'Business',
-                    items: [
-                        'PAN Card (of business/proprietor)',
-                        'Business Address Proof (Rent agreement or electricity bill)',
-                        'Bank Account Details (Cancelled cheque or statement)',
-                        'Business Registration Certificate (if applicable)'
-                    ]
-                },
-                {
-                    entityType: 'Applicant',
-                    items: [
-                        'Aadhaar Card (of proprietor/partners/directors)',
-                        'Passport Photo'
-                    ]
-                }
-            ]
-        },
-
-        faqs: [
-            {
-                question: 'Who needs GST Registration?',
-                answer: 'GST registration is mandatory if your annual turnover exceeds ₹40 lakhs (₹20 lakhs for special category states) or if you sell online/interstate.'
-            },
-            {
-                question: 'What is the validity of GST Registration?',
-                answer: 'GST registration is valid until cancelled. However, you need to file returns regularly to keep it active.'
-            },
-            {
-                question: 'Can I apply for GST voluntarily?',
-                answer: 'Yes, even if your turnover is below the threshold, you can voluntarily register for GST to claim input tax credit.'
-            },
-            {
-                question: 'What if my application is rejected?',
-                answer: 'We review your documents before filing to minimize rejections. If rejected, we will refile at no extra cost.'
-            }
-        ],
-
-        relatedServices: ['gst-return-filing', 'gst-cancellation']
-    },
-
     // ============================================
     // TRADEMARK REGISTRATION
     // ============================================
@@ -1536,7 +911,7 @@ The registration is fully online, requires only **Aadhaar and PAN** for verifica
             }
         ],
 
-        relatedServices: ['msme-registration', 'gst-registration', 'trademark-registration']
+        relatedServices: ['msme-registration', 'trademark-registration']
     },
 
     // MSME REGISTRATION
@@ -1794,7 +1169,7 @@ Registration is done through the **Udyam portal** using Aadhaar and PAN-based ve
             }
         ],
 
-        relatedServices: ['udyam-registration', 'gst-registration', 'private-limited-company-registration']
+        relatedServices: ['udyam-registration', 'fssai-registration']
     },
 
     // FSSAI FOOD LICENSE
@@ -2121,7 +1496,7 @@ There are three types of FSSAI licenses based on business scale: **Basic Registr
             }
         ],
 
-        relatedServices: ['gst-registration', 'trademark-registration', 'private-limited-company-registration'],
+        relatedServices: ['trademark-registration', 'msme-registration'],
 
         onboardingQuestions: [
             {
@@ -2459,7 +1834,7 @@ IEC registration is a **one-time process** with **lifetime validity**. There is 
             }
         ],
 
-        relatedServices: ['gst-registration', 'private-limited-company-registration', 'fssai-registration'],
+        relatedServices: ['fssai-registration', 'msme-registration', 'trademark-registration'],
 
         onboardingQuestions: [
             {
@@ -2476,6 +1851,405 @@ IEC registration is a **one-time process** with **lifetime validity**. There is 
             {
                 id: 'business_type',
                 question: 'What is your business type?',
+                type: 'single',
+                options: [
+                    { value: 'proprietorship', label: 'Proprietorship' },
+                    { value: 'partnership', label: 'Partnership Firm' },
+                    { value: 'company', label: 'Private Limited Company' },
+                    { value: 'llp', label: 'LLP' }
+                ],
+                required: true
+            }
+        ]
+    },
+
+    // ============================================
+    // TRADE LICENSE
+    // ============================================
+    {
+        slug: 'trade-license',
+        title: 'Trade License Registration',
+        shortTitle: 'Trade License',
+        category: 'Licenses & Registrations',
+        categorySlug: 'licenses-registrations',
+        basePrice: 2499,
+        timeline: '7-12 days',
+        badge: 'Essential for Business',
+
+        metaTitle: 'Trade License Registration Online @ ₹2499 | LawEthic',
+        metaDescription: 'Get your Trade License from Municipal Corporation with expert assistance. Complete documentation support, fast processing in 7-12 days. 100% online process.',
+        keywords: ['trade license', 'trade license registration', 'municipal license', 'business license', 'shop license', 'trade permit'],
+
+        hero: {
+            badge: 'Essential for Business',
+            title: 'Trade License Registration @ ₹2499',
+            description: 'Get your Trade License from the Municipal Corporation with expert assistance. We handle complete documentation and filing to ensure quick approval.',
+            highlights: [
+                'Expert assistance with Form-353',
+                'Complete documentation support',
+                'Fast processing in 7-12 days',
+                'Renewal & modification support'
+            ],
+            trustSignals: {
+                rating: '4.5/5 Google Rating',
+                served: '15,000+ Licenses Issued',
+                certified: 'Municipal Compliance Experts'
+            },
+            formTitle: 'Get Your Trade License!',
+            formCta: 'Get Started'
+        },
+
+        packages: [
+            {
+                id: 'basic',
+                name: 'Basic',
+                price: 2499,
+                originalPrice: 3999,
+                discount: '37% off',
+                timeline: '10-12 days',
+                featured: false,
+                inclusions: [
+                    'Trade License Application Filing',
+                    'Form-353 Preparation',
+                    'Document Verification',
+                    'Application Tracking',
+                    'License Certificate',
+                    'Email Support'
+                ],
+                exclusions: [
+                    'Government fees',
+                    'Physical inspection coordination'
+                ]
+            },
+            {
+                id: 'standard',
+                name: 'Standard',
+                price: 3999,
+                originalPrice: 5999,
+                discount: '33% off',
+                timeline: '7-10 days',
+                featured: true,
+                inclusions: [
+                    'Trade License Application Filing',
+                    'Form-353 Preparation',
+                    'Complete Document Preparation',
+                    'Inspection Coordination',
+                    'Application Tracking',
+                    'License Certificate',
+                    'Dedicated Support',
+                    '1-Year Compliance Reminder'
+                ],
+                exclusions: [
+                    'Government fees (varies by state/city)'
+                ]
+            },
+            {
+                id: 'premium',
+                name: 'Premium',
+                price: 5999,
+                originalPrice: 8999,
+                discount: '33% off',
+                timeline: '5-7 days',
+                featured: false,
+                inclusions: [
+                    'Priority Trade License Filing',
+                    'Form-353 & All Document Preparation',
+                    'Inspection Coordination & Support',
+                    'Fast-Track Processing',
+                    'License Certificate',
+                    'Priority Support',
+                    '1-Year Compliance Support',
+                    'Renewal Assistance'
+                ],
+                exclusions: [
+                    'Government fees (varies by state/city)'
+                ]
+            }
+        ],
+
+        overview: {
+            title: 'What is Trade License?',
+            description: `A **Trade License** is a legal certificate issued by the local Municipal Corporation or Municipal Authority that permits businesses to operate within a specific area or jurisdiction.
+
+Under the **Municipal Corporation Act**, every business establishment must obtain a Trade License before commencing operations. This license certifies that the business follows all safety, health, and environmental regulations set by the local authority.
+
+The Trade License ensures that businesses don't engage in any practices that might endanger the health, safety, or well-being of local residents. It must be **renewed annually** (typically between January 1 to March 31) to remain valid.`,
+            highlights: [
+                'Mandatory for all business establishments',
+                'Legal permission to operate a business',
+                'Ensures compliance with local regulations',
+                'Must be displayed at business premises',
+                'Annual renewal required',
+                'Protects from penalties and closure'
+            ],
+            image: '/images/services/trade-license/overview.svg'
+        },
+
+        eligibility: {
+            title: 'Who Needs a Trade License?',
+            description: 'Any business or commercial activity operating within municipal limits requires a Trade License.',
+            entities: [
+                { name: 'Shops & Retail Stores', icon: 'Store' },
+                { name: 'Restaurants & Hotels', icon: 'UtensilsCrossed' },
+                { name: 'Manufacturing Units', icon: 'Factory' },
+                { name: 'Healthcare Facilities', icon: 'Hospital' },
+                { name: 'Entertainment Venues', icon: 'Ticket' },
+                { name: 'Transport Services', icon: 'Truck' },
+                { name: 'Construction Companies', icon: 'Building2' },
+                { name: 'Street Vendors & Hawkers', icon: 'ShoppingCart' }
+            ]
+        },
+
+        types: {
+            title: 'Types of Trade License',
+            description: 'Trade licenses are categorized based on the nature of business activity.',
+            items: [
+                {
+                    name: 'Type A - Food Establishments',
+                    description: 'Required for all food service establishments including restaurants, cafes, bakeries, and food processing units.',
+                    icon: 'UtensilsCrossed'
+                },
+                {
+                    name: 'Type B - Manufacturing Units',
+                    description: 'For manufacturing and processing units where machines and electricity are used, such as milling units and factories.',
+                    icon: 'Factory'
+                },
+                {
+                    name: 'Type C - High-Risk Activities',
+                    description: 'For high-risk activities including manufacture of fireworks, explosives, chemicals, and hazardous materials.',
+                    icon: 'AlertTriangle'
+                }
+            ]
+        },
+
+        fees: {
+            title: 'Trade License Fees',
+            description: 'Government fees vary based on the type of business, area, and municipal corporation.',
+            table: [
+                {
+                    entityType: 'Small Shops (< 500 sq ft)',
+                    eFiling: '₹500 - ₹2,000/year',
+                    notes: 'Varies by city/municipality'
+                },
+                {
+                    entityType: 'Medium Establishments',
+                    eFiling: '₹2,000 - ₹5,000/year',
+                    notes: 'Based on area and nature of business'
+                },
+                {
+                    entityType: 'Large Commercial Units',
+                    eFiling: '₹5,000 - ₹25,000/year',
+                    notes: 'Based on turnover and area'
+                },
+                {
+                    entityType: 'Manufacturing Units',
+                    eFiling: '₹3,000 - ₹20,000/year',
+                    notes: 'Based on machinery and production'
+                },
+                {
+                    entityType: 'High-Risk Activities',
+                    eFiling: '₹10,000 - ₹50,000/year',
+                    notes: 'Includes additional clearances'
+                }
+            ]
+        },
+
+        documents: {
+            title: 'Documents Required for Trade License',
+            description: 'Documents required vary based on business type and entity structure.',
+            groups: [
+                {
+                    entityType: 'For All Applicants',
+                    items: [
+                        'Completed Form-353',
+                        'Photo ID Proof (Aadhaar/PAN/Voter ID)',
+                        'Passport Size Photographs',
+                        'Property Ownership Proof or Rent Agreement',
+                        'NOC from Property Owner',
+                        'Property Tax Receipts'
+                    ]
+                },
+                {
+                    entityType: 'For Companies & LLPs',
+                    items: [
+                        'Memorandum of Association (MoA)',
+                        'Article of Association (AoA)',
+                        'Certificate of Incorporation',
+                        'Board Resolution',
+                        'GST Registration Certificate',
+                        'Income Tax Returns'
+                    ]
+                },
+                {
+                    entityType: 'For Partnership Firms',
+                    items: [
+                        'Partnership Deed',
+                        'Income Tax Returns',
+                        'Property Tax Receipt',
+                        'Rental Agreement/Lease Deed',
+                        'Previous Trade License (if renewal)'
+                    ]
+                },
+                {
+                    entityType: 'Additional Clearances (if applicable)',
+                    items: [
+                        'NOC from Fire Department',
+                        'NOC from Pollution Control Board',
+                        'Food NOC (for food businesses)',
+                        'Drug NOC (for pharmaceutical)',
+                        'Building Plan Approval'
+                    ]
+                }
+            ]
+        },
+
+        process: [
+            {
+                step: 1,
+                title: 'Application Preparation',
+                description: 'Complete Form-353 and gather all required documents based on your business type.',
+                duration: '1-2 days',
+                icon: 'FileText'
+            },
+            {
+                step: 2,
+                title: 'Document Submission',
+                description: 'Submit application with documents to the Municipal Corporation along with required fees.',
+                duration: '1 day',
+                icon: 'Upload'
+            },
+            {
+                step: 3,
+                title: 'Site Inspection',
+                description: 'Municipal inspector visits your business premises to verify compliance with regulations.',
+                duration: '3-5 days',
+                icon: 'ClipboardCheck'
+            },
+            {
+                step: 4,
+                title: 'License Approval',
+                description: 'Upon successful inspection, the Trade License is approved and issued.',
+                duration: '2-4 days',
+                icon: 'Award'
+            }
+        ],
+
+        benefits: {
+            title: 'Benefits of Trade License',
+            description: 'Trade License provides multiple advantages for your business.',
+            items: [
+                {
+                    title: 'Legal Entity Status',
+                    description: 'Trade license establishes your business as a legal entity, recognized by government authorities.',
+                    icon: 'Scale'
+                },
+                {
+                    title: 'Business Credibility',
+                    description: 'Builds trust with customers, vendors, and financial institutions. Essential for business loans and partnerships.',
+                    icon: 'Shield'
+                },
+                {
+                    title: 'Compliance Assurance',
+                    description: 'Ensures your business complies with local health, safety, and environmental regulations.',
+                    icon: 'CheckCircle'
+                },
+                {
+                    title: 'Avoid Penalties',
+                    description: 'Operating without a trade license can result in heavy fines, penalties, or business closure.',
+                    icon: 'AlertCircle'
+                },
+                {
+                    title: 'Government Recognition',
+                    description: 'Enables participation in government tenders and access to various business schemes.',
+                    icon: 'Building'
+                },
+                {
+                    title: 'Bank Account & Loans',
+                    description: 'Required for opening business bank accounts and applying for business loans.',
+                    icon: 'CreditCard'
+                }
+            ]
+        },
+
+        faqs: [
+            {
+                question: 'What is a Trade License?',
+                answer: 'A Trade License is a legal permit issued by the local Municipal Corporation that allows businesses to operate within a specific area. It certifies that the business complies with local rules, health, and safety regulations.'
+            },
+            {
+                question: 'Is Trade License mandatory for all businesses?',
+                answer: 'Yes, any business operating within municipal limits must obtain a Trade License. Operating without one can result in penalties, fines, or even closure of the business.'
+            },
+            {
+                question: 'How long is a Trade License valid?',
+                answer: 'A Trade License is typically valid for one year and must be renewed annually. The renewal period is usually between January 1 and March 31.'
+            },
+            {
+                question: 'What is Form-353?',
+                answer: 'Form-353 is the standard application form used to apply for a Trade License from the Municipal Corporation. It contains details about the business, premises, and applicant.'
+            },
+            {
+                question: 'What happens if I don\'t renew my Trade License?',
+                answer: 'Failure to renew your Trade License can result in penalties, fines, and legal action. The municipal authority may also shut down your business for non-compliance.'
+            },
+            {
+                question: 'Can I apply for Trade License online?',
+                answer: 'Yes, most municipal corporations now allow online Trade License applications through their official portals. We can assist you with the complete online filing process.'
+            },
+            {
+                question: 'How long does it take to get a Trade License?',
+                answer: 'Trade License is typically issued within 7-12 days after application submission, depending on the municipal corporation and completion of site inspection.'
+            },
+            {
+                question: 'What is the cost of Trade License registration?',
+                answer: 'Government fees vary based on the city, type of business, area of premises, and nature of activity. Fees typically range from ₹500 to ₹50,000 per year.'
+            },
+            {
+                question: 'Do I need separate licenses for multiple locations?',
+                answer: 'Yes, you need to obtain a separate Trade License for each business location as the license is specific to the premises address.'
+            },
+            {
+                question: 'Can Trade License be revoked?',
+                answer: 'Yes, the municipal authority can revoke a Trade License if the business violates terms of the license, endangers public health/safety, or fails to comply with regulations.'
+            }
+        ],
+
+        relatedServices: ['fssai-registration', 'shop-establishment-registration', 'msme-registration'],
+
+        onboardingQuestions: [
+            {
+                id: 'city',
+                question: 'In which city is your business located?',
+                type: 'single',
+                options: [
+                    { value: 'delhi', label: 'Delhi' },
+                    { value: 'mumbai', label: 'Mumbai' },
+                    { value: 'bangalore', label: 'Bangalore' },
+                    { value: 'chennai', label: 'Chennai' },
+                    { value: 'kolkata', label: 'Kolkata' },
+                    { value: 'hyderabad', label: 'Hyderabad' },
+                    { value: 'pune', label: 'Pune' },
+                    { value: 'other', label: 'Other City' }
+                ],
+                required: true
+            },
+            {
+                id: 'businessType',
+                question: 'What type of business do you operate?',
+                type: 'single',
+                options: [
+                    { value: 'retail', label: 'Retail Shop' },
+                    { value: 'restaurant', label: 'Restaurant/Food Business' },
+                    { value: 'manufacturing', label: 'Manufacturing Unit' },
+                    { value: 'services', label: 'Service Business' },
+                    { value: 'healthcare', label: 'Healthcare Facility' },
+                    { value: 'other', label: 'Other' }
+                ],
+                required: true
+            },
+            {
+                id: 'entityType',
+                question: 'What is your business entity type?',
                 type: 'single',
                 options: [
                     { value: 'proprietorship', label: 'Proprietorship' },

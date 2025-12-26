@@ -21,13 +21,15 @@ import {
     Receipt,
     Award,
     Phone,
-    Mail
+    Mail,
+    FileQuestion
 } from 'lucide-react';
 import FloatingChatButton from '@/components/chat/FloatingChatButton';
 import DocumentReupload from '@/components/customer/DocumentReupload';
 import DocumentUploadSection from '@/components/customer/DocumentUploadSection';
 import PaymentButton from '@/components/PaymentButton';
 import CustomerDashboardLayout from '@/components/customer/CustomerDashboardLayout';
+import { QuestionnaireForm } from '@/components/customer/QuestionnaireForm';
 import { getServiceBySlug } from '@/data/services';
 
 interface OrderDetailProps {
@@ -52,10 +54,12 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
     const [documents, setDocuments] = useState<any[]>([]);
     const [certificates, setCertificates] = useState<any[]>([]);
     const [timeline, setTimeline] = useState<any[]>([]);
+    const [questionnaires, setQuestionnaires] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>(null);
     const [reuploadingDoc, setReuploadingDoc] = useState<any>(null);
-    const [activeTab, setActiveTab] = useState<'documents' | 'timeline' | 'deliverables'>('documents');
+    const [activeTab, setActiveTab] = useState<'documents' | 'timeline' | 'deliverables' | 'questionnaires'>('documents');
+    const [showQuestionnaire, setShowQuestionnaire] = useState<any>(null);
 
     useEffect(() => {
         checkAuthAndLoadOrder();
@@ -142,6 +146,9 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
 
             // Load certificates
             await loadCertificates();
+
+            // Load questionnaires
+            await loadQuestionnaires();
         } catch (error) {
             console.error('Failed to load order details:', error);
         }
@@ -157,6 +164,28 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
         } catch (error) {
             console.error('Failed to load certificates:', error);
         }
+    };
+
+    const loadQuestionnaires = async () => {
+        try {
+            const response = await fetch(`/api/questionnaires/${params.id}`);
+            const data = await response.json();
+            if (data.success) {
+                setQuestionnaires(data.questionnaires);
+                // Auto-switch to questionnaires tab if there are pending ones
+                const pendingQ = data.questionnaires.find((q: any) => q.status === 'pending');
+                if (pendingQ) {
+                    setActiveTab('questionnaires');
+                }
+            }
+        } catch (error) {
+            console.error('Failed to load questionnaires:', error);
+        }
+    };
+
+    const handleQuestionnaireSubmitted = () => {
+        loadQuestionnaires();
+        setShowQuestionnaire(null);
     };
 
     // Calculate current step based on order status
@@ -356,7 +385,7 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                 {/* Action Needed Banner */}
                 {actionNeeded && (
                     <div className={`rounded-xl p-4 mb-6 flex items-center justify-between ${actionNeeded.type === 'error' ? 'bg-red-50 border border-red-200' :
-                            'bg-amber-50 border border-amber-200'
+                        'bg-amber-50 border border-amber-200'
                         }`}>
                         <div className="flex items-center gap-3">
                             <AlertCircle className={`h-5 w-5 ${actionNeeded.type === 'error' ? 'text-red-600' : 'text-amber-600'
@@ -406,9 +435,10 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
 
                         {/* Tabs */}
                         <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
-                            <div className="flex border-b border-neutral-200">
+                            <div className="flex border-b border-neutral-200 overflow-x-auto">
                                 {[
                                     { key: 'documents', label: 'Documents', count: documents.length },
+                                    { key: 'questionnaires', label: 'Questionnaires', count: questionnaires.filter(q => q.status === 'pending').length, highlight: questionnaires.some(q => q.status === 'pending') },
                                     { key: 'deliverables', label: 'Deliverables', count: certificates.length + (order.invoiceFileId ? 1 : 0) },
                                     { key: 'timeline', label: 'Timeline', count: timeline.length }
                                 ].map(tab => (
@@ -416,14 +446,18 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                                         key={tab.key}
                                         onClick={() => setActiveTab(tab.key as any)}
                                         className={`flex-1 px-4 py-3 text-sm font-medium transition-colors relative ${activeTab === tab.key
-                                                ? 'text-brand-600 bg-brand-50'
+                                            ? 'text-brand-600 bg-brand-50'
+                                            : tab.highlight
+                                                ? 'text-amber-600 bg-amber-50'
                                                 : 'text-neutral-600 hover:bg-neutral-50'
                                             }`}
                                     >
                                         {tab.label}
                                         {tab.count > 0 && (
                                             <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${activeTab === tab.key
-                                                    ? 'bg-brand-100 text-brand-700'
+                                                ? 'bg-brand-100 text-brand-700'
+                                                : tab.highlight
+                                                    ? 'bg-amber-100 text-amber-700'
                                                     : 'bg-neutral-100 text-neutral-600'
                                                 }`}>
                                                 {tab.count}
@@ -483,8 +517,8 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                                                                     </p>
                                                                     <div className="flex items-center gap-2 mt-1">
                                                                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${doc.status === 'verified' ? 'bg-green-100 text-green-700' :
-                                                                                doc.status === 'rejected' ? 'bg-red-100 text-red-700' :
-                                                                                    'bg-amber-100 text-amber-700'
+                                                                            doc.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                                                                                'bg-amber-100 text-amber-700'
                                                                             }`}>
                                                                             {doc.status === 'verified' && <CheckCircle className="h-3 w-3 mr-1" />}
                                                                             {doc.status === 'rejected' && <XCircle className="h-3 w-3 mr-1" />}
@@ -598,6 +632,87 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                                     </div>
                                 )}
 
+                                {/* Questionnaires Tab */}
+                                {activeTab === 'questionnaires' && (
+                                    <div>
+                                        {showQuestionnaire ? (
+                                            <div>
+                                                <button
+                                                    onClick={() => setShowQuestionnaire(null)}
+                                                    className="flex items-center gap-2 text-sm text-brand-600 hover:text-brand-700 mb-4"
+                                                >
+                                                    <ArrowLeft className="h-4 w-4" />
+                                                    Back to questionnaires
+                                                </button>
+                                                <QuestionnaireForm
+                                                    questionnaireId={showQuestionnaire.$id}
+                                                    template={showQuestionnaire.template}
+                                                    userId={user.$id}
+                                                    userName={user.name || user.email}
+                                                    onSubmitSuccess={handleQuestionnaireSubmitted}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-4">
+                                                {questionnaires.length > 0 ? (
+                                                    questionnaires.map((q) => (
+                                                        <div
+                                                            key={q.$id}
+                                                            className={`border rounded-lg p-4 ${q.status === 'pending'
+                                                                ? 'border-amber-200 bg-amber-50'
+                                                                : 'border-blue-200 bg-blue-50'
+                                                                }`}
+                                                        >
+                                                            <div className="flex items-start justify-between">
+                                                                <div>
+                                                                    <h4 className="font-medium text-neutral-900">
+                                                                        {q.templateName}
+                                                                    </h4>
+                                                                    <p className="text-sm text-neutral-600 mt-1">
+                                                                        {q.templateDescription}
+                                                                    </p>
+                                                                    {q.notes && (
+                                                                        <p className="text-sm text-neutral-500 mt-2 italic">
+                                                                            Note from team: {q.notes}
+                                                                        </p>
+                                                                    )}
+                                                                </div>
+                                                                <span className={`px-2 py-1 rounded text-xs font-medium ${q.status === 'pending'
+                                                                    ? 'bg-amber-100 text-amber-700'
+                                                                    : 'bg-blue-100 text-blue-700'
+                                                                    }`}>
+                                                                    {q.status === 'pending' ? 'Action Required' : 'Submitted'}
+                                                                </span>
+                                                            </div>
+
+                                                            {q.status === 'pending' && q.template ? (
+                                                                <button
+                                                                    onClick={() => setShowQuestionnaire(q)}
+                                                                    className="mt-4 w-full px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-medium"
+                                                                >
+                                                                    Fill Questionnaire
+                                                                </button>
+                                                            ) : q.submittedAt && (
+                                                                <p className="text-sm text-blue-600 mt-4">
+                                                                    ✓ Submitted on {formatDateTime(q.submittedAt)}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="text-center py-8 text-neutral-500">
+                                                        <FileQuestion className="h-12 w-12 mx-auto mb-3 text-neutral-300" />
+                                                        <p>No questionnaires required</p>
+                                                        <p className="text-sm mt-1">
+                                                            If our team needs additional information, questionnaires will appear here.
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
                                 {/* Timeline Tab */}
                                 {activeTab === 'timeline' && (
                                     <div>
@@ -645,8 +760,8 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                                 <div className="flex justify-between">
                                     <span className="text-sm text-neutral-500">Status</span>
                                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${order.status === 'completed' ? 'bg-green-100 text-green-700' :
-                                            order.status === 'on_hold' ? 'bg-red-100 text-red-700' :
-                                                'bg-brand-100 text-brand-700'
+                                        order.status === 'on_hold' ? 'bg-red-100 text-red-700' :
+                                            'bg-brand-100 text-brand-700'
                                         }`}>
                                         {order.status.replace(/_/g, ' ')}
                                     </span>
@@ -654,7 +769,7 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                                 <div className="flex justify-between">
                                     <span className="text-sm text-neutral-500">Payment</span>
                                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${order.paymentStatus === 'paid' ? 'bg-green-100 text-green-700' :
-                                            'bg-amber-100 text-amber-700'
+                                        'bg-amber-100 text-amber-700'
                                         }`}>
                                         {order.paymentStatus}
                                     </span>

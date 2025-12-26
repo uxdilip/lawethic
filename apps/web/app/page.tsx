@@ -294,43 +294,11 @@ export default function HomePage() {
 
     const categories = [
         { id: 'all', label: 'All Services', icon: Sparkles },
-        { id: 'registration', label: 'Business Registration', icon: Building2 },
-        { id: 'tax', label: 'Tax & Compliance', icon: FileText },
         { id: 'trademark', label: 'Trademark & IP', icon: Award },
         { id: 'licenses', label: 'Licenses', icon: BadgeCheck },
     ];
 
     const services = [
-        {
-            slug: 'private-limited-company-registration',
-            name: 'Private Limited Company',
-            price: '₹999',
-            timeline: '14-21 days',
-            description: 'Most popular choice for startups and growing businesses',
-            icon: Building2,
-            gradient: 'from-brand-600 to-brand-500',
-            category: 'registration',
-        },
-        {
-            slug: 'llp-registration',
-            name: 'LLP Registration',
-            price: '₹1,999',
-            timeline: '10-15 days',
-            description: 'Limited liability with partnership flexibility',
-            icon: Users,
-            gradient: 'from-brand-600 to-brand-500',
-            category: 'registration',
-        },
-        {
-            slug: 'gst-registration',
-            name: 'GST Registration',
-            price: '₹999',
-            timeline: '3-5 days',
-            description: 'Mandatory for businesses above ₹40L turnover',
-            icon: FileText,
-            gradient: 'from-brand-600 to-brand-500',
-            category: 'tax',
-        },
         {
             slug: 'trademark-registration',
             name: 'Trademark Registration',
@@ -348,6 +316,16 @@ export default function HomePage() {
             timeline: '7-15 days',
             description: 'Required for all food businesses',
             icon: BadgeCheck,
+            gradient: 'from-brand-600 to-brand-500',
+            category: 'licenses',
+        },
+        {
+            slug: 'trade-license-registration',
+            name: 'Trade License',
+            price: '₹2,999',
+            timeline: '7-15 days',
+            description: 'Required for operating any business legally',
+            icon: Building2,
             gradient: 'from-brand-600 to-brand-500',
             category: 'licenses',
         },

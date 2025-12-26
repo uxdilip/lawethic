@@ -28,10 +28,9 @@ export default function Footer() {
                     <div>
                         <h4 className="font-semibold mb-4">Services</h4>
                         <ul className="space-y-3 text-sm">
-                            <li><Link href="/services/private-limited-company-registration" className="text-brand-200 hover:text-white transition-colors">Company Registration</Link></li>
-                            <li><Link href="/services/gst-registration" className="text-brand-200 hover:text-white transition-colors">GST Registration</Link></li>
                             <li><Link href="/services/trademark-registration" className="text-brand-200 hover:text-white transition-colors">Trademark Filing</Link></li>
                             <li><Link href="/services/fssai-registration" className="text-brand-200 hover:text-white transition-colors">FSSAI License</Link></li>
+                            <li><Link href="/services/trade-license-registration" className="text-brand-200 hover:text-white transition-colors">Trade License</Link></li>
                             <li><Link href="/services" className="text-white hover:text-brand-200 transition-colors font-medium">View All →</Link></li>
                         </ul>
                     </div>
