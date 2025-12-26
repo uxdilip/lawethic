@@ -2,6 +2,9 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getServiceBySlug, getAllServiceSlugs } from '@/data/services'
 import ServicePageClient from './ServicePageClient'
+import { ServiceSchema, FAQSchema, BreadcrumbSchema } from '@/components/StructuredData'
+
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://lawethic.com'
 
 interface Props {
     params: Promise<{ slug: string }>
@@ -36,6 +39,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             title: service.metaTitle,
             description: service.metaDescription,
             type: 'website',
+            url: `${BASE_URL}/services/${slug}`,
+            siteName: 'LAWethic',
+            images: [
+                {
+                    url: '/og-image.png',
+                    width: 1200,
+                    height: 630,
+                    alt: service.title,
+                },
+            ],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: service.metaTitle,
+            description: service.metaDescription,
+            images: ['/og-image.png'],
+        },
+        alternates: {
+            canonical: `${BASE_URL}/services/${slug}`,
         },
     }
 }
@@ -48,6 +70,30 @@ export default async function ServicePage({ params }: Props) {
         notFound()
     }
 
-    // Pass full service object to new client component
-    return <ServicePageClient service={service} />
+    // Breadcrumb data for structured data
+    const breadcrumbs = [
+        { name: 'Home', url: BASE_URL },
+        { name: 'Services', url: `${BASE_URL}/services` },
+        { name: service.title, url: `${BASE_URL}/services/${slug}` },
+    ]
+
+    return (
+        <>
+            {/* Structured Data for SEO */}
+            <ServiceSchema
+                name={service.title}
+                description={service.metaDescription}
+                price={service.basePrice}
+                url={`${BASE_URL}/services/${slug}`}
+                category={service.category}
+            />
+            {service.faqs && service.faqs.length > 0 && (
+                <FAQSchema faqs={service.faqs} />
+            )}
+            <BreadcrumbSchema items={breadcrumbs} />
+
+            {/* Page Content */}
+            <ServicePageClient service={service} />
+        </>
+    )
 }
