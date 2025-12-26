@@ -3,9 +3,9 @@ import { Client, Databases, ID } from 'node-appwrite';
 import { getQuestionnaireById } from '@/data/questionnaires';
 
 const client = new Client()
-    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
-    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!)
-    .setKey(process.env.APPWRITE_API_KEY!);
+    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
+    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT || '')
+    .setKey(process.env.APPWRITE_API_KEY || '');
 
 const databases = new Databases(client);
 
