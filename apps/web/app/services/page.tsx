@@ -11,9 +11,8 @@ export const metadata: Metadata = {
 
 // Category icons mapping
 const categoryIcons: Record<string, React.ReactNode> = {
-    'company-registration': <Building2 className="h-5 w-5" />,
-    'gst-registration': <FileText className="h-5 w-5" />,
     'trademark-registration': <Award className="h-5 w-5" />,
+    'licenses-registrations': <BadgeCheck className="h-5 w-5" />,
 }
 
 export default function ServicesPage() {
