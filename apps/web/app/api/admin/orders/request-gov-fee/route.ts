@@ -4,8 +4,8 @@ import { serverDatabases } from '@lawethic/appwrite/server';
 import { appwriteConfig } from '@lawethic/appwrite/config';
 import { sendEmail } from '@/lib/email/email-service';
 
-// Predefined government fees by service
-export const GOVERNMENT_FEES: Record<string, { label: string; items: { label: string; amount: number }[] }> = {
+// Predefined government fees by service (not exported - Next.js route files only allow handler exports)
+const GOVERNMENT_FEES: Record<string, { label: string; items: { label: string; amount: number }[] }> = {
     'trademark-registration': {
         label: 'Trademark Registration',
         items: [
