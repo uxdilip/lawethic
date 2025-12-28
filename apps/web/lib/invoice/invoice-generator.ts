@@ -290,3 +290,173 @@ export async function generateInvoice(orderId: string): Promise<{ invoiceNumber:
 export function getInvoiceDownloadUrl(fileId: string): string {
     return storage.getFileDownload('invoices', fileId).toString();
 }
+
+/**
+ * Generate invoice for government fee payment
+ */
+export async function generateGovFeeInvoice(
+    feeRequestId: string,
+    orderId: string,
+    paymentId: string
+): Promise<{ invoiceNumber: string; fileId: string }> {
+    try {
+        console.log('[GovFeeInvoice] Starting invoice generation for fee request:', feeRequestId);
+
+        // 1. Fetch fee request details
+        const feeRequest = await databases.getDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.collections.governmentFeeRequests,
+            feeRequestId
+        );
+
+        // 2. Fetch order details
+        const order = await databases.getDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.collections.orders,
+            orderId
+        );
+
+        // Parse formData if string
+        const formData = typeof order.formData === 'string' ? JSON.parse(order.formData) : order.formData;
+
+        // 3. Parse fee items
+        const feeItems = typeof feeRequest.items === 'string' ? JSON.parse(feeRequest.items) : feeRequest.items;
+
+        // 4. Generate invoice number
+        const invoiceNumber = await generateInvoiceNumber();
+
+        // 5. Prepare invoice data - customize for government fees
+        const invoiceData: InvoiceData = {
+            invoiceNumber,
+            invoiceDate: new Date().toISOString(),
+            orderNumber: order.orderNumber,
+
+            // Customer details
+            customerName: formData?.fullName || formData?.businessName || 'Customer',
+            customerEmail: formData?.email || '',
+            customerPhone: formData?.phone || '',
+            businessName: formData?.businessName || '',
+
+            // Service details - for gov fee
+            serviceName: 'Government Filing Fee',
+            serviceDescription: feeItems.map((item: any) => item.name).join(', '),
+            features: feeItems.map((item: any) => `${item.name}: ₹${item.amount.toLocaleString('en-IN')}`),
+
+            // Payment details
+            amount: feeRequest.totalAmount,
+            currency: 'INR',
+            paymentMethod: 'Razorpay',
+            transactionId: paymentId,
+            paymentDate: feeRequest.paidAt || new Date().toISOString(),
+
+            // Order details
+            orderId: orderId,
+        };
+
+        console.log('[GovFeeInvoice] Invoice data prepared:', { invoiceNumber, amount: invoiceData.amount });
+
+        // 6. Generate PDF
+        const pdfBuffer = await renderToBuffer(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            React.createElement(InvoiceTemplate, { data: invoiceData }) as any
+        );
+
+        // 7. Upload PDF to storage
+        const fileName = `gov-fee-invoice-${invoiceNumber}.pdf`;
+        const fileId = ID.unique();
+
+        // Create multipart payload
+        const boundary = `----WebKitFormBoundary${Math.random().toString(36).substring(2)}`;
+        const headerParts = `--${boundary}\r\nContent-Disposition: form-data; name="fileId"\r\n\r\n${fileId}\r\n--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${fileName}"\r\nContent-Type: application/pdf\r\n\r\n`;
+        const footerParts = `\r\n--${boundary}--\r\n`;
+
+        const bodyBuffer = Buffer.concat([
+            Buffer.from(headerParts),
+            pdfBuffer,
+            Buffer.from(footerParts)
+        ]);
+
+        const uploadResponse = await fetch(
+            `${appwriteConfig.endpoint}/storage/buckets/invoices/files`,
+            {
+                method: 'POST',
+                headers: {
+                    'X-Appwrite-Project': appwriteConfig.project,
+                    'X-Appwrite-Key': appwriteConfig.apiKey,
+                    'Content-Type': `multipart/form-data; boundary=${boundary}`,
+                },
+                body: bodyBuffer,
+            }
+        );
+
+        if (!uploadResponse.ok) {
+            const errorText = await uploadResponse.text();
+            console.error('[GovFeeInvoice] Upload failed:', errorText);
+            throw new Error(`Upload failed: ${uploadResponse.status}`);
+        }
+
+        const uploadedFile = await uploadResponse.json();
+        console.log('[GovFeeInvoice] PDF uploaded successfully:', uploadedFile.$id);
+
+        // 8. Update fee request with invoice info
+        await databases.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.collections.governmentFeeRequests,
+            feeRequestId,
+            {
+                invoiceFileId: uploadedFile.$id,
+                invoiceNumber: invoiceNumber,
+            }
+        );
+
+        // 9. Create timeline entry
+        try {
+            await databases.createDocument(
+                appwriteConfig.databaseId,
+                appwriteConfig.collections.orderTimeline,
+                ID.unique(),
+                {
+                    orderId: orderId,
+                    action: 'gov_fee_invoice_generated',
+                    details: `Government fee invoice ${invoiceNumber} generated`,
+                    performedBy: 'system',
+                    status: 'gov_fee_invoice_generated',
+                    note: `Government fee invoice ${invoiceNumber} generated`,
+                    updatedBy: 'system'
+                }
+            );
+        } catch (error) {
+            console.error('[GovFeeInvoice] Failed to create timeline entry:', error);
+        }
+
+        // 10. Send invoice email to customer
+        try {
+            const emailResult = await sendInvoiceEmail(
+                invoiceData.customerEmail,
+                invoiceData.customerName,
+                invoiceNumber,
+                order.orderNumber,
+                'Government Filing Fee',
+                invoiceData.amount,
+                pdfBuffer
+            );
+
+            if (emailResult.success) {
+                console.log('[GovFeeInvoice] Invoice email sent successfully');
+            } else {
+                console.warn('[GovFeeInvoice] Invoice email failed:', emailResult.error);
+            }
+        } catch (error) {
+            console.error('[GovFeeInvoice] Failed to send invoice email:', error);
+        }
+
+        return {
+            invoiceNumber,
+            fileId: uploadedFile.$id
+        };
+
+    } catch (error) {
+        console.error('[GovFeeInvoice] Generation failed:', error);
+        throw error;
+    }
+}

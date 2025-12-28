@@ -115,7 +115,7 @@ export default function CustomerDashboardLayout({ children }: CustomerDashboardL
                                         <div className="p-1">
                                             <button
                                                 onClick={() => {
-                                                    router.push('/dashboard');
+                                                    router.push('/dashboard/profile');
                                                     setShowUserMenu(false);
                                                 }}
                                                 className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"

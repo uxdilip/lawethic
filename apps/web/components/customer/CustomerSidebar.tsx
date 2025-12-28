@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Grid3X3, FileText, ChevronLeft, ChevronRight, Settings } from 'lucide-react';
+import { LayoutDashboard, Grid3X3, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CustomerSidebarProps {
@@ -118,20 +118,6 @@ export default function CustomerSidebar({ collapsed, onCollapseChange }: Custome
                     );
                 })}
             </nav>
-
-            {/* Settings Section */}
-            <div className="p-3 border-t border-neutral-200 space-y-1">
-                <Link
-                    href="/dashboard/settings"
-                    className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors",
-                        collapsed && "justify-center"
-                    )}
-                >
-                    <Settings className="w-5 h-5 text-neutral-400" />
-                    {!collapsed && <span className="font-medium text-sm">Settings</span>}
-                </Link>
-            </div>
         </div>
     );
 }

@@ -15,6 +15,7 @@ export const appwriteConfig = {
         orderTimeline: process.env.NEXT_PUBLIC_COLLECTION_ORDER_TIMELINE || 'order_timeline',
         leads: process.env.NEXT_PUBLIC_COLLECTION_LEADS || 'leads',
         questionnaireRequests: process.env.NEXT_PUBLIC_COLLECTION_QUESTIONNAIRE_REQUESTS || 'questionnaire_requests',
+        governmentFeeRequests: process.env.NEXT_PUBLIC_COLLECTION_GOV_FEE_REQUESTS || 'government_fee_requests',
     },
     buckets: {
         customerDocuments: process.env.NEXT_PUBLIC_BUCKET_CUSTOMER_DOCUMENTS || 'customer-documents',

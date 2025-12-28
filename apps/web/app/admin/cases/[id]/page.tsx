@@ -12,6 +12,7 @@ import CertificateUpload, { CertificateList } from '@/components/admin/Certifica
 import FloatingChatButton from '@/components/chat/FloatingChatButton';
 import AssignmentDropdown from '@/components/admin/AssignmentDropdown';
 import { SendQuestionnaireButton } from '@/components/admin/SendQuestionnaireButton';
+import GovFeeRequestModal from '@/components/admin/GovFeeRequestModal';
 import { getServiceBySlug } from '@/data/services';
 import {
     ArrowLeft,
@@ -33,7 +34,8 @@ import {
     AlertCircle,
     ExternalLink,
     Copy,
-    FileQuestion
+    FileQuestion,
+    IndianRupee
 } from 'lucide-react';
 
 interface CaseDetailProps {
@@ -52,8 +54,10 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
     const [certificates, setCertificates] = useState<any[]>([]);
     const [timeline, setTimeline] = useState<any[]>([]);
     const [questionnaires, setQuestionnaires] = useState<any[]>([]);
+    const [govFeeRequests, setGovFeeRequests] = useState<any[]>([]);
     const [currentUser, setCurrentUser] = useState<any>(null);
     const [showCertificateUpload, setShowCertificateUpload] = useState(false);
+    const [showGovFeeModal, setShowGovFeeModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [statusNote, setStatusNote] = useState('');
@@ -138,6 +142,9 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
 
             // Load questionnaires
             await loadQuestionnaires();
+
+            // Load government fee requests
+            await loadGovFeeRequests();
         } catch (error) {
             console.error('Failed to load case details:', error);
         } finally {
@@ -169,6 +176,18 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
         }
     };
 
+    const loadGovFeeRequests = async () => {
+        try {
+            const response = await fetch(`/api/admin/orders/request-gov-fee?orderId=${params.id}`);
+            const data = await response.json();
+            if (data.success) {
+                setGovFeeRequests(data.feeRequests || []);
+            }
+        } catch (error) {
+            console.error('Failed to load gov fee requests:', error);
+        }
+    };
+
     const handleCertificateUploadSuccess = () => {
         setShowCertificateUpload(false);
         loadCertificates();
@@ -176,6 +195,11 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
 
     const handleQuestionnairesSent = () => {
         loadQuestionnaires();
+        loadCaseDetails();
+    };
+
+    const handleGovFeeRequestSuccess = () => {
+        loadGovFeeRequests();
         loadCaseDetails();
     };
 
@@ -901,6 +925,62 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                                 )}
                             </div>
 
+                            {/* Government Fees */}
+                            <div className="bg-white rounded-xl border border-neutral-200 p-5">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="font-semibold text-neutral-900">Government Fees</h3>
+                                    <button
+                                        onClick={() => setShowGovFeeModal(true)}
+                                        className="px-3 py-1.5 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm"
+                                    >
+                                        + Request Fee
+                                    </button>
+                                </div>
+
+                                {govFeeRequests.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {govFeeRequests.map((req) => (
+                                            <div
+                                                key={req.$id}
+                                                className={`p-3 rounded-lg border ${req.status === 'pending'
+                                                    ? 'bg-amber-50 border-amber-200'
+                                                    : req.status === 'paid'
+                                                        ? 'bg-green-50 border-green-200'
+                                                        : 'bg-neutral-50 border-neutral-200'
+                                                    }`}
+                                            >
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <span className={`text-xs font-medium px-2 py-0.5 rounded ${req.status === 'pending'
+                                                        ? 'bg-amber-100 text-amber-700'
+                                                        : req.status === 'paid'
+                                                            ? 'bg-green-100 text-green-700'
+                                                            : 'bg-neutral-100 text-neutral-700'
+                                                        }`}>
+                                                        {req.status}
+                                                    </span>
+                                                    <span className="font-semibold text-neutral-900">
+                                                        {formatCurrency(req.totalAmount)}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-neutral-500">
+                                                    Requested on {formatDate(req.$createdAt)}
+                                                </p>
+                                                {req.paidAt && (
+                                                    <p className="text-xs text-green-600 mt-1">
+                                                        Paid on {formatDate(req.paidAt)}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-6 text-neutral-500">
+                                        <IndianRupee className="h-8 w-8 mx-auto mb-2 text-neutral-300" />
+                                        <p className="text-sm">No fee requests yet</p>
+                                    </div>
+                                )}
+                            </div>
+
                             {/* Payment Info */}
                             <div className="bg-white rounded-xl border border-neutral-200 p-5">
                                 <h3 className="font-semibold text-neutral-900 mb-4">Payment Info</h3>
@@ -932,6 +1012,19 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                         <FloatingChatButton
                             orderId={order.$id}
                             orderNumber={order.orderNumber || order.$id}
+                        />
+                    )}
+
+                    {/* Government Fee Request Modal */}
+                    {order && service && (
+                        <GovFeeRequestModal
+                            isOpen={showGovFeeModal}
+                            onClose={() => setShowGovFeeModal(false)}
+                            orderId={order.$id}
+                            customerId={order.customerId}
+                            serviceId={order.serviceId}
+                            serviceName={service?.name || 'Service'}
+                            onSuccess={handleGovFeeRequestSuccess}
                         />
                     )}
                 </div>

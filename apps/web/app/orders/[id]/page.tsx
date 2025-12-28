@@ -22,7 +22,8 @@ import {
     Award,
     Phone,
     Mail,
-    FileQuestion
+    FileQuestion,
+    IndianRupee
 } from 'lucide-react';
 import FloatingChatButton from '@/components/chat/FloatingChatButton';
 import DocumentReupload from '@/components/customer/DocumentReupload';
@@ -30,6 +31,7 @@ import DocumentUploadSection from '@/components/customer/DocumentUploadSection';
 import PaymentButton from '@/components/PaymentButton';
 import CustomerDashboardLayout from '@/components/customer/CustomerDashboardLayout';
 import { QuestionnaireForm } from '@/components/customer/QuestionnaireForm';
+import GovFeeCard from '@/components/customer/GovFeeCard';
 import { getServiceBySlug } from '@/data/services';
 
 interface OrderDetailProps {
@@ -55,6 +57,7 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
     const [certificates, setCertificates] = useState<any[]>([]);
     const [timeline, setTimeline] = useState<any[]>([]);
     const [questionnaires, setQuestionnaires] = useState<any[]>([]);
+    const [govFeeRequests, setGovFeeRequests] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>(null);
     const [reuploadingDoc, setReuploadingDoc] = useState<any>(null);
@@ -149,6 +152,9 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
 
             // Load questionnaires
             await loadQuestionnaires();
+
+            // Load government fee requests
+            await loadGovFeeRequests();
         } catch (error) {
             console.error('Failed to load order details:', error);
         }
@@ -183,6 +189,18 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
         }
     };
 
+    const loadGovFeeRequests = async () => {
+        try {
+            const response = await fetch(`/api/admin/orders/request-gov-fee?orderId=${params.id}`);
+            const data = await response.json();
+            if (data.success) {
+                setGovFeeRequests(data.feeRequests || []);
+            }
+        } catch (error) {
+            console.error('Failed to load gov fee requests:', error);
+        }
+    };
+
     const handleQuestionnaireSubmitted = () => {
         loadQuestionnaires();
         setShowQuestionnaire(null);
@@ -208,6 +226,17 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                 type: 'warning',
                 message: 'Complete payment to proceed with your order',
                 action: 'payment'
+            };
+        }
+
+        // Check for pending government fees
+        const pendingGovFees = govFeeRequests.filter(req => req.status === 'pending');
+        if (pendingGovFees.length > 0) {
+            const totalPending = pendingGovFees.reduce((sum, req) => sum + req.totalAmount, 0);
+            return {
+                type: 'warning',
+                message: `Government fee payment of ₹${totalPending.toLocaleString('en-IN')} required to proceed`,
+                action: 'govfee'
             };
         }
 
@@ -753,6 +782,22 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
 
                     {/* Sidebar */}
                     <div className="space-y-6">
+                        {/* Pending Government Fee - Show prominently if pending */}
+                        {govFeeRequests.filter(req => req.status === 'pending').map((req) => (
+                            <GovFeeCard
+                                key={req.$id}
+                                feeRequest={req}
+                                customerId={user?.$id || order?.customerId}
+                                customerName={user?.name || order?.formData?.fullName || 'Customer'}
+                                customerEmail={user?.email || order?.formData?.email || ''}
+                                customerPhone={order?.formData?.phone || order?.formData?.mobile}
+                                onPaymentSuccess={() => {
+                                    loadGovFeeRequests();
+                                    loadOrderDetails(user.$id);
+                                }}
+                            />
+                        ))}
+
                         {/* Order Summary Card */}
                         <div className="bg-white rounded-xl border border-neutral-200 p-6">
                             <h3 className="font-semibold text-neutral-900 mb-4">Order Summary</h3>
@@ -844,6 +889,38 @@ export default function OrderDetailPage({ params }: OrderDetailProps) {
                                         <p className="font-medium text-green-900">Certificate Ready!</p>
                                         <p className="text-sm text-green-700">Your certificate is available for download</p>
                                     </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Paid Government Fees */}
+                        {govFeeRequests.filter(req => req.status === 'paid').length > 0 && (
+                            <div className="bg-white rounded-xl border border-neutral-200 p-6">
+                                <h3 className="font-semibold text-neutral-900 mb-4 flex items-center gap-2">
+                                    <IndianRupee className="h-4 w-4" />
+                                    Paid Government Fees
+                                </h3>
+                                <div className="space-y-3">
+                                    {govFeeRequests.filter(req => req.status === 'paid').map((req) => (
+                                        <div
+                                            key={req.$id}
+                                            className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100"
+                                        >
+                                            <div>
+                                                <p className="text-sm font-medium text-green-900">
+                                                    ₹{req.totalAmount.toLocaleString('en-IN')}
+                                                </p>
+                                                <p className="text-xs text-green-600">
+                                                    Paid on {new Date(req.paidAt).toLocaleDateString('en-IN', {
+                                                        day: 'numeric',
+                                                        month: 'short',
+                                                        year: 'numeric'
+                                                    })}
+                                                </p>
+                                            </div>
+                                            <CheckCircle className="h-5 w-5 text-green-600" />
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
