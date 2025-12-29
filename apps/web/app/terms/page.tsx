@@ -13,104 +13,114 @@ export default function TermsPage() {
                 <Link href="/" className="text-brand-600 hover:underline mb-8 inline-block">← Back to Home</Link>
 
                 <h1 className="text-3xl font-bold text-neutral-900 mb-2">Terms and Conditions</h1>
-                <p className="text-neutral-500 mb-8">Last updated: December 28, 2025</p>
+                <p className="text-neutral-500 mb-8">Last updated: December 29, 2025</p>
 
                 <div className="space-y-6 text-neutral-700">
-                    <p>
-                        Welcome to LAWethic. These Terms govern your use of our website and services. By using our services, you agree to these Terms.
-                    </p>
 
-                    <p className="bg-amber-50 p-4 rounded text-amber-800">
-                        <strong>Important:</strong> LAWethic is NOT a law firm and does NOT provide legal advice. We are a technology platform that connects users with professionals and facilitates document preparation and filing services.
-                    </p>
-
-                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">Definitions</h2>
+                    <h2 className="text-xl font-semibold text-neutral-900">1. Services Provided</h2>
+                    <p>We provide professional assistance and facilitation services, including but not limited to:</p>
                     <ul className="list-disc pl-6 space-y-1">
-                        <li><strong>&quot;Company,&quot; &quot;we,&quot; &quot;our&quot;</strong> refers to LAWethic.</li>
-                        <li><strong>&quot;User,&quot; &quot;you,&quot; &quot;your&quot;</strong> refers to any person using our Services.</li>
-                        <li><strong>&quot;Services&quot;</strong> refers to all services offered through our website.</li>
+                        <li>Trade Licence Registration</li>
+                        <li>FSSAI Registration / License</li>
+                        <li>Trademark Registration</li>
+                        <li>MSME (Udyam) Registration</li>
+                        <li>Import Export Code (IEC) Registration</li>
+                        <li>Other business and statutory registrations</li>
+                        <li>Legal consultation services through our empanelled advocates and legal professionals</li>
+                    </ul>
+                    <p>All services are provided in accordance with applicable Indian laws and regulations.</p>
+
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">2. Nature of Business</h2>
+                    <p>
+                        We are not a government body, authority, or department. We are a private consultancy firm that assists clients in applying for registrations and certifications issued by government authorities and also provides legal consultation services through empanelled licensed professionals.
+                    </p>
+
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">3. Government Authority Disclaimer</h2>
+                    <p>
+                        Approval, rejection, timelines, and conditions are solely determined by the respective government departments.
+                    </p>
+
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">4. Legal Consultation Disclaimer</h2>
+                    <ul className="list-disc pl-6 space-y-1">
+                        <li>Legal advice is provided only by empanelled licensed advocates</li>
+                        <li>The Company does not act as a law firm</li>
+                        <li>Legal opinions are based on information provided by the client and prevailing laws</li>
+                        <li>Nothing herein constitutes a guarantee, warranty, or prediction of outcomes</li>
                     </ul>
 
-                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">Eligibility</h2>
-                    <p>
-                        You must be at least 18 years old and have legal capacity to enter into contracts. If using services on behalf of a company, you must have authority to bind that entity.
-                    </p>
-
-                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">Services We Provide</h2>
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">5. Client Responsibilities</h2>
+                    <p>Clients must:</p>
                     <ul className="list-disc pl-6 space-y-1">
-                        <li>Trademark registration and IP services</li>
-                        <li>FSSAI license and food business compliance</li>
-                        <li>Trade license and shop establishment registration</li>
-                        <li>GST registration and compliance</li>
-                        <li>Company and LLP incorporation</li>
-                        <li>Import Export Code (IEC) registration</li>
-                        <li>MSME/Udyam registration</li>
-                        <li>Annual compliance and filing services</li>
+                        <li>Provide true, accurate, and complete information</li>
+                        <li>Submit lawful and valid documents</li>
+                        <li>Cooperate during the service process</li>
+                        <li>Respond promptly to queries</li>
+                    </ul>
+                    <p>The Company is not responsible for delays or rejections due to incorrect or incomplete information provided by the client.</p>
+
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">6. Fees &amp; Payments</h2>
+                    <ul className="list-disc pl-6 space-y-1">
+                        <li>Fees charged are service/consultation fees unless explicitly stated</li>
+                        <li>Government fees, stamp duties, or statutory charges are payable separately</li>
+                        <li>Fees are non-refundable except where the Company fails to provide the service</li>
+                        <li>Prices may change without prior notice</li>
                     </ul>
 
-                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">User Responsibilities</h2>
-                    <p>You agree to:</p>
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">7. No Guarantee of Approval</h2>
+                    <p>Submission of an application does not guarantee approval. Approval depends on:</p>
                     <ul className="list-disc pl-6 space-y-1">
-                        <li>Provide accurate and complete information</li>
-                        <li>Upload authentic documents only</li>
-                        <li>Respond promptly to requests for information</li>
-                        <li>Pay all applicable fees on time</li>
-                        <li>Not use services for illegal purposes</li>
-                        <li>Keep your account credentials secure</li>
+                        <li>Government authority discretion</li>
+                        <li>Compliance with applicable laws</li>
+                        <li>Accuracy of information submitted</li>
                     </ul>
 
-                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">Prohibited Activities</h2>
-                    <p>You must NOT:</p>
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">8. Timelines</h2>
+                    <p>
+                        All timelines provided are estimates only and are not guaranteed. Delays caused by government processing or force majeure events are beyond Company control.
+                    </p>
+
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">9. Limitation of Liability</h2>
+                    <p>To the maximum extent permitted by law:</p>
                     <ul className="list-disc pl-6 space-y-1">
-                        <li>Submit false or misleading information</li>
-                        <li>Attempt to circumvent security measures</li>
-                        <li>Use automated systems without permission</li>
-                        <li>Impersonate another person or entity</li>
-                        <li>Harass our staff or other users</li>
+                        <li>No liability for indirect, incidental, or consequential damages</li>
+                        <li>Liability limited to the amount paid for the specific service</li>
+                        <li>No liability for business losses, penalties, or missed opportunities</li>
                     </ul>
 
-                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">Payment Terms</h2>
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">10. Intellectual Property</h2>
                     <p>
-                        Prices are in Indian Rupees (INR) and include GST unless stated otherwise. Government fees are collected separately. Payment must be made before services commence. We accept payments via Razorpay. See our <Link href="/refund" className="text-brand-600 hover:underline">Refund Policy</Link> for cancellations.
+                        All content on this website, including text, logos, graphics, and layout, is the intellectual property of LAWethic and may not be reproduced without written permission.
                     </p>
 
-                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">Service Delivery</h2>
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">11. Confidentiality &amp; Data Protection</h2>
                     <p>
-                        Estimated timelines are indicative and may vary based on document completeness, government processing times, portal issues, or queries raised by authorities. We are not responsible for delays beyond our control.
+                        Client data and documents are handled confidentially. Data may be shared only with government authorities or empanelled professionals for service execution.
                     </p>
 
-                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">Limitation of Liability</h2>
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">12. Third-Party Services</h2>
                     <p>
-                        To the maximum extent permitted by law, LAWethic shall not be liable for indirect, incidental, or consequential damages, loss of profits, rejection of applications by authorities, or delays in government processing. Our total liability shall not exceed the amount paid for the specific service.
+                        All applications are filed through official government portals. The Company is not liable for disruptions, delays, or changes caused by such authorities.
                     </p>
 
-                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">Indemnification</h2>
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">13. Termination of Services</h2>
                     <p>
-                        You agree to indemnify LAWethic from claims arising from your use of services, violation of these Terms, or false information provided by you.
+                        The Company reserves the right to refuse or terminate services for false information, non-cooperation, or misuse. No refunds shall be issued in such cases.
                     </p>
 
-                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">Dispute Resolution</h2>
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">14. Governing Law &amp; Jurisdiction</h2>
                     <p>
-                        Disputes shall first be resolved through good-faith negotiations. If unresolved within 30 days, disputes may be referred to arbitration under the Arbitration and Conciliation Act, 1996, in Chennai.
-                    </p>
-                    <p className="mt-2">
-                        <strong>Governing Law:</strong> Laws of India<br />
-                        <strong>Jurisdiction:</strong> Courts of Chennai, Tamil Nadu
+                        These Terms are governed by the laws of India. Courts at Chennai shall have exclusive jurisdiction.
                     </p>
 
-                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">Modifications</h2>
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">15. Amendments</h2>
                     <p>
-                        We may modify these Terms at any time. Changes are effective upon posting. Continued use constitutes acceptance of revised Terms.
+                        Terms may be updated at any time without prior notice. Continued use constitutes acceptance.
                     </p>
 
-                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">Termination</h2>
+                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">16. Contact Information</h2>
                     <p>
-                        We may suspend or terminate your access at any time for violation of these Terms or harmful conduct.
-                    </p>
-
-                    <h2 className="text-xl font-semibold text-neutral-900 mt-8">Contact Us</h2>
-                    <p>
-                        For questions about these Terms:<br />
+                        <strong>LAWethic</strong><br />
+                        Chennai, Tamil Nadu, India<br />
                         Email: <a href="mailto:support@lawethic.com" className="text-brand-600 hover:underline">support@lawethic.com</a>
                     </p>
 
