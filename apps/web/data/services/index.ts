@@ -141,13 +141,25 @@ export interface Service {
         description: string
         highlights: string[]
         trustSignals?: {
-            rating: string
-            served: string
-            certified: string
+            rating?: string
+            served?: string
+            certified?: string
+            secure?: string
+            fast?: string
+            support?: string
         }
         // Lead form configuration
         formTitle?: string
         formCta?: string
+        // Stats section
+        stats?: {
+            count?: string
+            countLabel?: string
+            rating?: string
+            ratingLabel?: string
+            timeline?: string
+            timelineLabel?: string
+        }
     }
 
     // Pricing packages

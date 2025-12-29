@@ -6,7 +6,27 @@ interface OverviewSectionProps {
     data: OverviewType
 }
 
+// Check if content contains HTML tags (from rich text editor)
+function isHtmlContent(content: string): boolean {
+    return /<[a-z][\s\S]*>/i.test(content)
+}
+
+// Convert basic markdown-like formatting to HTML (for backwards compatibility)
+function convertMarkdownToHtml(content: string): string {
+    return content
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n\n/g, '</p><p class="mt-4">')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>')
+}
+
 export function OverviewSection({ data }: OverviewSectionProps) {
+    // If content already has HTML tags (from rich text editor), use it directly
+    // Otherwise, apply markdown-like conversion for backwards compatibility
+    const descriptionHtml = isHtmlContent(data.description)
+        ? data.description
+        : convertMarkdownToHtml(data.description)
+
     return (
         <section id="overview" className="scroll-mt-28">
             <h2 className="text-2xl font-bold text-neutral-900 mb-4">{data.title}</h2>
@@ -14,16 +34,10 @@ export function OverviewSection({ data }: OverviewSectionProps) {
             <div className="grid lg:grid-cols-3 gap-8">
                 {/* Content */}
                 <div className="lg:col-span-2">
-                    {/* Description with markdown-like formatting */}
+                    {/* Description with rich text support */}
                     <div
-                        className="prose prose-neutral max-w-none text-neutral-600 leading-relaxed"
-                        dangerouslySetInnerHTML={{
-                            __html: data.description
-                                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                .replace(/\n\n/g, '</p><p class="mt-4">')
-                                .replace(/^/, '<p>')
-                                .replace(/$/, '</p>')
-                        }}
+                        className="prose prose-neutral max-w-none text-neutral-600 leading-relaxed prose-headings:text-neutral-900 prose-h2:text-xl prose-h3:text-lg prose-a:text-brand-600 prose-blockquote:border-l-brand-500 prose-blockquote:bg-neutral-50 prose-blockquote:py-1 prose-blockquote:pr-4"
+                        dangerouslySetInnerHTML={{ __html: descriptionHtml }}
                     />
 
                     {/* Highlights */}

@@ -31,6 +31,7 @@ interface ServicePageClientProps {
 
 export default function ServicePageClient({ service }: ServicePageClientProps) {
     const router = useRouter()
+    // Service data now comes from server (ISR) - no client-side fetch needed
     const [user, setUser] = useState<any>(null)
     const [showAuthModal, setShowAuthModal] = useState(false)
     const [checkingAuth, setCheckingAuth] = useState(true)

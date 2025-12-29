@@ -145,3 +145,186 @@ export interface OrderTimeline {
     updatedBy: string;
     $createdAt: string;
 }
+
+// ============================================
+// SERVICE CONTENT MANAGEMENT TYPES
+// ============================================
+
+export type ServiceContentStatus = 'draft' | 'published';
+
+// Hero section content
+export interface HeroContent {
+    badge?: string;
+    title: string;
+    description: string;
+    highlights: string[];
+    formTitle?: string;
+    formCta?: string;
+    trustSignals?: {
+        secure?: string;
+        fast?: string;
+        support?: string;
+    };
+    stats?: {
+        count?: string;
+        countLabel?: string;
+        rating?: string;
+        ratingLabel?: string;
+        timeline?: string;
+        timelineLabel?: string;
+    };
+}
+
+// Pricing package
+export interface PackageContent {
+    id: string;
+    name: string;
+    price: number;
+    originalPrice?: number;
+    discount?: string;
+    timeline: string;
+    featured: boolean;
+    inclusions: string[];
+    exclusions?: string[];
+    emiAvailable?: boolean;
+}
+
+// Overview section
+export interface OverviewContent {
+    title: string;
+    description: string; // Rich text HTML
+    highlights?: string[];
+}
+
+// Eligibility entity
+export interface EligibilityEntity {
+    name: string;
+    icon?: string; // Lucide icon name
+}
+
+// Eligibility section
+export interface EligibilityContent {
+    title: string;
+    description?: string;
+    entities: EligibilityEntity[];
+}
+
+// Type item (e.g., types of trademarks)
+export interface TypeItemContent {
+    name: string;
+    description: string;
+    icon?: string;
+}
+
+// Types section
+export interface TypesContent {
+    title: string;
+    description?: string;
+    items: TypeItemContent[];
+}
+
+// Fee row for fees table
+export interface FeeRowContent {
+    entityType: string;
+    eFiling: string;
+    physical?: string;
+    notes?: string;
+}
+
+// Fees section
+export interface FeesContent {
+    title: string;
+    description?: string;
+    table: FeeRowContent[];
+}
+
+// Document group
+export interface DocumentGroupContent {
+    entityType: string;
+    items: string[];
+}
+
+// Documents section
+export interface DocumentsContent {
+    title?: string;
+    description?: string;
+    groups: DocumentGroupContent[];
+}
+
+// Process step
+export interface ProcessStepContent {
+    step: number;
+    title: string;
+    description: string;
+    duration: string;
+    icon?: string;
+}
+
+// Benefit item
+export interface BenefitItemContent {
+    title: string;
+    description: string;
+    icon?: string;
+}
+
+// Benefits section
+export interface BenefitsContent {
+    title: string;
+    description?: string;
+    items: BenefitItemContent[];
+}
+
+// FAQ item
+export interface FAQContent {
+    question: string;
+    answer: string; // Rich text HTML
+}
+
+// SEO/Meta content
+export interface MetaContent {
+    title: string;
+    description: string;
+    keywords: string[];
+}
+
+// Full service content structure
+export interface ServiceContentData {
+    // Basic info
+    title: string;
+    shortTitle?: string;
+    category: string;
+    categorySlug: string;
+    basePrice: number;
+    timeline: string;
+    badge?: string;
+
+    // Sections
+    hero: HeroContent;
+    packages: PackageContent[];
+    overview?: OverviewContent;
+    eligibility?: EligibilityContent;
+    types?: TypesContent;
+    fees?: FeesContent;
+    documents?: DocumentsContent;
+    process?: ProcessStepContent[];
+    benefits?: BenefitsContent;
+    faqs?: FAQContent[];
+    meta: MetaContent;
+
+    // Related services
+    relatedServices?: string[];
+}
+
+// Database model for service content
+export interface ServiceContent {
+    $id: string;
+    slug: string;
+    version: number;
+    status: ServiceContentStatus;
+    content: string; // JSON stringified ServiceContentData
+    editedBy: string;
+    publishedAt?: string;
+    changeNote?: string;
+    $createdAt: string;
+    $updatedAt: string;
+}

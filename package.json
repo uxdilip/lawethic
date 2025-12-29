@@ -19,7 +19,8 @@
         "fix-attributes": "tsx scripts/fix-attributes.ts",
         "check-collections": "tsx scripts/check-collections.ts",
         "test-document": "tsx scripts/test-document.ts",
-        "test-order": "tsx scripts/test-order.ts"
+        "test-order": "tsx scripts/test-order.ts",
+        "setup-service-content": "cd scripts && node setup-service-content-collection.js"
     },
     "keywords": [
         "compliance",
@@ -37,6 +38,10 @@
         "tsx": "^4.21.0"
     },
     "dependencies": {
+        "@radix-ui/react-alert-dialog": "^1.1.15",
+        "@radix-ui/react-dropdown-menu": "^2.1.16",
+        "@radix-ui/react-popover": "^1.1.15",
+        "@radix-ui/react-switch": "^1.2.6",
         "@react-pdf/renderer": "^4.3.1",
         "resend": "^6.5.2"
     }
