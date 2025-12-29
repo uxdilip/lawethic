@@ -44,8 +44,8 @@ export function FAQSection({ faqs }: FAQSectionProps) {
                                 <AccordionTrigger className="text-left font-semibold hover:no-underline py-4">
                                     {faq.question}
                                 </AccordionTrigger>
-                                <AccordionContent className="text-gray-600 pb-4">
-                                    {faq.answer}
+                                <AccordionContent className="text-gray-600 pb-4 prose prose-sm prose-neutral max-w-none">
+                                    <div dangerouslySetInnerHTML={{ __html: faq.answer }} />
                                 </AccordionContent>
                             </AccordionItem>
                         ))}

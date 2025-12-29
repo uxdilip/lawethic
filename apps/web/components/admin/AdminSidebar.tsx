@@ -50,6 +50,12 @@ export default function AdminSidebar({ onCommandOpen, onCollapseChange }: Sideba
             icon: Users,
             badge: 'New',
         },
+        {
+            name: 'Services',
+            href: '/admin/services',
+            icon: FileText,
+            badge: null,
+        },
         // { 
         //   name: 'Documents', 
         //   href: '/admin/documents', 

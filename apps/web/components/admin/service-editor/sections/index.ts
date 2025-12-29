@@ -1,0 +1,10 @@
+export { HeroSection } from './HeroSection';
+export { PackagesSection } from './PackagesSection';
+export { OverviewSection } from './OverviewSection';
+export { ProcessSection } from './ProcessSection';
+export { FAQsSection } from './FAQsSection';
+export { DocumentsSection } from './DocumentsSection';
+export { EligibilitySection } from './EligibilitySection';
+export { FeesSection } from './FeesSection';
+export { BenefitsSection } from './BenefitsSection';
+export { MetaSection } from './MetaSection';

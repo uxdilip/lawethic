@@ -2,8 +2,12 @@
     "name": "scripts",
     "version": "1.0.0",
     "private": true,
+    "scripts": {
+        "setup-service-content": "node setup-service-content-collection.js"
+    },
     "dependencies": {
-        "node-appwrite": "^11.0.0",
+        "dotenv": "^16.6.1",
+        "node-appwrite": "^21.1.0",
         "node-fetch": "^2.7.0"
     }
 }

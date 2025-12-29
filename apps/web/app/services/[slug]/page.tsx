@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getServiceBySlug, getAllServiceSlugs } from '@/data/services'
+import { getServiceContent } from '@/lib/services/getServiceContent'
 import ServicePageClient from './ServicePageClient'
 import { ServiceSchema, FAQSchema, BreadcrumbSchema } from '@/components/StructuredData'
 
@@ -20,16 +21,19 @@ export async function generateStaticParams() {
 
 /**
  * Generate metadata for SEO
+ * Uses database content if published, otherwise static
  */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params
-    const service = getServiceBySlug(slug)
+    const result = await getServiceContent(slug)
 
-    if (!service) {
+    if (!result) {
         return {
             title: 'Service Not Found | LawEthic',
         }
     }
+
+    const service = result.service
 
     return {
         title: service.metaTitle,
@@ -64,11 +68,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ServicePage({ params }: Props) {
     const { slug } = await params
-    const service = getServiceBySlug(slug)
 
-    if (!service) {
+    // Fetch service content (from DB if published, otherwise static)
+    // This runs at BUILD time and on REVALIDATION (ISR)
+    const result = await getServiceContent(slug)
+
+    if (!result) {
         notFound()
     }
+
+    const { service, source, version } = result
 
     // Breadcrumb data for structured data
     const breadcrumbs = [
@@ -91,6 +100,13 @@ export default async function ServicePage({ params }: Props) {
                 <FAQSchema faqs={service.faqs} />
             )}
             <BreadcrumbSchema items={breadcrumbs} />
+
+            {/* Debug info - remove in production */}
+            {process.env.NODE_ENV === 'development' && (
+                <div className="hidden">
+                    Content source: {source}, Version: {version}
+                </div>
+            )}
 
             {/* Page Content */}
             <ServicePageClient service={service} />
