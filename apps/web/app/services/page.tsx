@@ -34,7 +34,7 @@ export default function ServicesPage() {
                 <div className="container mx-auto text-center max-w-3xl">
                     <h1 className="text-4xl font-bold mb-4">Our Services</h1>
                     <p className="text-xl text-brand-100">
-                        Professional compliance services handled by experienced CA/CS professionals
+                        Professional compliance services handled by experienced legal experts
                     </p>
                     <div className="flex items-center justify-center gap-6 mt-6 text-sm text-brand-100">
                         <span className="flex items-center gap-2">

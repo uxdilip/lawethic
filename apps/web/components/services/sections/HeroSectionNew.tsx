@@ -107,14 +107,14 @@ export function HeroSectionNew({ service }: HeroSectionNewProps) {
                         <div className="pt-4 border-t border-neutral-200">
                             <div className="flex flex-wrap gap-8">
                                 <div>
-                                    <p className="text-2xl font-bold text-neutral-900">{service.hero.stats?.count || '10,000+'}</p>
-                                    <p className="text-sm text-neutral-500">{service.hero.stats?.countLabel || 'Registrations Done'}</p>
+                                    <p className="text-2xl font-bold text-neutral-900">{service.hero.stats?.count || '100%'}</p>
+                                    <p className="text-sm text-neutral-500">{service.hero.stats?.countLabel || 'Accuracy Guaranteed'}</p>
                                 </div>
                                 <div>
-                                    <p className="text-2xl font-bold text-neutral-900">{service.hero.stats?.rating || '4.8/5'}</p>
+                                    <p className="text-2xl font-bold text-neutral-900">{service.hero.stats?.rating || 'Expert'}</p>
                                     <div className="flex items-center gap-1">
                                         <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
-                                        <span className="text-sm text-neutral-500">{service.hero.stats?.ratingLabel || 'Rating'}</span>
+                                        <span className="text-sm text-neutral-500">{service.hero.stats?.ratingLabel || 'Legal Team'}</span>
                                     </div>
                                 </div>
                                 <div>

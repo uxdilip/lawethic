@@ -348,12 +348,12 @@ export default function HomePage() {
     const processSteps = [
         { title: 'Choose Service', description: 'Browse and select the service you need', icon: Search },
         { title: 'Submit Documents', description: 'Upload required documents securely', icon: FileText },
-        { title: 'Expert Processing', description: 'Our CA/CS team handles your filing', icon: Users },
+        { title: 'Expert Processing', description: 'Our legal team handles your filing', icon: Users },
         { title: 'Get Certificate', description: 'Receive your registration certificate', icon: BadgeCheck },
     ];
 
     const features = [
-        { title: '100% Manual Filing', description: 'Experienced CA/CS professionals handle your documents personally', icon: Users },
+        { title: '100% Manual Filing', description: 'Experienced legal professionals handle your documents personally', icon: Users },
         { title: 'Real-time Tracking', description: 'Track your application status from your dashboard', icon: TrendingUp },
         { title: 'Document Support', description: 'Expert guidance on required documentation', icon: FileCheck },
         { title: 'Transparent Pricing', description: 'No hidden charges, what you see is what you pay', icon: CreditCard },
@@ -433,7 +433,7 @@ export default function HomePage() {
 
                             <p className="text-lg sm:text-xl text-white/80 mb-8 max-w-2xl mx-auto">
                                 GST Registration, Trademark, Company Incorporation & more.
-                                <span className="font-semibold text-brand-200"> 100% manual filing</span> by experienced CA/CS professionals.
+                                <span className="font-semibold text-brand-200"> 100% manual filing</span> by experienced legal professionals.
                             </p>
 
                             {/* CTA Buttons */}
@@ -683,7 +683,7 @@ export default function HomePage() {
                             <ArrowRight className="h-5 w-5" />
                         </Link>
                         <a
-                            href="https://wa.me/919876543210"
+                            href="https://wa.me/918420562101"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 px-8 py-4 bg-white border-2 border-brand-200 text-brand-600 rounded-xl font-semibold hover:bg-brand-50 transition-all duration-300"

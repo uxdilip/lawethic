@@ -39,9 +39,9 @@ function mergeContentWithStatic(content: ServiceContentData, staticService: Stat
             } : undefined,
             // stats - use content if any field is set, otherwise fall back to defaults
             stats: content.hero.stats ? {
-                count: content.hero.stats.count ?? '10,000+',
-                countLabel: content.hero.stats.countLabel ?? 'Registrations Done',
-                rating: content.hero.stats.rating ?? '4.8/5',
+                count: content.hero.stats.count ?? '100%',
+                countLabel: content.hero.stats.countLabel ?? 'Accuracy Guaranteed',
+                rating: content.hero.stats.rating ?? 'Expert',
                 ratingLabel: content.hero.stats.ratingLabel ?? 'Rating',
                 timeline: content.hero.stats.timeline ?? '7-10',
                 timelineLabel: content.hero.stats.timelineLabel ?? 'Working Days',

@@ -109,7 +109,7 @@ export default function TermsPage() {
 
                     <h2 className="text-xl font-semibold text-neutral-900 mt-8">14. Governing Law &amp; Jurisdiction</h2>
                     <p>
-                        These Terms are governed by the laws of India. Courts at Chennai shall have exclusive jurisdiction.
+                        These Terms are governed by the laws of India. Courts at Kolkata shall have exclusive jurisdiction.
                     </p>
 
                     <h2 className="text-xl font-semibold text-neutral-900 mt-8">15. Amendments</h2>
@@ -120,7 +120,8 @@ export default function TermsPage() {
                     <h2 className="text-xl font-semibold text-neutral-900 mt-8">16. Contact Information</h2>
                     <p>
                         <strong>LAWethic</strong><br />
-                        Chennai, Tamil Nadu, India<br />
+                        29/13/A, Naskar Para Road, Haridevpur, Kolkata-700041<br />
+                        Phone: +91 84205 62101<br />
                         Email: <a href="mailto:support@lawethic.com" className="text-brand-600 hover:underline">support@lawethic.com</a>
                     </p>
 

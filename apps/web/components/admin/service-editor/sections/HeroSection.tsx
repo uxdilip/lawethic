@@ -173,7 +173,7 @@ export function HeroSection({ content, onChange }: HeroSectionProps) {
                                     id="stat-count"
                                     value={content.stats?.count || ''}
                                     onChange={(e) => updateStat('count', e.target.value)}
-                                    placeholder="Default: 10,000+"
+                                    placeholder="Default: 100%"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -182,7 +182,7 @@ export function HeroSection({ content, onChange }: HeroSectionProps) {
                                     id="stat-count-label"
                                     value={content.stats?.countLabel || ''}
                                     onChange={(e) => updateStat('countLabel', e.target.value)}
-                                    placeholder="Default: Registrations Done"
+                                    placeholder="Default: Accuracy Guaranteed"
                                 />
                             </div>
                         </div>
@@ -193,7 +193,7 @@ export function HeroSection({ content, onChange }: HeroSectionProps) {
                                     id="stat-rating"
                                     value={content.stats?.rating || ''}
                                     onChange={(e) => updateStat('rating', e.target.value)}
-                                    placeholder="Default: 4.8/5"
+                                    placeholder="Default: Expert"
                                 />
                             </div>
                             <div className="space-y-2">

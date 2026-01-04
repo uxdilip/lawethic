@@ -12,7 +12,7 @@ export function OrganizationSchema() {
         alternateName: 'LawEthic',
         url: 'https://lawethic.com',
         logo: 'https://lawethic.com/logo.png',
-        description: 'India\'s trusted platform for business registration, trademark filing, FSSAI license, and compliance services. Expert CA/CS professionals with 100% online process.',
+        description: 'India\'s trusted platform for business registration, trademark filing, FSSAI license, and compliance services. Expert legal professionals with 100% online process.',
         foundingDate: '2024',
         founders: [
             {
@@ -244,14 +244,14 @@ export function LocalBusinessSchema() {
         name: 'LAWethic',
         image: 'https://lawethic.com/logo.png',
         url: 'https://lawethic.com',
-        telephone: '+91-1234567890',
+        telephone: '+91-8420562101',
         email: 'support@lawethic.com',
         address: {
             '@type': 'PostalAddress',
-            streetAddress: 'Your Street Address',
-            addressLocality: 'Your City',
-            addressRegion: 'Your State',
-            postalCode: 'Your PIN',
+            streetAddress: '29/13/A, Naskar Para Road, Haridevpur',
+            addressLocality: 'Kolkata',
+            addressRegion: 'West Bengal',
+            postalCode: '700041',
             addressCountry: 'IN',
         },
         geo: {

@@ -32,7 +32,7 @@ export const metadata: Metadata = {
         default: 'LAWethic - India\'s Trusted Business Registration & Compliance Platform',
         template: '%s | LAWethic',
     },
-    description: 'India\'s leading platform for Trademark Registration, FSSAI License, Trade License, MSME Registration & more. Expert CA/CS professionals. 100% online process. Starting ₹999.',
+    description: 'India\'s leading platform for Trademark Registration, FSSAI License, Trade License, MSME Registration & more. Expert legal professionals. 100% online process. Starting ₹999.',
     keywords: [
         'trademark registration',
         'FSSAI license',

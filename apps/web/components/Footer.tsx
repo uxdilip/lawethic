@@ -16,7 +16,7 @@ export default function Footer() {
                         </h3>
                         <p className="text-brand-200 text-sm leading-relaxed mb-6">
                             Professional compliance services platform for businesses across India.
-                            100% manual filing by experienced CA/CS professionals.
+                            100% manual filing by experienced legal professionals.
                         </p>
                         <div className="flex items-center gap-3">
                             <Lock className="h-5 w-5 text-brand-200" />
@@ -39,8 +39,6 @@ export default function Footer() {
                     <div>
                         <h4 className="font-semibold mb-4">Company</h4>
                         <ul className="space-y-3 text-sm">
-                            <li><Link href="/about" className="text-brand-200 hover:text-white transition-colors">About Us</Link></li>
-                            <li><Link href="/contact" className="text-brand-200 hover:text-white transition-colors">Contact</Link></li>
                             <li><Link href="/privacy" className="text-brand-200 hover:text-white transition-colors">Privacy Policy</Link></li>
                             <li><Link href="/terms" className="text-brand-200 hover:text-white transition-colors">Terms of Service</Link></li>
                             <li><Link href="/refund" className="text-brand-200 hover:text-white transition-colors">Refund Policy</Link></li>
@@ -57,11 +55,11 @@ export default function Footer() {
                             </li>
                             <li className="flex items-start gap-3">
                                 <Phone className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                                <span>+91 98765 43210</span>
+                                <span>+91 84205 62101</span>
                             </li>
                             <li className="flex items-start gap-3">
                                 <MapPin className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                                <span>Chennai, Tamil Nadu, India</span>
+                                <span>29/13/A, Naskar Para Road, Haridevpur, Kolkata-700041</span>
                             </li>
                         </ul>
                     </div>

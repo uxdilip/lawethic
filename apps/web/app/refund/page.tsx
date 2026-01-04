@@ -56,7 +56,8 @@ export default function RefundPolicyPage() {
                     <p>
                         For refund requests or questions:<br />
                         <strong>LAWethic</strong><br />
-                        Chennai, Tamil Nadu, India<br />
+                        29/13/A, Naskar Para Road, Haridevpur, Kolkata-700041<br />
+                        Phone: +91 84205 62101<br />
                         Email: <a href="mailto:support@lawethic.com" className="text-brand-600 hover:underline">support@lawethic.com</a>
                     </p>
 
