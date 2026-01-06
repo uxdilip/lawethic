@@ -60,9 +60,14 @@ export function FAQSection({ faqs }: FAQSectionProps) {
                     className="text-center mt-12"
                 >
                     <p className="text-gray-600 mb-4">Still have questions?</p>
-                    <button className="text-blue-600 font-semibold hover:underline">
+                    <a
+                        href="https://wa.me/918420562101"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 font-semibold hover:underline"
+                    >
                         Talk to an Expert →
-                    </button>
+                    </a>
                 </motion.div>
             </div>
         </section>
