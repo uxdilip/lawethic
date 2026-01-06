@@ -27,7 +27,8 @@ import {
     Phone,
     Mail,
     MapPin,
-    ArrowUpRight
+    ArrowUpRight,
+    Receipt
 } from 'lucide-react';
 
 // ============================================
@@ -295,6 +296,7 @@ export default function HomePage() {
     const categories = [
         { id: 'all', label: 'All Services', icon: Sparkles },
         { id: 'trademark', label: 'Trademark & IP', icon: Award },
+        { id: 'tax', label: 'Tax & Compliance', icon: Receipt },
         { id: 'licenses', label: 'Licenses', icon: BadgeCheck },
     ];
 
@@ -302,27 +304,47 @@ export default function HomePage() {
         {
             slug: 'trademark-registration',
             name: 'Trademark Registration',
-            price: '₹4,999',
-            timeline: '1-2 days filing',
+            price: '₹1,299',
+            timeline: '3-5 days',
             description: 'Protect your brand identity and logo',
             icon: Award,
             gradient: 'from-brand-600 to-brand-500',
             category: 'trademark',
         },
         {
+            slug: 'gst-registration',
+            name: 'GST Registration',
+            price: '₹399',
+            timeline: '2-5 days',
+            description: 'Get your GSTIN for business compliance',
+            icon: Receipt,
+            gradient: 'from-brand-600 to-brand-500',
+            category: 'tax',
+        },
+        {
+            slug: 'gst-return-filing',
+            name: 'GST Return Filing',
+            price: '₹799',
+            timeline: 'Monthly',
+            description: 'Timely GSTR-1 & 3B filing by experts',
+            icon: FileText,
+            gradient: 'from-brand-600 to-brand-500',
+            category: 'tax',
+        },
+        {
             slug: 'fssai-registration',
             name: 'FSSAI License',
-            price: '₹1,999',
-            timeline: '7-15 days',
+            price: '₹1,299',
+            timeline: '7-10 days',
             description: 'Required for all food businesses',
             icon: BadgeCheck,
             gradient: 'from-brand-600 to-brand-500',
             category: 'licenses',
         },
         {
-            slug: 'trade-license-registration',
+            slug: 'trade-license',
             name: 'Trade License',
-            price: '₹2,999',
+            price: '₹3,599',
             timeline: '7-15 days',
             description: 'Required for operating any business legally',
             icon: Building2,
@@ -332,8 +354,8 @@ export default function HomePage() {
         {
             slug: 'iec-registration',
             name: 'Import Export Code',
-            price: '₹1,499',
-            timeline: '3-5 days',
+            price: '₹1,699',
+            timeline: '2-5 days',
             description: 'Essential for international trade',
             icon: TrendingUp,
             gradient: 'from-brand-600 to-brand-500',

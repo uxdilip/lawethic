@@ -33,6 +33,36 @@ export const NAVIGATION_STRUCTURE: NavigationParent[] = [
         ]
     },
     {
+        id: 'tax-compliance',
+        title: 'Tax & Compliance',
+        href: '#',
+        children: [
+            {
+                id: 'gst-services',
+                title: 'GST Services',
+                description: 'GST registration and return filing',
+                icon: 'Receipt',
+                href: '/services',
+                services: [
+                    {
+                        slug: 'gst-registration',
+                        title: 'GST Registration',
+                        price: 399,
+                        timeline: '2-5 days',
+                        badge: '✓ Get GSTIN'
+                    },
+                    {
+                        slug: 'gst-return-filing',
+                        title: 'GST Return Filing',
+                        price: 799,
+                        timeline: 'Monthly/Quarterly',
+                        badge: '✓ Stay Compliant'
+                    }
+                ]
+            }
+        ]
+    },
+    {
         id: 'licenses-registrations',
         title: 'Licenses & Registrations',
         href: '#',
@@ -47,36 +77,29 @@ export const NAVIGATION_STRUCTURE: NavigationParent[] = [
                     {
                         slug: 'trade-license',
                         title: 'Trade License',
-                        price: 2499,
-                        timeline: '7-12 days',
+                        price: 3599,
+                        timeline: '7-15 days',
                         badge: '✓ Essential'
                     },
                     {
                         slug: 'fssai-registration',
                         title: 'FSSAI Food License',
-                        price: 1999,
-                        timeline: '5-7 days',
+                        price: 1299,
+                        timeline: '7-10 days',
                         badge: '✓ Food Business'
                     },
                     {
                         slug: 'udyam-registration',
-                        title: 'Udyam Registration',
-                        price: 499,
+                        title: 'Udyam/MSME Registration',
+                        price: 199,
                         timeline: '1-2 days',
                         badge: '✓ Free on Govt Portal'
                     },
                     {
-                        slug: 'msme-registration',
-                        title: 'MSME Registration',
-                        price: 499,
-                        timeline: '1-2 days',
-                        badge: null
-                    },
-                    {
                         slug: 'iec-registration',
                         title: 'IEC Import/Export Code',
-                        price: 1499,
-                        timeline: '2-3 days',
+                        price: 1699,
+                        timeline: '2-5 days',
                         badge: '✓ Go Global'
                     }
                 ]

@@ -1,11 +1,15 @@
 import { TypesSection as TypesType } from '@/data/services'
 import {
     Package, Briefcase, BadgeCheck, Users, Box, Palette,
-    Volume2, Paintbrush, FileText, Award
+    Volume2, Paintbrush, FileText, Award, User, Building,
+    Landmark, Globe, Calendar, GitBranch, ShoppingBag,
+    ShoppingCart, Factory, UtensilsCrossed, AlertTriangle,
+    TrendingUp, Layers, GitCompare, FileOutput, FileInput
 } from 'lucide-react'
 
-// Icon mapping
+// Icon mapping - comprehensive list for all type items
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+    // Trademark types
     Package,
     Briefcase,
     BadgeCheck,
@@ -14,8 +18,29 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     Palette,
     Volume2,
     Paintbrush,
+    // Common
     FileText,
-    Award
+    Award,
+    User,
+    Building,
+    Landmark,
+    Globe,
+    // GST types
+    Calendar,
+    GitBranch,
+    ShoppingBag,
+    ShoppingCart,
+    // License types
+    Factory,
+    UtensilsCrossed,
+    AlertTriangle,
+    // MSME types
+    TrendingUp,
+    Layers,
+    // GST Filing types
+    GitCompare,
+    FileOutput,
+    FileInput
 }
 
 interface TypesSectionProps {

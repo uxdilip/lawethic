@@ -1,21 +1,43 @@
 import { EligibilitySection as EligibilityType } from '@/data/services'
 import {
     User, Users, Store, Building, Building2,
-    Landmark, Globe, Heart, Briefcase
+    Landmark, Globe, Heart, Briefcase, Handshake,
+    Factory, UtensilsCrossed, ChefHat, Warehouse, Milk,
+    Hospital, Ticket, Truck, TrendingUp, Calendar,
+    GitBranch, Receipt, ShoppingCart, Package
 } from 'lucide-react'
 
-// Icon mapping
+// Icon mapping - comprehensive list for all eligibility entities
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+    // Common entity types
     User,
     Users,
     Store,
-    Handshake: Briefcase, // Handshake not available in lucide, use Briefcase
     Building,
     Building2,
     Landmark,
     Globe,
     Heart,
-    Briefcase
+    Briefcase,
+    Handshake,
+    // Business types
+    Factory,
+    Warehouse,
+    Package,
+    // Food & hospitality
+    UtensilsCrossed,
+    ChefHat,
+    Milk,
+    // Healthcare & services
+    Hospital,
+    Ticket,
+    Truck,
+    // GST & compliance
+    TrendingUp,
+    Calendar,
+    GitBranch,
+    Receipt,
+    ShoppingCart
 }
 
 interface EligibilitySectionProps {

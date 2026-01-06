@@ -43,13 +43,7 @@ const GOVERNMENT_FEES: Record<string, { label: string; items: { label: string; a
         ]
     },
     'udyam-registration': {
-        label: 'Udyam Registration',
-        items: [
-            { label: 'Government Fee', amount: 0 },
-        ]
-    },
-    'msme-registration': {
-        label: 'MSME Registration',
+        label: 'Udyam/MSME Registration',
         items: [
             { label: 'Government Fee', amount: 0 },
         ]

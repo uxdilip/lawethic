@@ -24,8 +24,8 @@ const GOVERNMENT_FEES: Record<string, { name: string; amount: number; descriptio
     'import-export-code': [
         { name: 'IEC Registration Fee', amount: 500, description: 'Government fee for IEC' },
     ],
-    'msme-registration': [
-        { name: 'MSME/Udyam Registration', amount: 0, description: 'Free government registration' },
+    'udyam-registration': [
+        { name: 'Udyam/MSME Registration', amount: 0, description: 'Free government registration' },
     ],
     'professional-tax': [
         { name: 'Professional Tax Registration', amount: 500, description: 'State registration fee' },
@@ -221,8 +221,8 @@ export default function GovFeeRequestModal({
                                             key={index}
                                             onClick={() => togglePredefinedFee(fee)}
                                             className={`flex items-center justify-between p-3 rounded-lg border transition-colors text-left ${isAdded
-                                                    ? 'bg-brand-50 border-brand-200'
-                                                    : 'bg-neutral-50 hover:bg-neutral-100 border-neutral-200'
+                                                ? 'bg-brand-50 border-brand-200'
+                                                : 'bg-neutral-50 hover:bg-neutral-100 border-neutral-200'
                                                 }`}
                                         >
                                             <div>

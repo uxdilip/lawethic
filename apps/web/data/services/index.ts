@@ -232,28 +232,28 @@ export const SERVICES: Service[] = [
         shortTitle: 'Trademark',
         category: 'Trademark & IP',
         categorySlug: 'trademark-registration',
-        basePrice: 1999,
-        timeline: '1-2 days filing',
+        basePrice: 1299,
+        timeline: '3-5 working days',
         badge: 'Brand Protection',
 
-        metaTitle: 'Trademark Registration Online @ ₹1999 | Protect Your Brand | LawEthic',
-        metaDescription: 'Register your trademark in India. Protect your brand, logo, and name. Expert filing in 1-2 days. 10-year protection with renewal option.',
+        metaTitle: 'Trademark Registration Online @ ₹1299 | Protect Your Brand | LawEthic',
+        metaDescription: 'Register your trademark in India. Protect your brand, logo, and name. Expert filing. 10-year protection with renewal option.',
         keywords: ['trademark registration', 'brand registration', 'logo trademark', 'tm registration india'],
 
         hero: {
             badge: 'Protect Your Brand',
             title: 'Trademark Registration Online in India',
-            description: 'Protect your brand name, logo, and tagline with expert trademark registration. 10-year protection starting at ₹1,999 + govt fees.',
+            description: 'Protect your brand name, logo, and tagline with expert trademark registration. 10-year protection starting at ₹1,299 + govt fees.',
             highlights: [
-                'Trademark filing starts at ₹1,999 + govt fees',
+                'Trademark filing starts at ₹1,299 + govt fees',
                 'Senior IP lawyer conducts thorough trademark search',
-                '30-minute consultation with a Trademark Expert',
-                'Filing within 6 hours, TM symbol in 24 hours'
+                'Expert consultation included',
+                'Status monitoring & objection support'
             ],
             trustSignals: {
-                rating: '4.5/5 Google Rating',
-                served: '15,000+ Trademarks Filed',
-                certified: 'IP Certified Experts'
+                secure: '100% Online Process',
+                fast: 'Quick Processing',
+                support: 'Expert Support'
             },
             formTitle: 'Register Your Trademark!',
             formCta: 'Get Started'
@@ -261,20 +261,18 @@ export const SERVICES: Service[] = [
 
         packages: [
             {
-                id: 'standard',
-                name: 'Standard Filing',
-                price: 1999,
-                originalPrice: 2999,
-                discount: '33% off',
-                timeline: '3 working days',
+                id: 'basic',
+                name: 'Basic',
+                price: 1299,
+                originalPrice: 1999,
+                discount: '35% off',
+                timeline: '3-5 working days',
                 featured: false,
                 inclusions: [
-                    '30-minute consultation with TM Expert',
-                    'Thorough TM name/logo search',
-                    'Assistance in selecting TM class',
-                    'Form 48 - Complementary',
-                    'TM Filing within 3 working days',
-                    'TM Receipt within 3 working days'
+                    'Trademark search',
+                    'Expert consultation',
+                    'TM-A filing',
+                    'Status monitoring'
                 ],
                 exclusions: [
                     'Government fees (₹4,500 for individuals/MSME)',
@@ -282,22 +280,62 @@ export const SERVICES: Service[] = [
                 ]
             },
             {
-                id: 'express',
-                name: 'Express Filing',
-                price: 2999,
-                originalPrice: 4999,
-                discount: '40% off',
-                timeline: '6 hours',
+                id: 'combo',
+                name: 'Combo',
+                price: 2099,
+                originalPrice: 2999,
+                discount: '30% off',
+                timeline: '3-5 working days',
+                featured: false,
+                inclusions: [
+                    'Word mark + Device mark filing',
+                    'Trademark search',
+                    'TM-A filing for both marks',
+                    'Status monitoring'
+                ],
+                exclusions: [
+                    'Government fees (₹4,500 per mark for individuals/MSME)',
+                    'Objection handling'
+                ]
+            },
+            {
+                id: 'standard',
+                name: 'Standard',
+                price: 2299,
+                originalPrice: 3499,
+                discount: '34% off',
+                timeline: '3-5 working days',
                 featured: true,
+                inclusions: [
+                    'Trademark search',
+                    'Expert consultation',
+                    'TM-A filing',
+                    'Objection reply drafting',
+                    'Multiple objection handling',
+                    'Status monitoring'
+                ],
+                exclusions: [
+                    'Government fees (₹4,500 for individuals/MSME)'
+                ]
+            },
+            {
+                id: 'premium',
+                name: 'Premium',
+                price: 4599,
+                originalPrice: 6999,
+                discount: '34% off',
+                timeline: '3-5 working days',
+                featured: false,
                 emiAvailable: true,
                 inclusions: [
-                    '30-minute consultation with TM Expert',
-                    'Thorough TM name/logo search',
-                    'Assistance in selecting TM class',
-                    'Form 48 - Complementary',
-                    'TM Filing within 6 hours',
-                    'TM Receipt within 24 hours',
-                    'Free MSME Registration'
+                    'Complete trademark registration',
+                    'Trademark search & consultation',
+                    'TM-A filing',
+                    'Objection reply drafting',
+                    'Multiple objection handling',
+                    'Hearing representation',
+                    'Multiple hearings support',
+                    'Dedicated expert support'
                 ],
                 exclusions: [
                     'Government fees (₹4,500 for individuals/MSME)'
@@ -637,21 +675,21 @@ At LawEthic, we simplify the online trademark registration process by offering e
     // UDYAM REGISTRATION
     {
         slug: 'udyam-registration',
-        title: 'Udyam Registration',
-        shortTitle: 'Udyam Registration',
+        title: 'Udyam/MSME Registration',
+        shortTitle: 'Udyam/MSME',
         category: 'Licenses & Registrations',
         categorySlug: 'licenses-registrations',
-        basePrice: 499,
+        basePrice: 199,
         timeline: '1-2 days',
         badge: 'Free on Govt Portal',
 
-        metaTitle: 'Udyam Registration Online @ ₹499 | MSME Registration | LawEthic',
-        metaDescription: 'Get Udyam Registration (MSME) online with expert assistance. Free on government portal. Get your Udyam certificate with permanent registration number in 1-2 days.',
+        metaTitle: 'Udyam/MSME Registration Online @ ₹199 | LawEthic',
+        metaDescription: 'Get Udyam/MSME Registration online with expert assistance. Free on government portal. Get your Udyam certificate with permanent registration number in 1-2 days.',
         keywords: ['udyam registration', 'msme registration', 'udyam portal', 'udyam certificate', 'msme certificate'],
 
         hero: {
             badge: 'Most Popular for MSMEs',
-            title: 'Udyam Registration Online',
+            title: 'Udyam/MSME Registration Online',
             description: 'Register your Micro, Small, or Medium Enterprise with expert assistance. Get your Udyam Registration Number and certificate delivered to your email.',
             highlights: [
                 'Online Udyam registration done by experts',
@@ -660,9 +698,9 @@ At LawEthic, we simplify the online trademark registration process by offering e
                 'Permanent Udyam Registration Number'
             ],
             trustSignals: {
-                rating: '4.5/5 Google Rating',
-                served: '50,000+ MSMEs Registered',
-                certified: 'MSME Certified Experts'
+                secure: '100% Online Process',
+                fast: 'Quick Processing',
+                support: 'Expert Support'
             },
             formTitle: 'Register Your MSME!',
             formCta: 'Get Started'
@@ -671,38 +709,20 @@ At LawEthic, we simplify the online trademark registration process by offering e
         packages: [
             {
                 id: 'basic',
-                name: 'Basic',
-                price: 499,
-                originalPrice: 999,
-                discount: '50% off',
-                timeline: '2 days',
-                featured: false,
+                name: 'Udyam/MSME Registration',
+                price: 199,
+                originalPrice: 499,
+                discount: '60% off',
+                timeline: '1-2 days',
+                featured: true,
                 inclusions: [
                     'Udyam Registration Filing',
                     'Document Verification',
                     'Udyam Certificate',
                     'Permanent Registration Number',
-                    'Email & WhatsApp Support'
+                    'Expert Support'
                 ],
-                exclusions: [
-                    'Express processing'
-                ]
-            },
-            {
-                id: 'express',
-                name: 'Express',
-                price: 999,
-                originalPrice: 1499,
-                discount: '33% off',
-                timeline: 'Same day',
-                featured: true,
-                inclusions: [
-                    'Everything in Basic',
-                    'Same-day Registration',
-                    'Priority Processing',
-                    'Dedicated Expert Support',
-                    'NIC Code Selection Help'
-                ]
+                exclusions: []
             }
         ],
 
@@ -923,265 +943,7 @@ The registration is fully online, requires only **Aadhaar and PAN** for verifica
             }
         ],
 
-        relatedServices: ['msme-registration', 'trademark-registration']
-    },
-
-    // MSME REGISTRATION
-    {
-        slug: 'msme-registration',
-        title: 'MSME Registration',
-        shortTitle: 'MSME Registration',
-        category: 'Licenses & Registrations',
-        categorySlug: 'licenses-registrations',
-        basePrice: 499,
-        timeline: '1-2 days',
-        badge: null,
-
-        metaTitle: 'MSME Registration Online @ ₹499 | Udyam Certificate | LawEthic',
-        metaDescription: 'Get MSME Registration online through Udyam portal. Official government recognition for your business. Access subsidies, schemes, and financial benefits.',
-        keywords: ['msme registration', 'msme certificate', 'msme online registration', 'udyam msme', 'small business registration'],
-
-        hero: {
-            badge: 'Government Recognition',
-            title: 'MSME Registration Online',
-            description: 'Give your startup official government recognition through MSME registration. Access schemes, subsidies, and financial benefits designed for small businesses.',
-            highlights: [
-                'Expert legal help for smooth documentation',
-                'Fast, error-free registration process',
-                'Access to government schemes and subsidies',
-                'Permanent MSME certificate'
-            ],
-            trustSignals: {
-                rating: '4.5/5 Google Rating',
-                served: '50,000+ MSMEs Registered',
-                certified: 'MSME Certified Experts'
-            },
-            formTitle: 'Register Your MSME!',
-            formCta: 'Get Started'
-        },
-
-        packages: [
-            {
-                id: 'basic',
-                name: 'Basic',
-                price: 499,
-                originalPrice: 999,
-                discount: '50% off',
-                timeline: '2 days',
-                featured: false,
-                inclusions: [
-                    'MSME/Udyam Registration',
-                    'Document Verification',
-                    'MSME Certificate',
-                    'Permanent Registration Number',
-                    'Basic Support'
-                ]
-            },
-            {
-                id: 'complete',
-                name: 'Complete',
-                price: 999,
-                originalPrice: 1999,
-                discount: '50% off',
-                timeline: 'Same day',
-                featured: true,
-                inclusions: [
-                    'Everything in Basic',
-                    'Same-day Registration',
-                    'NIC Code Selection Help',
-                    'GST Registration Support',
-                    'Priority Support',
-                    'Compliance Guidance'
-                ]
-            }
-        ],
-
-        overview: {
-            title: 'What is MSME Registration?',
-            description: `MSME stands for **Micro, Small, and Medium Enterprises**. MSME Registration (now called Udyam Registration) provides official government recognition to businesses, enabling them to access various benefits and support programs.
-
-The Ministry of MSME is responsible for formulating rules, regulations, and laws relating to micro, small, and medium enterprises with the goal of promoting economic growth.
-
-Registration is done through the **Udyam portal** using Aadhaar and PAN-based verification. The process is completely **free** on the government portal and provides instant certification.`,
-            highlights: [
-                'Official government recognition for your business',
-                'Access to exclusive MSME schemes and subsidies',
-                'Eligibility for priority sector lending',
-                'Protection against delayed payments',
-                'Reduced fees for trademarks and patents',
-                'Easier access to credit and loans'
-            ],
-            image: '/images/services/msme/overview.svg'
-        },
-
-        eligibility: {
-            title: 'Who Can Apply for MSME Registration?',
-            description: 'Any enterprise meeting the investment and turnover criteria can register as MSME, regardless of business structure.',
-            entities: [
-                { name: 'Sole Proprietorships', icon: 'User' },
-                { name: 'Partnership Firms', icon: 'Handshake' },
-                { name: 'Private Limited Companies', icon: 'Building' },
-                { name: 'Limited Liability Partnerships', icon: 'Briefcase' },
-                { name: 'One Person Companies', icon: 'User' },
-                { name: 'Hindu Undivided Families', icon: 'Users' },
-                { name: 'Cooperative Societies', icon: 'Users' },
-                { name: 'Trusts', icon: 'Heart' }
-            ]
-        },
-
-        types: {
-            title: 'MSME Classification',
-            description: 'MSMEs are classified based on investment in plant & machinery and annual turnover.',
-            items: [
-                {
-                    name: 'Micro Enterprise',
-                    description: 'Investment up to ₹1 crore AND Turnover up to ₹5 crore. Ideal for startups and small businesses.',
-                    icon: 'Sparkles'
-                },
-                {
-                    name: 'Small Enterprise',
-                    description: 'Investment up to ₹10 crore AND Turnover up to ₹50 crore. Growing businesses with established operations.',
-                    icon: 'TrendingUp'
-                },
-                {
-                    name: 'Medium Enterprise',
-                    description: 'Investment up to ₹50 crore AND Turnover up to ₹250 crore. Larger enterprises with significant operations.',
-                    icon: 'Building2'
-                }
-            ]
-        },
-
-        documents: {
-            title: 'Documents Required for MSME Registration',
-            description: 'Simple documentation required for MSME registration through Udyam portal.',
-            groups: [
-                {
-                    entityType: 'All Applicants',
-                    items: [
-                        'Aadhaar Number of Owner/Partner/Director',
-                        'PAN Card of Enterprise',
-                        'Business Address Details',
-                        'Bank Account Number & IFSC',
-                        'NIC 2-digit Code',
-                        'Investment Details (Plant/Equipment)',
-                        'Turnover Details'
-                    ]
-                },
-                {
-                    entityType: 'If Previously Registered',
-                    items: [
-                        'GST Number (if applicable)',
-                        'Previous EM-II or UAM Number',
-                        'Sales and Purchase Bill Copies',
-                        'Machinery Purchase Bills'
-                    ]
-                }
-            ]
-        },
-
-        process: [
-            {
-                step: 1,
-                title: 'Share Documents',
-                description: 'Provide Aadhaar, PAN, and business details to our team.',
-                duration: '1 hour',
-                icon: 'Upload'
-            },
-            {
-                step: 2,
-                title: 'Aadhaar OTP Verification',
-                description: 'Authenticate using OTP sent to Aadhaar-linked mobile.',
-                duration: '5 minutes',
-                icon: 'Smartphone'
-            },
-            {
-                step: 3,
-                title: 'PAN Verification',
-                description: 'Investment and turnover details fetched from IT/GST systems.',
-                duration: '5 minutes',
-                icon: 'CheckCircle'
-            },
-            {
-                step: 4,
-                title: 'Form Submission',
-                description: 'Complete details including NIC code and enterprise information.',
-                duration: '30 minutes',
-                icon: 'FileCheck'
-            },
-            {
-                step: 5,
-                title: 'Certificate Issued',
-                description: 'MSME Certificate with dynamic QR code sent to email.',
-                duration: 'Instant',
-                icon: 'Award'
-            }
-        ],
-
-        benefits: {
-            title: 'Benefits of MSME Registration',
-            description: 'MSME registration opens doors to various government schemes and financial benefits.',
-            items: [
-                {
-                    title: 'Government Schemes Access',
-                    description: 'Access Credit Guarantee, PMEGP, RAMP, and other MSME-focused schemes.',
-                    icon: 'Gift'
-                },
-                {
-                    title: 'Easier Credit Access',
-                    description: 'Collateral-free loans, lower interest rates, and priority sector lending benefits.',
-                    icon: 'CreditCard'
-                },
-                {
-                    title: 'Tax Benefits',
-                    description: 'Extended MAT credit for 15 years, excise exemptions, and other tax advantages.',
-                    icon: 'Receipt'
-                },
-                {
-                    title: 'Government Tenders Priority',
-                    description: 'Preference in government procurement and participation in tenders.',
-                    icon: 'FileText'
-                },
-                {
-                    title: 'Dispute Resolution',
-                    description: 'Access to MSME tribunals for quick resolution of payment disputes.',
-                    icon: 'Scale'
-                },
-                {
-                    title: 'Subsidy Benefits',
-                    description: 'Electricity bill subsidies, Industrial Promotion Subsidy, and ISO certification support.',
-                    icon: 'BadgePercent'
-                }
-            ]
-        },
-
-        faqs: [
-            {
-                question: 'Is MSME registration free?',
-                answer: 'Yes, MSME/Udyam registration is completely free on the government portal. You only pay for professional assistance if you choose to use our services.'
-            },
-            {
-                question: 'What is the difference between MSME and Udyam?',
-                answer: 'MSME and Udyam refer to the same registration. Udyam is the new portal/system introduced in 2020 for MSME registration, replacing the earlier Udyog Aadhaar system.'
-            },
-            {
-                question: 'Is Aadhaar mandatory for MSME registration?',
-                answer: 'Yes, Aadhaar is mandatory for identity verification during Udyam registration. The Aadhaar number of the business owner/partner/director is required.'
-            },
-            {
-                question: 'How long is MSME registration valid?',
-                answer: 'MSME/Udyam registration is permanent and does not expire. However, annual updation of ITR and GSTR details is recommended.'
-            },
-            {
-                question: 'Can a trading company register for MSME?',
-                answer: 'Yes, trading companies can register for MSME by providing business details through the Udyam portal. Both manufacturing and service enterprises are eligible.'
-            },
-            {
-                question: 'What is the NIC code for MSME registration?',
-                answer: 'NIC (National Industrial Classification) code is a 6-digit code that categorizes your business activity. We help you select the correct NIC code during registration.'
-            }
-        ],
-
-        relatedServices: ['udyam-registration', 'fssai-registration']
+        relatedServices: ['fssai-registration', 'trademark-registration']
     },
 
     // FSSAI FOOD LICENSE
@@ -1191,12 +953,12 @@ Registration is done through the **Udyam portal** using Aadhaar and PAN-based ve
         shortTitle: 'FSSAI License',
         category: 'Licenses & Registrations',
         categorySlug: 'licenses-registrations',
-        basePrice: 1999,
-        timeline: '5-7 days',
+        basePrice: 1299,
+        timeline: '7-10 days',
         badge: 'Food Business Essential',
 
-        metaTitle: 'FSSAI Registration Online @ ₹1999 | Food License in 5 Days | LawEthic',
-        metaDescription: 'Get FSSAI Food License online. Registration completed in 5 days. Expert guidance to choose the right license type. 100% online process.',
+        metaTitle: 'FSSAI Registration Online @ ₹1299 | Food License | LawEthic',
+        metaDescription: 'Get FSSAI Food License online. Basic registration from ₹1,299. Expert guidance to choose the right license type. 100% online process.',
         keywords: ['fssai registration', 'fssai license', 'food license', 'fssai certificate', 'food business license'],
 
         hero: {
@@ -1210,9 +972,9 @@ Registration is done through the **Udyam portal** using Aadhaar and PAN-based ve
                 '100% online process'
             ],
             trustSignals: {
-                rating: '4.5/5 Google Rating',
-                served: '25,000+ Food Licenses Issued',
-                certified: 'FSSAI Certified Experts'
+                secure: '100% Online Process',
+                fast: 'Quick Processing',
+                support: 'Expert Support'
             },
             formTitle: 'Get Your Food License!',
             formCta: 'Get Started'
@@ -1222,38 +984,35 @@ Registration is done through the **Udyam portal** using Aadhaar and PAN-based ve
             {
                 id: 'basic-registration',
                 name: 'Basic Registration',
-                price: 1999,
-                originalPrice: 2999,
-                discount: '33% off',
-                timeline: '7 days',
+                price: 1299,
+                originalPrice: 1999,
+                discount: '35% off',
+                timeline: '7-10 working days',
                 featured: false,
                 inclusions: [
-                    'FSSAI Basic Registration',
-                    'Document Preparation',
-                    'Application Filing',
-                    'Registration Certificate',
-                    'Email Support'
+                    '14-digit FSSAI registration',
+                    'Documentation & filing',
+                    'Application tracking',
+                    'Expert support till certificate issuance'
                 ],
                 exclusions: [
-                    'Government fees',
-                    'State license support'
+                    'State/Central license support'
                 ]
             },
             {
                 id: 'state-license',
                 name: 'State License',
-                price: 3999,
-                originalPrice: 5999,
+                price: 1999,
+                originalPrice: 2999,
                 discount: '33% off',
-                timeline: '10-15 days',
+                timeline: '20-25 working days',
                 featured: true,
                 inclusions: [
-                    'FSSAI State License Filing',
-                    'Document Preparation & Verification',
-                    'Application Tracking',
-                    'License Certificate',
-                    'Dedicated Support',
-                    '1-Year Compliance Support'
+                    'State FSSAI license (1-year validity)',
+                    'Complete documentation & filing',
+                    'Follow-ups with department',
+                    'Expert consultation',
+                    'For turnover ₹12 Lakhs - ₹20 Crores'
                 ],
                 exclusions: [
                     'Government fees (₹2,000-5,000/year)'
@@ -1262,21 +1021,20 @@ Registration is done through the **Udyam portal** using Aadhaar and PAN-based ve
             {
                 id: 'central-license',
                 name: 'Central License',
-                price: 5999,
-                originalPrice: 8999,
+                price: 3999,
+                originalPrice: 5999,
                 discount: '33% off',
-                timeline: '15-30 days',
+                timeline: '~1 month',
                 featured: false,
                 inclusions: [
-                    'FSSAI Central License Filing',
-                    'Complete Document Preparation',
-                    'Application & Tracking',
-                    'Central License Certificate',
-                    'Priority Support',
-                    '1-Year Compliance Support'
+                    'Central FSSAI license',
+                    'Mandatory for import/export',
+                    'Dedicated compliance expert',
+                    'End-to-end handling',
+                    'For large businesses & multi-state operations'
                 ],
                 exclusions: [
-                    'Government fees (₹7,500/year)'
+                    'Government fees (₹7,500 + 18% GST/year)'
                 ]
             }
         ],
@@ -1508,7 +1266,7 @@ There are three types of FSSAI licenses based on business scale: **Basic Registr
             }
         ],
 
-        relatedServices: ['trademark-registration', 'msme-registration'],
+        relatedServices: ['trademark-registration', 'udyam-registration'],
 
         onboardingQuestions: [
             {
@@ -1543,28 +1301,28 @@ There are three types of FSSAI licenses based on business scale: **Basic Registr
         shortTitle: 'IEC Code',
         category: 'Licenses & Registrations',
         categorySlug: 'licenses-registrations',
-        basePrice: 1499,
-        timeline: '2-3 days',
+        basePrice: 1699,
+        timeline: '2-5 days',
         badge: 'Go Global',
 
-        metaTitle: 'IEC Registration Online @ ₹1499 | Import Export Code in 2 Days | LawEthic',
-        metaDescription: 'Get Import Export Code (IEC) registration in 2 days. 100% online process. Expert-assisted filing. Start your import/export business legally.',
+        metaTitle: 'IEC Registration Online @ ₹1699 | Import Export Code | LawEthic',
+        metaDescription: 'Get Import Export Code (IEC) registration in 2-5 days. 100% online process. Expert-assisted filing. Start your import/export business legally.',
         keywords: ['iec registration', 'import export code', 'iec license', 'iec certificate', 'dgft registration'],
 
         hero: {
             badge: 'Go Global',
             title: 'Import Export Code (IEC) Registration',
-            description: 'Get your IEC code and start importing or exporting goods legally. 100% online process with expert assistance. IEC registration completed in 2 days.',
+            description: 'Get your IEC code and start importing or exporting goods legally. 100% online process with expert assistance. Lifetime validity - no renewal required.',
             highlights: [
                 'Expert-assisted 100% online IEC Registration',
-                'Filing done in 2 days',
-                'Go global with end-to-end support',
-                '10,000+ businesses served since 2011'
+                'Filing done in 2-5 working days',
+                'Lifetime validity - no renewal required',
+                'Required for customs clearance & foreign remittances'
             ],
             trustSignals: {
-                rating: '4.5/5 Google Rating',
-                served: '10,000+ IEC Registrations',
-                certified: 'DGFT Certified Experts'
+                secure: '100% Online Process',
+                fast: 'Quick Processing',
+                support: 'Expert Support'
             },
             formTitle: 'Get Your IEC Code!',
             formCta: 'Get Started'
@@ -1572,40 +1330,20 @@ There are three types of FSSAI licenses based on business scale: **Basic Registr
 
         packages: [
             {
-                id: 'basic',
-                name: 'Basic',
-                price: 1499,
+                id: 'standard',
+                name: 'IEC Registration',
+                price: 1699,
                 originalPrice: 2499,
-                discount: '40% off',
-                timeline: '3-5 days',
-                featured: false,
-                inclusions: [
-                    'IEC Application Filing',
-                    'Document Verification',
-                    'DGFT Portal Registration',
-                    'IEC Certificate',
-                    'Email Support'
-                ],
-                exclusions: [
-                    'Government fees (₹500)',
-                    'AD Code Registration'
-                ]
-            },
-            {
-                id: 'complete',
-                name: 'Complete',
-                price: 2999,
-                originalPrice: 4999,
-                discount: '40% off',
-                timeline: '2-3 days',
+                discount: '32% off',
+                timeline: '2-5 working days',
                 featured: true,
                 inclusions: [
-                    'Everything in Basic',
-                    'Priority Processing',
-                    'AD Code Registration',
-                    'Bank Account Verification',
-                    'Dedicated Expert Support',
-                    'Export/Import Procedure Guide'
+                    'IEC application preparation',
+                    'Documentation assistance',
+                    'Online filing on DGFT portal',
+                    'PAN-based IEC',
+                    'Tracking & follow-ups',
+                    'Expert support till issuance'
                 ],
                 exclusions: [
                     'Government fees (₹500)'
@@ -1846,7 +1584,7 @@ IEC registration is a **one-time process** with **lifetime validity**. There is 
             }
         ],
 
-        relatedServices: ['fssai-registration', 'msme-registration', 'trademark-registration'],
+        relatedServices: ['fssai-registration', 'udyam-registration', 'trademark-registration'],
 
         onboardingQuestions: [
             {
@@ -1884,17 +1622,17 @@ IEC registration is a **one-time process** with **lifetime validity**. There is 
         shortTitle: 'Trade License',
         category: 'Licenses & Registrations',
         categorySlug: 'licenses-registrations',
-        basePrice: 2499,
-        timeline: '7-12 days',
+        basePrice: 3599,
+        timeline: '7-15 days',
         badge: 'Essential for Business',
 
-        metaTitle: 'Trade License Registration Online @ ₹2499 | LawEthic',
-        metaDescription: 'Get your Trade License from Municipal Corporation with expert assistance. Complete documentation support, fast processing in 7-12 days. 100% online process.',
+        metaTitle: 'Trade License Registration Online @ ₹3599 | LawEthic',
+        metaDescription: 'Get your Trade License from Municipal Corporation with expert assistance. Complete documentation support, fast processing in 7-15 days. 100% online process.',
         keywords: ['trade license', 'trade license registration', 'municipal license', 'business license', 'shop license', 'trade permit'],
 
         hero: {
             badge: 'Essential for Business',
-            title: 'Trade License Registration @ ₹2499',
+            title: 'Trade License Registration @ ₹3599',
             description: 'Get your Trade License from the Municipal Corporation with expert assistance. We handle complete documentation and filing to ensure quick approval.',
             highlights: [
                 'Expert assistance with Form-353',
@@ -1903,9 +1641,9 @@ IEC registration is a **one-time process** with **lifetime validity**. There is 
                 'Renewal & modification support'
             ],
             trustSignals: {
-                rating: '4.5/5 Google Rating',
-                served: '15,000+ Licenses Issued',
-                certified: 'Municipal Compliance Experts'
+                secure: '100% Online Process',
+                fast: 'Quick Processing',
+                support: 'Expert Support'
             },
             formTitle: 'Get Your Trade License!',
             formCta: 'Get Started'
@@ -1913,68 +1651,23 @@ IEC registration is a **one-time process** with **lifetime validity**. There is 
 
         packages: [
             {
-                id: 'basic',
-                name: 'Basic',
-                price: 2499,
-                originalPrice: 3999,
-                discount: '37% off',
-                timeline: '10-12 days',
-                featured: false,
-                inclusions: [
-                    'Trade License Application Filing',
-                    'Form-353 Preparation',
-                    'Document Verification',
-                    'Application Tracking',
-                    'License Certificate',
-                    'Email Support'
-                ],
-                exclusions: [
-                    'Government fees',
-                    'Physical inspection coordination'
-                ]
-            },
-            {
                 id: 'standard',
-                name: 'Standard',
-                price: 3999,
-                originalPrice: 5999,
-                discount: '33% off',
-                timeline: '7-10 days',
+                name: 'Trade License Registration',
+                price: 3599,
+                originalPrice: 4999,
+                discount: '28% off',
+                timeline: '7-15 working days',
                 featured: true,
                 inclusions: [
-                    'Trade License Application Filing',
-                    'Form-353 Preparation',
-                    'Complete Document Preparation',
-                    'Inspection Coordination',
-                    'Application Tracking',
-                    'License Certificate',
-                    'Dedicated Support',
-                    '1-Year Compliance Reminder'
+                    'Application preparation',
+                    'Documentation support',
+                    'Online filing',
+                    'Regular follow-ups',
+                    'Status tracking',
+                    'Expert support'
                 ],
                 exclusions: [
-                    'Government fees (varies by state/city)'
-                ]
-            },
-            {
-                id: 'premium',
-                name: 'Premium',
-                price: 5999,
-                originalPrice: 8999,
-                discount: '33% off',
-                timeline: '5-7 days',
-                featured: false,
-                inclusions: [
-                    'Priority Trade License Filing',
-                    'Form-353 & All Document Preparation',
-                    'Inspection Coordination & Support',
-                    'Fast-Track Processing',
-                    'License Certificate',
-                    'Priority Support',
-                    '1-Year Compliance Support',
-                    'Renewal Assistance'
-                ],
-                exclusions: [
-                    'Government fees (varies by state/city)'
+                    'Government fees (as applicable)'
                 ]
             }
         ],
@@ -2226,7 +1919,7 @@ The Trade License ensures that businesses don't engage in any practices that mig
             }
         ],
 
-        relatedServices: ['fssai-registration', 'shop-establishment-registration', 'msme-registration'],
+        relatedServices: ['fssai-registration', 'shop-establishment-registration', 'udyam-registration'],
 
         onboardingQuestions: [
             {
@@ -2268,6 +1961,789 @@ The Trade License ensures that businesses don't engage in any practices that mig
                     { value: 'partnership', label: 'Partnership Firm' },
                     { value: 'company', label: 'Private Limited Company' },
                     { value: 'llp', label: 'LLP' }
+                ],
+                required: true
+            }
+        ]
+    },
+
+    // ============================================
+    // GST REGISTRATION
+    // ============================================
+    {
+        slug: 'gst-registration',
+        title: 'GST Registration',
+        shortTitle: 'GST',
+        category: 'Tax & Compliance',
+        categorySlug: 'tax-compliance',
+        basePrice: 399,
+        timeline: '2-5 working days',
+        badge: 'Tax Compliant',
+
+        metaTitle: 'GST Registration Online @ ₹399 | Get GSTIN in 2-5 Days | LawEthic',
+        metaDescription: 'Apply for GST registration online. Get your GSTIN number quickly with expert assistance. 100% online process, affordable pricing, and dedicated support.',
+        keywords: ['gst registration', 'gstin number', 'gst certificate', 'online gst registration', 'gst registration india', 'goods and services tax'],
+
+        hero: {
+            badge: 'Mandatory for Business',
+            title: 'GST Registration Online – Get Your GSTIN',
+            description: 'Get your GST registration done quickly and hassle-free. Apply online for GSTIN and unlock Input Tax Credit, e-commerce selling, and pan-India business expansion.',
+            highlights: [
+                'GST registration starting at just ₹399',
+                'Expert-assisted document preparation',
+                'ARN generated within 24-48 hours',
+                'Complete compliance support included'
+            ],
+            trustSignals: {
+                secure: '100% Online Process',
+                fast: 'Quick GSTIN Delivery',
+                support: 'Expert Support'
+            },
+            formTitle: 'Apply for GST Registration',
+            formCta: 'Get Started'
+        },
+
+        packages: [
+            {
+                id: 'basic',
+                name: 'Basic',
+                price: 399,
+                originalPrice: 699,
+                discount: '43% off',
+                timeline: '3-5 working days',
+                featured: false,
+                inclusions: [
+                    'GST application filing',
+                    'Document preparation assistance',
+                    'ARN generation',
+                    'GST Certificate delivery',
+                    'Basic compliance guidance'
+                ],
+                exclusions: [
+                    'GST return filing',
+                    'Objection handling'
+                ]
+            },
+            {
+                id: 'standard',
+                name: 'Standard',
+                price: 1699,
+                originalPrice: 2499,
+                discount: '32% off',
+                timeline: '2-3 working days',
+                featured: true,
+                inclusions: [
+                    'Priority GST application filing',
+                    'Complete document preparation',
+                    'ARN generation within 24 hours',
+                    'GST Certificate delivery',
+                    'Query/objection handling',
+                    '3 months GST return filing (GSTR-1 & 3B)',
+                    'Dedicated expert support'
+                ],
+                exclusions: [
+                    'Transactions beyond 100/month'
+                ]
+            },
+            {
+                id: 'premium',
+                name: 'Premium',
+                price: 2999,
+                originalPrice: 4499,
+                discount: '33% off',
+                timeline: '1-2 working days',
+                featured: false,
+                emiAvailable: true,
+                inclusions: [
+                    'Express GST registration',
+                    'Complete document preparation',
+                    'ARN generation same day',
+                    'GST Certificate delivery',
+                    'Query/objection handling',
+                    '12 months GST return filing (GSTR-1 & 3B)',
+                    'MSME/Udyam registration included',
+                    'Accounting software license (1 year)',
+                    'Dedicated account manager',
+                    'Priority support'
+                ],
+                exclusions: [
+                    'Transactions beyond 300/month'
+                ]
+            }
+        ],
+
+        overview: {
+            title: 'What is GST Registration?',
+            description: `**Goods and Services Tax (GST)** is India's unified indirect tax system that replaced multiple taxes like VAT, Service Tax, and Excise Duty. GST registration is mandatory for businesses with annual turnover exceeding the threshold limit.
+
+Once registered, you receive a unique **15-digit GSTIN (GST Identification Number)** that allows you to collect GST from customers, claim Input Tax Credit (ITC), and conduct interstate business seamlessly.
+
+GST registration is essential for:
+- **E-commerce sellers** – Mandatory regardless of turnover
+- **Interstate suppliers** – For selling across state borders
+- **Claiming Input Tax Credit** – Reduce tax liability
+- **Business credibility** – Builds trust with customers and vendors`,
+            highlights: [
+                'Single tax system across India',
+                'Claim Input Tax Credit on purchases',
+                'Sell on e-commerce platforms',
+                'Interstate business made easy',
+                'Enhanced business credibility',
+                'Access to government tenders'
+            ]
+        },
+
+        eligibility: {
+            title: 'Who Needs GST Registration?',
+            description: 'GST registration is mandatory in the following cases:',
+            entities: [
+                { name: 'Turnover > ₹40 lakhs (Goods)', icon: 'TrendingUp' },
+                { name: 'Turnover > ₹20 lakhs (Services)', icon: 'Briefcase' },
+                { name: 'Interstate Suppliers', icon: 'Truck' },
+                { name: 'E-commerce Sellers', icon: 'ShoppingCart' },
+                { name: 'Casual Taxable Persons', icon: 'Calendar' },
+                { name: 'Input Service Distributors', icon: 'GitBranch' },
+                { name: 'TDS/TCS Deductors', icon: 'Receipt' },
+                { name: 'Agents of Suppliers', icon: 'Users' }
+            ]
+        },
+
+        types: {
+            title: 'Types of GST Registration',
+            description: 'Different types of GST registration are available based on business requirements:',
+            items: [
+                {
+                    name: 'Regular GST Registration',
+                    description: 'For businesses with turnover above threshold limits. Allows charging GST and claiming ITC.',
+                    icon: 'Building'
+                },
+                {
+                    name: 'Composition Scheme',
+                    description: 'For small businesses with turnover up to ₹1.5 crore. Pay tax at fixed rate without ITC benefit.',
+                    icon: 'Package'
+                },
+                {
+                    name: 'Casual Taxable Person',
+                    description: 'For occasional suppliers with no fixed place of business. Valid for 90 days, extendable.',
+                    icon: 'Calendar'
+                },
+                {
+                    name: 'Non-Resident Taxable Person',
+                    description: 'For foreign businesses supplying goods/services in India without a permanent establishment.',
+                    icon: 'Globe'
+                },
+                {
+                    name: 'Input Service Distributor',
+                    description: 'For businesses distributing ITC of input services to branches/units.',
+                    icon: 'GitBranch'
+                },
+                {
+                    name: 'E-commerce Operator',
+                    description: 'Mandatory for platforms facilitating supply of goods/services through electronic commerce.',
+                    icon: 'ShoppingBag'
+                }
+            ]
+        },
+
+        fees: {
+            title: 'GST Registration Fees',
+            description: 'Government fees for GST registration is NIL. You only pay our professional service charges.',
+            table: [
+                {
+                    entityType: 'Government Fees',
+                    eFiling: 'NIL',
+                    notes: 'GST registration is free on govt portal'
+                },
+                {
+                    entityType: 'Our Service Fees',
+                    eFiling: 'From ₹399',
+                    notes: 'Expert assistance & documentation'
+                },
+                {
+                    entityType: 'Digital Signature (if required)',
+                    eFiling: '₹800-1500',
+                    notes: 'Required for companies & LLPs'
+                }
+            ]
+        },
+
+        documents: {
+            title: 'Documents Required for GST Registration',
+            description: 'Documents vary based on your business type. We help you prepare everything.',
+            groups: [
+                {
+                    entityType: 'Proprietorship',
+                    items: [
+                        'PAN Card of Proprietor',
+                        'Aadhaar Card of Proprietor',
+                        'Passport size photograph',
+                        'Bank account statement/Cancelled cheque',
+                        'Electricity bill/Rent agreement of business premises',
+                        'NOC from landlord (if rented)'
+                    ]
+                },
+                {
+                    entityType: 'Partnership Firm / LLP',
+                    items: [
+                        'PAN Card of Firm/LLP',
+                        'Partnership Deed / LLP Agreement',
+                        'PAN & Aadhaar of all Partners',
+                        'Passport size photographs of Partners',
+                        'Bank account details of Firm',
+                        'Address proof of business premises',
+                        'NOC from landlord (if rented)',
+                        'Board Resolution/Authorization letter'
+                    ]
+                },
+                {
+                    entityType: 'Private Limited / Public Company',
+                    items: [
+                        'PAN Card of Company',
+                        'Certificate of Incorporation',
+                        'MOA & AOA',
+                        'PAN & Aadhaar of all Directors',
+                        'Passport size photographs of Directors',
+                        'Bank account details of Company',
+                        'Address proof of registered office',
+                        'NOC from landlord (if rented)',
+                        'Board Resolution for GST registration',
+                        'Digital Signature Certificate (DSC)'
+                    ]
+                }
+            ]
+        },
+
+        process: [
+            {
+                step: 1,
+                title: 'Document Collection',
+                description: 'Share your documents through our secure portal. Our experts verify and prepare them for filing.',
+                duration: 'Day 1',
+                icon: 'FileText'
+            },
+            {
+                step: 2,
+                title: 'Application Filing',
+                description: 'We file your GST application (Form GST REG-01) on the official GST portal with accurate details.',
+                duration: 'Day 1-2',
+                icon: 'Send'
+            },
+            {
+                step: 3,
+                title: 'ARN Generation',
+                description: 'Application Reference Number (ARN) is generated. You can track status using this number.',
+                duration: 'Day 2',
+                icon: 'Hash'
+            },
+            {
+                step: 4,
+                title: 'Verification',
+                description: 'GST officer verifies your application. We handle any queries or additional document requests.',
+                duration: 'Day 2-4',
+                icon: 'CheckCircle'
+            },
+            {
+                step: 5,
+                title: 'GSTIN Issued',
+                description: 'Upon approval, your GSTIN and GST Registration Certificate are issued. We deliver both to you.',
+                duration: 'Day 3-5',
+                icon: 'Award'
+            }
+        ],
+
+        benefits: {
+            title: 'Benefits of GST Registration',
+            description: 'Why you should register for GST:',
+            items: [
+                {
+                    title: 'Input Tax Credit',
+                    description: 'Claim credit on taxes paid for business purchases, reducing overall tax liability.',
+                    icon: 'PiggyBank'
+                },
+                {
+                    title: 'Interstate Business',
+                    description: 'Sell goods and services across state borders without any restrictions.',
+                    icon: 'Truck'
+                },
+                {
+                    title: 'E-commerce Access',
+                    description: 'Sell on Amazon, Flipkart, and other platforms. GSTIN is mandatory.',
+                    icon: 'ShoppingCart'
+                },
+                {
+                    title: 'Business Credibility',
+                    description: 'GST registration builds trust with customers, vendors, and financial institutions.',
+                    icon: 'Shield'
+                },
+                {
+                    title: 'Government Tenders',
+                    description: 'GSTIN is often required to participate in government tenders and contracts.',
+                    icon: 'FileCheck'
+                },
+                {
+                    title: 'Loan Eligibility',
+                    description: 'Banks prefer GST-registered businesses for loans and credit facilities.',
+                    icon: 'CreditCard'
+                }
+            ]
+        },
+
+        faqs: [
+            {
+                question: 'What is the threshold limit for GST registration?',
+                answer: 'For goods suppliers, the threshold is ₹40 lakhs annual turnover (₹20 lakhs for special category states). For service providers, it is ₹20 lakhs (₹10 lakhs for special category states). E-commerce sellers need registration regardless of turnover.'
+            },
+            {
+                question: 'How long does GST registration take?',
+                answer: 'GST registration typically takes 2-5 working days from application submission. With our premium plan, you can get it done in 1-2 days with expedited processing.'
+            },
+            {
+                question: 'Is GST registration free?',
+                answer: 'Yes, the government does not charge any fees for GST registration. You only pay our professional service charges for expert assistance and documentation support.'
+            },
+            {
+                question: 'Can I register for GST without a business address?',
+                answer: 'No, a valid business address with proof (rent agreement/electricity bill) is mandatory. If you work from home, you can use your residential address with proper documentation.'
+            },
+            {
+                question: 'What is GSTIN?',
+                answer: 'GSTIN is a 15-digit unique identification number assigned to every GST-registered business. It contains state code, PAN, entity number, and check digit.'
+            },
+            {
+                question: 'Do I need GST registration to sell on Amazon/Flipkart?',
+                answer: 'Yes, GST registration is mandatory for selling on e-commerce platforms like Amazon, Flipkart, Meesho, etc., regardless of your turnover.'
+            },
+            {
+                question: 'What happens if I dont register for GST?',
+                answer: 'Operating without GST registration when required attracts penalty of ₹10,000 or 10% of tax due (whichever is higher). Continued non-compliance can lead to prosecution.'
+            },
+            {
+                question: 'Can I cancel my GST registration?',
+                answer: 'Yes, you can apply for GST cancellation if you stop business operations, turnover falls below threshold, or business is transferred/merged. File Form GST REG-16 for cancellation.'
+            }
+        ],
+
+        relatedServices: ['gst-return-filing', 'udyam-registration', 'trade-license'],
+
+        onboardingQuestions: [
+            {
+                id: 'turnover',
+                question: 'What is your expected annual turnover?',
+                type: 'single',
+                options: [
+                    { value: 'below20', label: 'Below ₹20 lakhs' },
+                    { value: '20to40', label: '₹20 lakhs - ₹40 lakhs' },
+                    { value: '40to1cr', label: '₹40 lakhs - ₹1 crore' },
+                    { value: 'above1cr', label: 'Above ₹1 crore' }
+                ],
+                required: true
+            },
+            {
+                id: 'entityType',
+                question: 'What is your business entity type?',
+                type: 'single',
+                options: [
+                    { value: 'proprietorship', label: 'Proprietorship' },
+                    { value: 'partnership', label: 'Partnership Firm' },
+                    { value: 'llp', label: 'LLP' },
+                    { value: 'company', label: 'Private Limited Company' }
+                ],
+                required: true
+            },
+            {
+                id: 'reason',
+                question: 'Why do you need GST registration?',
+                type: 'single',
+                options: [
+                    { value: 'ecommerce', label: 'To sell on e-commerce platforms' },
+                    { value: 'interstate', label: 'For interstate business' },
+                    { value: 'threshold', label: 'Crossed turnover threshold' },
+                    { value: 'itc', label: 'To claim Input Tax Credit' },
+                    { value: 'other', label: 'Other reason' }
+                ],
+                required: true
+            }
+        ]
+    },
+
+    // ============================================
+    // GST RETURN FILING
+    // ============================================
+    {
+        slug: 'gst-return-filing',
+        title: 'GST Return Filing',
+        shortTitle: 'GST Filing',
+        category: 'Tax & Compliance',
+        categorySlug: 'tax-compliance',
+        basePrice: 799,
+        timeline: 'Monthly/Quarterly',
+        badge: 'Stay Compliant',
+
+        metaTitle: 'GST Return Filing Online @ ₹799 | GSTR-1, GSTR-3B Filing | LawEthic',
+        metaDescription: 'File your GST returns online with expert assistance. Timely GSTR-1 & GSTR-3B filing, avoid penalties, maximize ITC claims. Affordable pricing from ₹799.',
+        keywords: ['gst return filing', 'gstr-1 filing', 'gstr-3b filing', 'gst compliance', 'gst filing online', 'monthly gst return'],
+
+        hero: {
+            badge: 'Stay Compliant',
+            title: 'GST Return Filing – GSTR-1 & GSTR-3B',
+            description: 'Never miss a GST deadline again. Our experts file your GSTR-1 & GSTR-3B returns accurately and on time, helping you avoid penalties and maximize Input Tax Credit.',
+            highlights: [
+                'GST return filing starting at ₹799',
+                'Timely filing before deadlines',
+                'ITC reconciliation & optimization',
+                'Dedicated expert for your account'
+            ],
+            trustSignals: {
+                secure: 'Secure Data Handling',
+                fast: 'On-time Filing',
+                support: 'Expert Support'
+            },
+            formTitle: 'Start GST Filing',
+            formCta: 'Get Started'
+        },
+
+        packages: [
+            {
+                id: 'quarterly',
+                name: 'Quarterly',
+                price: 799,
+                originalPrice: 1199,
+                discount: '33% off',
+                timeline: '3 months',
+                featured: false,
+                inclusions: [
+                    'GSTR-1 filing (3 months)',
+                    'GSTR-3B filing (3 months)',
+                    'Up to 100 transactions/month',
+                    'ITC reconciliation',
+                    'Basic compliance support',
+                    'Email support'
+                ],
+                exclusions: [
+                    'GSTR-9 annual return',
+                    'GST audit support'
+                ]
+            },
+            {
+                id: 'annual',
+                name: 'Annual',
+                price: 2499,
+                originalPrice: 3599,
+                discount: '31% off',
+                timeline: '12 months',
+                featured: true,
+                inclusions: [
+                    'GSTR-1 filing (12 months)',
+                    'GSTR-3B filing (12 months)',
+                    'Up to 300 transactions/month',
+                    'ITC reconciliation & optimization',
+                    'Turnover up to ₹20 lakhs',
+                    'Accounting software license (1 year)',
+                    'Dedicated account manager',
+                    'Phone & email support'
+                ],
+                exclusions: [
+                    'GSTR-9 annual return'
+                ]
+            },
+            {
+                id: 'premium',
+                name: 'Premium',
+                price: 3999,
+                originalPrice: 5999,
+                discount: '33% off',
+                timeline: '12 months',
+                featured: false,
+                emiAvailable: true,
+                inclusions: [
+                    'GSTR-1 filing (12 months)',
+                    'GSTR-3B filing (12 months)',
+                    'GSTR-9 annual return filing',
+                    'Up to 500 transactions/month',
+                    'Turnover up to ₹50 lakhs',
+                    'ITC reconciliation & optimization',
+                    'ITR filing for one financial year',
+                    'Accounting software license (1 year)',
+                    'Dedicated senior accountant',
+                    'Priority phone support',
+                    'GST notice assistance'
+                ],
+                exclusions: []
+            }
+        ],
+
+        overview: {
+            title: 'What is GST Return Filing?',
+            description: `**GST Return Filing** is the process of submitting periodic reports of sales, purchases, and tax payments to the GST authorities. Every GST-registered business must file returns regardless of business activity.
+
+The main returns to be filed are:
+- **GSTR-1**: Details of outward supplies (sales) – filed monthly or quarterly
+- **GSTR-3B**: Summary return with tax payment – filed monthly
+- **GSTR-9**: Annual return – filed yearly
+
+Timely GST filing ensures you:
+- Avoid late fees and penalties
+- Maintain ITC eligibility
+- Keep your GST registration active
+- Build compliant business records`,
+            highlights: [
+                'Avoid penalties up to ₹10,000/month',
+                'Maintain Input Tax Credit eligibility',
+                'Prevent GST registration cancellation',
+                'Build credible business records',
+                'Required for loan applications',
+                'Mandatory for e-commerce sellers'
+            ]
+        },
+
+        types: {
+            title: 'Types of GST Returns',
+            description: 'Different GST returns serve different purposes:',
+            items: [
+                {
+                    name: 'GSTR-1',
+                    description: 'Monthly/quarterly return for outward supplies (sales). Due by 11th of next month (monthly) or end of month following quarter.',
+                    icon: 'FileOutput'
+                },
+                {
+                    name: 'GSTR-3B',
+                    description: 'Monthly summary return with tax payment. Self-declaration of sales, ITC, and tax liability. Due by 20th of next month.',
+                    icon: 'FileText'
+                },
+                {
+                    name: 'GSTR-9',
+                    description: 'Annual return consolidating all monthly/quarterly returns. Due by 31st December of next financial year.',
+                    icon: 'Calendar'
+                },
+                {
+                    name: 'GSTR-4',
+                    description: 'Annual return for composition scheme dealers. Simplified return with fixed tax rate payment.',
+                    icon: 'Package'
+                },
+                {
+                    name: 'GSTR-9C',
+                    description: 'Reconciliation statement for businesses with turnover above ₹5 crore. Filed along with GSTR-9.',
+                    icon: 'GitCompare'
+                },
+                {
+                    name: 'GSTR-2A/2B',
+                    description: 'Auto-populated returns showing ITC available from suppliers. Used for reconciliation.',
+                    icon: 'FileInput'
+                }
+            ]
+        },
+
+        fees: {
+            title: 'GST Return Filing Fees & Penalties',
+            description: 'Late filing attracts significant penalties. File on time with our expert assistance.',
+            table: [
+                {
+                    entityType: 'Late Fee - GSTR-1',
+                    eFiling: '₹50/day (₹20 for nil return)',
+                    notes: 'Maximum ₹10,000 per return'
+                },
+                {
+                    entityType: 'Late Fee - GSTR-3B',
+                    eFiling: '₹50/day (₹20 for nil return)',
+                    notes: 'Maximum ₹10,000 per return'
+                },
+                {
+                    entityType: 'Interest on Late Tax Payment',
+                    eFiling: '18% per annum',
+                    notes: 'Calculated on outstanding tax'
+                },
+                {
+                    entityType: 'Our Service Fee',
+                    eFiling: 'From ₹799',
+                    notes: 'For 3 months filing'
+                }
+            ]
+        },
+
+        documents: {
+            title: 'Information Required for GST Filing',
+            description: 'Keep these details ready for hassle-free GST return filing:',
+            groups: [
+                {
+                    entityType: 'Sales Information',
+                    items: [
+                        'Sales invoices with customer GSTIN',
+                        'B2C sales summary (sales to consumers)',
+                        'Credit/debit notes issued',
+                        'Advances received',
+                        'Export invoices (if any)',
+                        'E-commerce sales data'
+                    ]
+                },
+                {
+                    entityType: 'Purchase Information',
+                    items: [
+                        'Purchase invoices with supplier GSTIN',
+                        'Import bills of entry',
+                        'Credit/debit notes received',
+                        'Expense invoices (rent, utilities, services)',
+                        'Capital goods purchases',
+                        'Reverse charge transactions'
+                    ]
+                },
+                {
+                    entityType: 'Other Details',
+                    items: [
+                        'GST portal login credentials',
+                        'Previous return copies',
+                        'Bank statements for reconciliation',
+                        'HSN/SAC codes for products/services',
+                        'E-way bills generated (if any)'
+                    ]
+                }
+            ]
+        },
+
+        process: [
+            {
+                step: 1,
+                title: 'Data Collection',
+                description: 'Share your sales and purchase data through our secure portal or accounting software integration.',
+                duration: 'Day 1-3',
+                icon: 'Upload'
+            },
+            {
+                step: 2,
+                title: 'Data Verification',
+                description: 'Our experts verify invoices, reconcile with GSTR-2A/2B, and identify ITC mismatches.',
+                duration: 'Day 4-5',
+                icon: 'CheckCircle'
+            },
+            {
+                step: 3,
+                title: 'Return Preparation',
+                description: 'We prepare GSTR-1 and GSTR-3B with accurate categorization and tax calculations.',
+                duration: 'Day 6-8',
+                icon: 'FileText'
+            },
+            {
+                step: 4,
+                title: 'Review & Approval',
+                description: 'You review the prepared returns. We make any necessary corrections before filing.',
+                duration: 'Day 9-10',
+                icon: 'Eye'
+            },
+            {
+                step: 5,
+                title: 'Filing & Confirmation',
+                description: 'Returns filed on GST portal. You receive ARN and filing confirmation.',
+                duration: 'Before deadline',
+                icon: 'Send'
+            }
+        ],
+
+        benefits: {
+            title: 'Why Choose LawEthic for GST Filing?',
+            description: 'Benefits of our GST return filing service:',
+            items: [
+                {
+                    title: 'Never Miss Deadlines',
+                    description: 'We track all due dates and file your returns before deadlines, avoiding penalties.',
+                    icon: 'Clock'
+                },
+                {
+                    title: 'Maximize ITC Claims',
+                    description: 'Expert reconciliation ensures you claim maximum eligible Input Tax Credit.',
+                    icon: 'PiggyBank'
+                },
+                {
+                    title: 'Error-Free Filing',
+                    description: 'Thorough verification prevents errors that could lead to notices or penalties.',
+                    icon: 'ShieldCheck'
+                },
+                {
+                    title: 'Dedicated Expert',
+                    description: 'Get a dedicated accountant who understands your business and handles all GST matters.',
+                    icon: 'UserCheck'
+                },
+                {
+                    title: 'Compliance Reports',
+                    description: 'Monthly reports on your GST compliance status, ITC utilization, and tax liability.',
+                    icon: 'BarChart'
+                },
+                {
+                    title: 'Notice Support',
+                    description: 'If you receive any GST notice, we help draft responses and resolve issues.',
+                    icon: 'FileWarning'
+                }
+            ]
+        },
+
+        faqs: [
+            {
+                question: 'What is the due date for GSTR-1 filing?',
+                answer: 'For monthly filers, GSTR-1 is due by the 11th of the following month. For quarterly filers (turnover up to ₹5 crore), it is due by the 13th of the month following the quarter.'
+            },
+            {
+                question: 'What is the due date for GSTR-3B filing?',
+                answer: 'GSTR-3B is due by the 20th of the following month for most businesses. For businesses with turnover up to ₹5 crore in certain states, staggered dates of 22nd or 24th apply.'
+            },
+            {
+                question: 'What happens if I file GST returns late?',
+                answer: 'Late filing attracts a late fee of ₹50 per day (₹20 for nil returns) up to ₹10,000 per return. Additionally, 18% interest per annum applies on unpaid tax. Continuous non-filing can lead to GST registration cancellation.'
+            },
+            {
+                question: 'Can I file nil GST return?',
+                answer: 'Yes, if you have no sales or purchases in a month, you still need to file a nil return. Non-filing of nil returns also attracts late fees.'
+            },
+            {
+                question: 'What is ITC reconciliation?',
+                answer: 'ITC reconciliation is matching your purchase records with GSTR-2A/2B (supplier-reported data) to ensure you claim only eligible Input Tax Credit. Mismatches can lead to ITC denial.'
+            },
+            {
+                question: 'Do I need to file GSTR-9 annual return?',
+                answer: 'GSTR-9 is mandatory for all regular taxpayers. However, businesses with turnover up to ₹2 crore can opt out. For turnover above ₹5 crore, GSTR-9C reconciliation is also required.'
+            },
+            {
+                question: 'Can you handle GST filing for multiple GSTINs?',
+                answer: 'Yes, we can manage GST filing for businesses with multiple GSTINs (different states or verticals). Contact us for custom pricing based on the number of registrations.'
+            },
+            {
+                question: 'What if I receive a GST notice?',
+                answer: 'Our premium plan includes GST notice assistance. We help analyze the notice, prepare appropriate responses, and represent your case if needed.'
+            }
+        ],
+
+        relatedServices: ['gst-registration', 'udyam-registration', 'trade-license'],
+
+        onboardingQuestions: [
+            {
+                id: 'filingFrequency',
+                question: 'What is your GST filing frequency?',
+                type: 'single',
+                options: [
+                    { value: 'monthly', label: 'Monthly (GSTR-1 & 3B)' },
+                    { value: 'quarterly', label: 'Quarterly (QRMP scheme)' },
+                    { value: 'composition', label: 'Composition Scheme' },
+                    { value: 'notSure', label: 'Not sure' }
+                ],
+                required: true
+            },
+            {
+                id: 'transactions',
+                question: 'How many transactions do you have per month?',
+                type: 'single',
+                options: [
+                    { value: 'below50', label: 'Below 50' },
+                    { value: '50to100', label: '50-100' },
+                    { value: '100to300', label: '100-300' },
+                    { value: 'above300', label: 'Above 300' }
+                ],
+                required: true
+            },
+            {
+                id: 'currentStatus',
+                question: 'Are your previous GST returns filed?',
+                type: 'single',
+                options: [
+                    { value: 'allFiled', label: 'Yes, all returns filed' },
+                    { value: 'pending', label: 'Some returns pending' },
+                    { value: 'newRegistration', label: 'New GST registration' }
                 ],
                 required: true
             }
