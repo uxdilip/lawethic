@@ -1,9 +1,9 @@
 import { EligibilitySection as EligibilityType } from '@/data/services'
 import {
     User, Users, Store, Building, Building2,
-    Landmark, Globe, Heart, Briefcase, Handshake,
+    Landmark, Globe, Heart, Briefcase, UserCheck,
     Factory, UtensilsCrossed, ChefHat, Warehouse, Milk,
-    Hospital, Ticket, Truck, TrendingUp, Calendar,
+    Cross, Ticket, Truck, TrendingUp, Calendar,
     GitBranch, Receipt, ShoppingCart, Package
 } from 'lucide-react'
 
@@ -19,7 +19,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     Globe,
     Heart,
     Briefcase,
-    Handshake,
+    Handshake: UserCheck,
     // Business types
     Factory,
     Warehouse,
@@ -29,7 +29,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     ChefHat,
     Milk,
     // Healthcare & services
-    Hospital,
+    Hospital: Cross,
     Ticket,
     Truck,
     // GST & compliance
