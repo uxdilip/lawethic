@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { getAllServices, getServicesByCategory, Service } from '@/data/services'
-import { ArrowRight, CheckCircle, Clock, Star, Building2, FileText, Award, BadgeCheck } from 'lucide-react'
+import { ArrowRight, CheckCircle, Clock, Building2, FileText, Award, BadgeCheck, Zap, Shield, MessageCircle } from 'lucide-react'
 import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
@@ -38,12 +38,16 @@ export default function ServicesPage() {
                     </p>
                     <div className="flex items-center justify-center gap-6 mt-6 text-sm text-brand-100">
                         <span className="flex items-center gap-2">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                            4.5/5 Rating
+                            <Zap className="h-4 w-4" />
+                            Quick Processing
                         </span>
                         <span className="flex items-center gap-2">
-                            <BadgeCheck className="h-4 w-4" />
-                            50,000+ Customers
+                            <Shield className="h-4 w-4" />
+                            100% Secure
+                        </span>
+                        <span className="flex items-center gap-2">
+                            <MessageCircle className="h-4 w-4" />
+                            Expert Support
                         </span>
                     </div>
                 </div>
