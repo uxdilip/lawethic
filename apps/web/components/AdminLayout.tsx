@@ -62,8 +62,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 "flex flex-col min-h-screen transition-all duration-300 ease-in-out",
                 sidebarCollapsed ? "ml-16" : "ml-64"
             )}>
-                {/* Top Header */}
-                <header className="h-16 bg-white border-b border-neutral-200 flex items-center justify-between px-6">
+                {/* Top Header - Sticky */}
+                <header className="sticky top-0 z-20 h-16 bg-white border-b border-neutral-200 flex items-center justify-between px-6">
                     <div className="flex items-center gap-4">
                         {/* Page context will be added by individual pages */}
                     </div>

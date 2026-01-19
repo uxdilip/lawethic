@@ -1,16 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Client, Databases, ID, Users } from 'node-appwrite';
-import { cookies } from 'next/headers';
 
 const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID || 'main';
 const MESSAGES_COLLECTION = 'messages';
+const CONSULTATION_CASES_COLLECTION = 'consultation_cases';
 
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { orderId, message = '', attachments = [] } = body;
+        const {
+            orderId,
+            message = '',
+            attachments = [],
+            isConsultation = false,
+            // Client passes sender info (they've already auth'd with Appwrite SDK)
+            senderId,
+            senderName,
+            senderRole = 'customer'
+        } = body;
 
-        console.log('[Messages API] Request body:', { orderId, messageLength: message?.length, attachmentsCount: attachments.length });
+        console.log('[Messages API] Request body:', {
+            orderId,
+            messageLength: message?.length,
+            attachmentsCount: attachments.length,
+            isConsultation,
+            senderId,
+            senderName,
+            senderRole
+        });
 
         if (!orderId || (!message && (!attachments || attachments.length === 0))) {
             return NextResponse.json(
@@ -19,46 +36,12 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Get cookies from request headers instead of cookies() helper
-        const cookieHeader = request.headers.get('cookie');
-        console.log('[Messages API] Cookie header:', cookieHeader ? 'Present' : 'Missing');
-
-        if (!cookieHeader) {
-            console.error('[Messages API] No cookie header found');
+        if (!senderId || !senderName) {
             return NextResponse.json(
-                { error: 'Unauthorized - Please login again' },
-                { status: 401 }
+                { error: 'senderId and senderName are required' },
+                { status: 400 }
             );
         }
-
-        // Parse cookies from header
-        const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
-            const [name, value] = cookie.trim().split('=');
-            acc[name] = value;
-            return acc;
-        }, {} as Record<string, string>);
-
-        console.log('[Messages API] Parsed cookies:', Object.keys(cookies));
-
-        // Find Appwrite session cookie
-        const sessionCookieName = Object.keys(cookies).find(name =>
-            name.startsWith('a_session_') ||
-            name === 'appwrite-session' ||
-            name.includes('session')
-        );
-
-        if (!sessionCookieName) {
-            console.error('[Messages API] No session cookie found');
-            console.error('[Messages API] Available cookies:', Object.keys(cookies));
-            return NextResponse.json(
-                { error: 'Unauthorized - Please login again' },
-                { status: 401 }
-            );
-        }
-
-        const sessionCookieValue = cookies[sessionCookieName];
-        console.log('[Messages API] Using session cookie:', sessionCookieName);
-
 
         // Check if API key is available
         const apiKey = process.env.APPWRITE_API_KEY;
@@ -70,91 +53,150 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || '';
+        const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT || '';
 
-        // Use admin client to get user info and create message
+        // Use admin client for database operations
         const adminClient = new Client()
-            .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || '')
-            .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT || '')
+            .setEndpoint(endpoint)
+            .setProject(projectId)
             .setKey(apiKey);
 
         const databases = new Databases(adminClient);
 
-        // Get user by verifying session via REST API
-        const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || '';
-        const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT || '';
+        // Verify sender has access to this consultation/order
+        if (isConsultation) {
+            try {
+                const consultation = await databases.getDocument(
+                    DATABASE_ID,
+                    CONSULTATION_CASES_COLLECTION,
+                    orderId
+                );
+                // For consultations, verify the sender is either the customer or staff
+                // Check by customerId OR by email (for cases created as guest then logged in)
+                const isCustomerById = consultation.customerId === senderId;
+                const isCustomerByEmail = body.senderEmail && consultation.customerEmail === body.senderEmail;
+                const isCustomer = isCustomerById || isCustomerByEmail;
+                const isStaff = senderRole === 'admin' || senderRole === 'operations';
 
-        const userResponse = await fetch(`${endpoint}/account`, {
-            headers: {
-                'X-Appwrite-Project': projectId,
-                'Cookie': `${sessionCookieName}=${sessionCookieValue}`
+                console.log('[Messages API] Auth check:', {
+                    customerId: consultation.customerId,
+                    customerEmail: consultation.customerEmail,
+                    senderId,
+                    senderEmail: body.senderEmail,
+                    isCustomerById,
+                    isCustomerByEmail,
+                    isCustomer,
+                    senderRole,
+                    isStaff
+                });
+
+                // If customer is identified by email but customerId is 'guest', update it
+                if (isCustomerByEmail && consultation.customerId === 'guest' && senderId) {
+                    try {
+                        await databases.updateDocument(
+                            DATABASE_ID,
+                            CONSULTATION_CASES_COLLECTION,
+                            orderId,
+                            { customerId: senderId }
+                        );
+                        console.log('[Messages API] Updated consultation customerId from guest to:', senderId);
+                    } catch (updateErr) {
+                        console.error('[Messages API] Failed to update customerId:', updateErr);
+                    }
+                }
+
+                if (!isCustomer && !isStaff) {
+                    console.error('[Messages API] User not authorized for this consultation');
+                    return NextResponse.json(
+                        { error: 'Not authorized to send messages in this consultation' },
+                        { status: 403 }
+                    );
+                }
+            } catch (err: any) {
+                console.error('[Messages API] Failed to verify consultation access:', err.message);
+                return NextResponse.json(
+                    { error: 'Consultation not found' },
+                    { status: 404 }
+                );
             }
-        });
-
-        console.log('[Messages API] User validation response status:', userResponse.status);
-
-        if (!userResponse.ok) {
-            console.error('[Messages API] Failed to get user from session');
-            console.error('[Messages API] Response status:', userResponse.status);
-            const errorText = await userResponse.text();
-            console.error('[Messages API] Response body:', errorText);
-            return NextResponse.json(
-                { error: 'Unauthorized - Invalid session' },
-                { status: 401 }
-            );
         }
 
-        const user = await userResponse.json();
+        // Create message - use the same schema as ChatPanel.tsx (which works)
+        const messageData: Record<string, any> = {
+            orderId,
+            senderId,
+            senderName,
+            senderRole,
+            message: message?.trim() || '',
+            messageType: attachments && attachments.length > 0 ? 'file' : 'text',
+            read: false,
+            readAt: null,
+            metadata: attachments && attachments.length > 0 ? JSON.stringify({ attachments }) : null,
+        };
 
-        // Get user role from prefs or default to customer
-        const userRole = (user.prefs?.role as string) || 'customer';
-
-        // Create message
         const newMessage = await databases.createDocument(
             DATABASE_ID,
             MESSAGES_COLLECTION,
             ID.unique(),
-            {
-                orderId,
-                senderId: user.$id,
-                senderName: user.name || 'User',
-                senderRole: userRole,
-                message: message?.trim() || '',
-                messageType: attachments.length > 0 ? 'file' : 'text',
-                read: false,
-                readAt: null,
-                metadata: attachments.length > 0 ? JSON.stringify({ attachments }) : null
-            }
+            messageData
         );
+
+        console.log('[Messages API] Message created:', newMessage.$id);
 
         // Send notification to the other person in conversation
         try {
-            // Get order to find the other person's userId
-            const order = await databases.getDocument(DATABASE_ID, 'orders', orderId);
-            const customerId = order.userId; // Customer's userId
-            const assignedAdminId = order.assignedTo; // Assigned admin's userId
-
+            let customerId: string | null = null;
+            let assignedAdminId: string | null = null;
             let actionUrl: string = '';
+
+            if (isConsultation) {
+                // Get consultation case to find customer info (we already verified access above)
+                const consultation = await databases.getDocument(DATABASE_ID, CONSULTATION_CASES_COLLECTION, orderId);
+                customerId = consultation.customerId; // Customer's ID (ConsultationCase uses 'customerId')
+                // Consultations don't have assignedTo field, so admin notifications go to all staff
+                assignedAdminId = null;
+
+                // Set action URLs based on sender role
+                if (senderRole === 'customer') {
+                    actionUrl = `/admin/consultations/${orderId}`;
+                } else {
+                    actionUrl = `/dashboard/consultations/${orderId}`;
+                }
+            } else {
+                // Get order to find the other person's userId
+                const order = await databases.getDocument(DATABASE_ID, 'orders', orderId);
+                customerId = order.userId; // Customer's userId
+                assignedAdminId = order.assignedTo; // Assigned admin's userId
+
+                if (senderRole === 'customer') {
+                    actionUrl = `/admin/cases/${orderId}`;
+                } else {
+                    actionUrl = `/orders/${orderId}`;
+                }
+            }
+
             const baseNotificationData = {
                 orderId: orderId,
                 type: 'message',
                 message: attachments.length > 0
-                    ? `${user.name} sent ${attachments.length} file(s)`
-                    : `New message from ${user.name}: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+                    ? `${senderName} sent ${attachments.length} file(s)`
+                    : `New message from ${senderName}: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
                 title: 'New Message',
                 description: attachments.length > 0
-                    ? `${user.name} sent you ${attachments.length} attachment(s)`
-                    : `${user.name} sent you a message`,
+                    ? `${senderName} sent you ${attachments.length} attachment(s)`
+                    : `${senderName} sent you a message`,
                 actionLabel: 'View Message',
                 read: false,
                 readAt: null,
-                sourceUserId: user.$id,
+                sourceUserId: senderId,
                 metadata: null
             };
 
             // Determine recipient based on sender role
-            if (userRole === 'customer') {
+            if (senderRole === 'customer') {
                 // Customer sending message -> notify assigned admin or all staff
-                actionUrl = `/admin/cases/${orderId}`;
+                // actionUrl already set above based on isConsultation
 
                 if (assignedAdminId) {
                     // Notify assigned admin
@@ -201,9 +243,9 @@ export async function POST(request: NextRequest) {
                 }
             } else {
                 // Admin/operations sending message -> notify customer
-                actionUrl = `/orders/${orderId}`;
+                // actionUrl already set above based on isConsultation
 
-                if (customerId && customerId !== user.$id) {
+                if (customerId && customerId !== senderId) {
                     await databases.createDocument(
                         DATABASE_ID,
                         'notifications',

@@ -50,3 +50,10 @@ next-env.d.ts
 
 # Appwrite
 .appwrite
+
+# Case Study (separate project)
+case-study/
+
+# Markdown files (except README.md)
+*.md
+!README.md

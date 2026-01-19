@@ -17,9 +17,15 @@ export const appwriteConfig = {
         questionnaireRequests: process.env.NEXT_PUBLIC_COLLECTION_QUESTIONNAIRE_REQUESTS || 'questionnaire_requests',
         governmentFeeRequests: process.env.NEXT_PUBLIC_COLLECTION_GOV_FEE_REQUESTS || 'government_fee_requests',
         serviceContentDrafts: process.env.NEXT_PUBLIC_COLLECTION_SERVICE_CONTENT_DRAFTS || 'service_content_drafts',
+        // Consultation collections
+        consultationCases: process.env.NEXT_PUBLIC_COLLECTION_CONSULTATION_CASES || 'consultation_cases',
+        consultationBookings: process.env.NEXT_PUBLIC_COLLECTION_CONSULTATION_BOOKINGS || 'consultation_bookings',
+        expertAvailability: process.env.NEXT_PUBLIC_COLLECTION_EXPERT_AVAILABILITY || 'expert_availability',
+        expertBlockedDates: process.env.NEXT_PUBLIC_COLLECTION_EXPERT_BLOCKED_DATES || 'expert_blocked_dates',
     },
     buckets: {
         customerDocuments: process.env.NEXT_PUBLIC_BUCKET_CUSTOMER_DOCUMENTS || 'customer-documents',
+        consultationAttachments: process.env.NEXT_PUBLIC_BUCKET_CONSULTATION_ATTACHMENTS || 'consultation-attachments',
     },
     teams: {
         operations: process.env.NEXT_PUBLIC_TEAM_OPERATIONS || 'operations',

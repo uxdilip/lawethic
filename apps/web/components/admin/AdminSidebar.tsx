@@ -13,6 +13,7 @@ import {
     Settings,
     Bell,
     Search,
+    MessageSquare,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -42,6 +43,12 @@ export default function AdminSidebar({ onCommandOpen, onCollapseChange }: Sideba
             name: 'Cases',
             href: '/admin/cases',
             icon: FolderKanban,
+            badge: null,
+        },
+        {
+            name: 'Consultations',
+            href: '/admin/consultations',
+            icon: MessageSquare,
             badge: null,
         },
         {

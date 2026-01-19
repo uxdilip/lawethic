@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import AdminLayoutWrapper from './AdminLayoutWrapper';
 
 export const metadata: Metadata = {
     title: 'Admin - LawEthic',
@@ -10,7 +11,5 @@ export default function AdminRootLayout({
 }: {
     children: React.ReactNode;
 }) {
-    // Admin pages use AdminLayout component which has its own navbar
-    // No global Header here to avoid duplicate navbars
-    return <>{children}</>;
+    return <AdminLayoutWrapper>{children}</AdminLayoutWrapper>;
 }

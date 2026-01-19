@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import AdminLayout from '@/components/AdminLayout';
-import { StaffOnly } from '@/components/RoleGuard';
+
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -155,8 +155,8 @@ export default function AdminLeadsPage() {
     };
 
     return (
-        <StaffOnly>
-            <AdminLayout>
+        <>
+            
                 <div className="p-6">
                     {/* Header */}
                     <div className="mb-6">
@@ -337,7 +337,7 @@ export default function AdminLeadsPage() {
                         )}
                     </div>
                 </div>
-            </AdminLayout>
-        </StaffOnly>
+            
+        </>
     );
 }

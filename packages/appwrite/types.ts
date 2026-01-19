@@ -1,5 +1,5 @@
 // User roles
-export type UserRole = 'customer' | 'operations' | 'admin';
+export type UserRole = 'customer' | 'operations' | 'admin' | 'expert';
 
 // Order status
 export type OrderStatus =
@@ -25,7 +25,49 @@ export type NotificationType =
     | 'status_update'
     | 'certificate_ready'
     | 'payment_success'
-    | 'message_received';
+    | 'message_received'
+    | 'consultation_submitted'
+    | 'consultation_scheduled'
+    | 'consultation_reminder'
+    | 'consultation_completed';
+
+// Consultation case status
+export type ConsultationStatus =
+    | 'submitted'
+    | 'under_review'
+    | 'pending_assignment'
+    | 'meeting_scheduled'
+    | 'meeting_completed'
+    | 'recommendations_sent'
+    | 'converted'
+    | 'cancelled'
+    | 'closed';
+
+// Consultation booking status
+export type BookingStatus = 'scheduled' | 'completed' | 'cancelled' | 'no_show';
+
+// Business type for consultations
+export type BusinessType = 'startup' | 'existing_business' | 'legal';
+
+// Case types for consultations
+export type CaseType =
+    | 'start-pvt-ltd'
+    | 'start-llp'
+    | 'start-opc'
+    | 'start-partnership'
+    | 'start-proprietorship'
+    | 'convert-to-pvt'
+    | 'annual-compliance'
+    | 'gst-matters'
+    | 'trademark-ip'
+    | 'hiring-hr'
+    | 'import-export'
+    | 'food-business'
+    | 'ngo-trust'
+    | 'legal-docs'
+    | 'tax-matters'
+    | 'funding-investment'
+    | 'general-query';
 
 // Question field for service-specific forms
 export interface QuestionField {
@@ -109,10 +151,18 @@ export interface Message {
     $id: string;
     orderId: string;
     senderId: string;
+    senderName?: string;
+    senderRole?: string;
     message: string;
-    attachments: string[];
-    isRead: boolean;
+    messageType?: 'text' | 'file' | 'system';
+    attachments?: string[];
+    metadata?: string | null;
+    read?: boolean;
+    readAt?: string | null;
+    isRead?: boolean;
+    isConsultation?: boolean;
     $createdAt: string;
+    $updatedAt?: string;
 }
 
 export interface Notification {
@@ -145,6 +195,136 @@ export interface OrderTimeline {
     updatedBy: string;
     $createdAt: string;
 }
+
+// ============================================
+// CONSULTATION TYPES
+// ============================================
+
+export interface ConsultationCase {
+    $id: string;
+    caseNumber: string;
+    customerId: string;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    businessType: BusinessType;
+    caseType: CaseType;
+    title: string;
+    description: string;
+    attachments: string[];
+    status: ConsultationStatus;
+    scheduledAt?: string;
+    meetingLink?: string;
+    assignedExpertId?: string;
+    expertNotes?: string;
+    recommendations?: string;
+    recommendationsSentAt?: string;
+    suggestedServiceSlugs: string[];
+    convertedOrderIds: string[];
+    amount: number;
+    paymentStatus: PaymentStatus | 'free';
+    paymentId?: string;
+    $createdAt: string;
+    $updatedAt: string;
+}
+
+export interface ExpertAvailability {
+    $id: string;
+    expertId: string;
+    dayOfWeek: number; // 0 (Sun) - 6 (Sat)
+    startTime: string; // "10:00"
+    endTime: string; // "18:00"
+    slotDuration: number; // minutes
+    bufferTime: number; // minutes
+    isActive: boolean;
+    $createdAt: string;
+    $updatedAt: string;
+}
+
+export interface ExpertBlockedDate {
+    $id: string;
+    expertId: string;
+    date: string; // "2026-01-20"
+    reason?: string;
+    $createdAt: string;
+}
+
+export interface ConsultationBooking {
+    $id: string;
+    caseId: string;
+    customerId: string;
+    expertId: string;
+    date: string; // "2026-01-17"
+    startTime: string; // "14:00"
+    endTime: string; // "14:30"
+    meetingLink: string;
+    status: BookingStatus;
+    notes?: string;
+    $createdAt: string;
+    $updatedAt: string;
+}
+
+// Case type to service suggestions mapping
+export const CASE_TYPE_SUGGESTIONS: Record<CaseType, string[]> = {
+    'start-pvt-ltd': ['private-limited-company-registration', 'gst-registration', 'trademark-registration'],
+    'start-llp': ['llp-registration', 'gst-registration', 'llp-agreement'],
+    'start-opc': ['one-person-company-registration', 'gst-registration'],
+    'start-partnership': ['partnership-firm-registration', 'partnership-deed', 'gst-registration'],
+    'start-proprietorship': ['gst-registration', 'msme-registration', 'shop-establishment'],
+    'convert-to-pvt': ['proprietorship-to-pvt-ltd', 'llp-to-pvt-ltd'],
+    'annual-compliance': ['annual-compliance-private-limited', 'roc-filing', 'annual-return-filing'],
+    'gst-matters': ['gst-registration', 'gst-return-filing', 'gst-cancellation'],
+    'trademark-ip': ['trademark-registration', 'trademark-objection', 'trademark-renewal'],
+    'hiring-hr': ['pf-registration', 'esi-registration', 'professional-tax'],
+    'import-export': ['iec-registration', 'gst-registration'],
+    'food-business': ['fssai-registration', 'fssai-license', 'gst-registration'],
+    'ngo-trust': ['ngo-registration', 'section-8-company', 'trust-registration'],
+    'legal-docs': ['legal-drafting', 'mou-agreement', 'nda-agreement'],
+    'tax-matters': ['income-tax-filing', 'tax-planning', 'tax-notice-response'],
+    'funding-investment': ['startup-india-registration', 'pitch-deck-review', 'term-sheet-review'],
+    'general-query': [],
+};
+
+// Case type display names
+export const CASE_TYPE_LABELS: Record<CaseType, string> = {
+    'start-pvt-ltd': 'Starting a Private Limited Company',
+    'start-llp': 'Starting an LLP',
+    'start-opc': 'Starting One Person Company',
+    'start-partnership': 'Starting a Partnership',
+    'start-proprietorship': 'Starting Sole Proprietorship',
+    'convert-to-pvt': 'Convert to Private Limited',
+    'annual-compliance': 'Annual Compliance & Filings',
+    'gst-matters': 'GST Registration & Returns',
+    'trademark-ip': 'Trademark & Intellectual Property',
+    'hiring-hr': 'Hiring & HR Compliance',
+    'import-export': 'Import/Export Business',
+    'food-business': 'Food & Restaurant Business',
+    'ngo-trust': 'NGO / Trust / Society',
+    'legal-docs': 'Legal Documentation',
+    'tax-matters': 'Income Tax & Tax Planning',
+    'funding-investment': 'Funding & Investment',
+    'general-query': 'General Legal Query',
+};
+
+// Business type display names
+export const BUSINESS_TYPE_LABELS: Record<BusinessType, string> = {
+    'startup': 'Starting a New Business',
+    'existing_business': 'I Have an Existing Business',
+    'legal': 'Legal Matter',
+};
+
+// Consultation status display names
+export const CASE_STATUS_LABELS: Record<ConsultationStatus, string> = {
+    'submitted': 'Submitted',
+    'under_review': 'Under Review',
+    'pending_assignment': 'Pending Assignment',
+    'meeting_scheduled': 'Meeting Scheduled',
+    'meeting_completed': 'Meeting Completed',
+    'recommendations_sent': 'Recommendations Sent',
+    'converted': 'Converted to Order',
+    'cancelled': 'Cancelled',
+    'closed': 'Closed',
+};
 
 // ============================================
 // SERVICE CONTENT MANAGEMENT TYPES

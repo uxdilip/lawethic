@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { databases, storage, account } from '@lawethic/appwrite/client';
 import { appwriteConfig } from '@lawethic/appwrite/config';
 import { Query } from 'appwrite';
-import AdminLayout from '@/components/AdminLayout';
-import { StaffOnly } from '@/components/RoleGuard';
+
+
 import Link from 'next/link';
 import CertificateUpload, { CertificateList } from '@/components/admin/CertificateUpload';
 import FloatingChatButton from '@/components/chat/FloatingChatButton';
@@ -363,20 +363,20 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
 
     if (loading) {
         return (
-            <StaffOnly>
-                <AdminLayout>
+            <>
+                
                     <div className="flex justify-center py-12">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600"></div>
                     </div>
-                </AdminLayout>
-            </StaffOnly>
+                
+            </>
         );
     }
 
     if (!order) {
         return (
-            <StaffOnly>
-                <AdminLayout>
+            <>
+                
                     <div className="max-w-7xl mx-auto px-6">
                         <div className="text-center py-12">
                             <AlertCircle className="h-16 w-16 text-neutral-300 mx-auto mb-4" />
@@ -386,14 +386,14 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                             </Link>
                         </div>
                     </div>
-                </AdminLayout>
-            </StaffOnly>
+                
+            </>
         );
     }
 
     return (
-        <StaffOnly>
-            <AdminLayout>
+        <>
+            
                 <div className="max-w-7xl mx-auto px-6 py-6">
                     {/* Header */}
                     <div className="mb-6">
@@ -1028,7 +1028,7 @@ export default function CaseDetailPage({ params }: CaseDetailProps) {
                         />
                     )}
                 </div>
-            </AdminLayout>
-        </StaffOnly>
+            
+        </>
     );
 }

@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { databases, account } from '@lawethic/appwrite/client';
 import { appwriteConfig } from '@lawethic/appwrite/config';
 import { Query } from 'appwrite';
-import AdminLayout from '@/components/AdminLayout';
-import { StaffOnly } from '@/components/RoleGuard';
+
+
 import DataTable from '@/components/admin/DataTable';
 import Link from 'next/link';
 import { format } from 'date-fns';
@@ -414,8 +414,8 @@ export default function AdminCasesPage() {
     const currentOrders = filteredOrders.slice(startIndex, endIndex);
 
     return (
-        <StaffOnly>
-            <AdminLayout>
+        <>
+            
                 {/* Page Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-neutral-900">All Cases</h1>
@@ -566,7 +566,7 @@ export default function AdminCasesPage() {
                         onDelete={handleDeleteSelected}
                     />
                 )}
-            </AdminLayout>
-        </StaffOnly>
+            
+        </>
     );
 }

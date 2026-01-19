@@ -474,3 +474,499 @@ export async function sendCertificateReadyEmail(
         html,
     });
 }
+
+// ============================================
+// CONSULTATION EMAIL FUNCTIONS
+// ============================================
+
+/**
+ * Send consultation submission confirmation email to customer
+ */
+export async function sendConsultationConfirmationEmail(
+    customerEmail: string,
+    customerName: string,
+    caseNumber: string,
+    caseTitle: string,
+    caseType: string
+) {
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+        .case-info { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #7c3aed; }
+        .button { display: inline-block; background: #1e40af; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+        .highlight { color: #7c3aed; font-weight: bold; }
+        .steps { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .step { display: flex; align-items: flex-start; margin-bottom: 15px; }
+        .step-number { background: #7c3aed; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; margin-right: 12px; flex-shrink: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ Consultation Request Received</h1>
+            <p>We're excited to help you!</p>
+        </div>
+        <div class="content">
+            <p>Dear ${customerName},</p>
+            
+            <p>Thank you for reaching out to LAWethic! We have received your free consultation request and our expert team will review it shortly.</p>
+            
+            <div class="case-info">
+                <p><strong>Case Number:</strong> <span class="highlight">${caseNumber}</span></p>
+                <p><strong>Subject:</strong> ${caseTitle}</p>
+                <p><strong>Category:</strong> ${caseType}</p>
+            </div>
+            
+            <div class="steps">
+                <h3>What happens next?</h3>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>Our expert reviews your case (typically within 24-48 hours)</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>We'll schedule a free consultation call at your convenience</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>Get personalized recommendations for your business needs</div>
+                </div>
+            </div>
+            
+            <center>
+                <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard/consultations" class="button">
+                    Track Your Case
+                </a>
+            </center>
+            
+            <p>If you have any questions or need to update your submission, please reply to this email or contact us at support@lawethic.com.</p>
+            
+            <p>Best regards,<br>
+            <strong>LAWethic Team</strong></p>
+        </div>
+        <div class="footer">
+            <p>This is a free consultation service. No payment required.</p>
+            <p>&copy; ${new Date().getFullYear()} LAWethic. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
+    `.trim();
+
+    return sendEmail({
+        to: customerEmail,
+        subject: `🎯 Consultation Request Received - ${caseNumber}`,
+        html,
+    });
+}
+
+/**
+ * Send notification to admin about new consultation case
+ */
+export async function sendNewConsultationAdminAlert(
+    caseNumber: string,
+    customerName: string,
+    customerEmail: string,
+    customerPhone: string,
+    caseTitle: string,
+    caseType: string,
+    businessType: string,
+    meetingDate?: string,
+    meetingTime?: string
+) {
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@lawethic.com';
+
+    const meetingInfo = meetingDate && meetingTime
+        ? `<p><strong>📅 Meeting Scheduled:</strong> ${meetingDate} at ${meetingTime}</p>`
+        : '<p><em>Meeting not yet scheduled</em></p>';
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #dc2626; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+        .info-box { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #dc2626; }
+        .button { display: inline-block; background: #dc2626; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+        .label { color: #6b7280; font-size: 12px; text-transform: uppercase; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔔 New Consultation Request</h1>
+            <p>Action required</p>
+        </div>
+        <div class="content">
+            <p>A new consultation request has been submitted and needs your attention.</p>
+            
+            <div class="info-box">
+                <p class="label">Case Details</p>
+                <p><strong>Case Number:</strong> ${caseNumber}</p>
+                <p><strong>Subject:</strong> ${caseTitle}</p>
+                <p><strong>Category:</strong> ${caseType}</p>
+                <p><strong>Business Type:</strong> ${businessType}</p>
+                ${meetingInfo}
+            </div>
+            
+            <div class="info-box">
+                <p class="label">Customer Information</p>
+                <p><strong>Name:</strong> ${customerName}</p>
+                <p><strong>Email:</strong> <a href="mailto:${customerEmail}">${customerEmail}</a></p>
+                <p><strong>Phone:</strong> <a href="tel:${customerPhone}">${customerPhone}</a></p>
+            </div>
+            
+            <center>
+                <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/consultations" class="button">
+                    Review Case
+                </a>
+            </center>
+        </div>
+        <div class="footer">
+            <p>This is an automated notification from LAWethic.</p>
+        </div>
+    </div>
+</body>
+</html>
+    `.trim();
+
+    return sendEmail({
+        to: adminEmail,
+        subject: `🔔 New Consultation: ${caseNumber} - ${customerName}`,
+        html,
+    });
+}
+
+/**
+ * Send notification to all experts about new consultation
+ */
+export async function sendNewConsultationExpertAlert(
+    expertEmails: string[],
+    caseNumber: string,
+    customerName: string,
+    caseTitle: string,
+    caseType: string,
+    businessType: string,
+    meetingDate?: string,
+    meetingTime?: string,
+    meetingLink?: string
+) {
+    if (expertEmails.length === 0) {
+        console.log('[Email] No expert emails provided for notification');
+        return { success: false, error: 'No experts to notify' };
+    }
+
+    const meetingInfo = meetingDate && meetingTime
+        ? `<p><strong>📅 Meeting Scheduled:</strong> ${meetingDate} at ${meetingTime}</p>`
+        : '<p><em>Meeting not yet scheduled</em></p>';
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #059669; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+        .info-box { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #059669; }
+        .button { display: inline-block; background: #059669; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+        .label { color: #6b7280; font-size: 12px; text-transform: uppercase; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 New Consultation Request</h1>
+            <p>A new case needs your attention</p>
+        </div>
+        <div class="content">
+            <p>Hello,</p>
+            
+            <p>A new consultation request has been submitted and is ready for review.</p>
+            
+            <div class="info-box">
+                <p class="label">Case Details</p>
+                <p><strong>Case Number:</strong> ${caseNumber}</p>
+                <p><strong>Subject:</strong> ${caseTitle}</p>
+                <p><strong>Category:</strong> ${caseType}</p>
+                <p><strong>Business Type:</strong> ${businessType}</p>
+                <p><strong>Customer:</strong> ${customerName}</p>
+                ${meetingInfo}
+            </div>
+            
+            <center>
+                ${meetingLink
+            ? `<a href="${meetingLink}" class="button">🎥 Join Meeting</a>`
+            : `<a href="${process.env.NEXT_PUBLIC_APP_URL}/expert/consultations" class="button">View in Expert Panel</a>`
+        }
+            </center>
+            
+            <p>${meetingLink ? 'The meeting link is ready. Join at the scheduled time.' : 'Please review the case at your earliest convenience.'}</p>
+            
+            <p>Best regards,<br>
+            <strong>LAWethic System</strong></p>
+        </div>
+        <div class="footer">
+            <p>This is an automated notification from LAWethic.</p>
+        </div>
+    </div>
+</body>
+</html>
+    `.trim();
+
+    // Send to all experts
+    const results = await Promise.all(
+        expertEmails.map(email =>
+            sendEmail({
+                to: email,
+                subject: `📋 New Consultation: ${caseNumber} - ${customerName}`,
+                html,
+            })
+        )
+    );
+
+    const successful = results.filter(r => r.success).length;
+    console.log(`[Email] Sent expert notifications: ${successful}/${expertEmails.length}`);
+
+    return { success: successful > 0, sentCount: successful };
+}
+
+/**
+ * Send meeting reminder email (30 minutes before)
+ */
+export async function sendMeetingReminderEmail(
+    recipientEmail: string,
+    recipientName: string,
+    caseNumber: string,
+    meetingDate: string,
+    meetingTime: string,
+    meetingLink: string,
+    recipientType: 'customer' | 'expert'
+) {
+    const isExpert = recipientType === 'expert';
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: ${isExpert ? '#059669' : '#1A2A44'}; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+        .alert-box { background: #fef3c7; border: 1px solid #f59e0b; padding: 20px; margin: 20px 0; border-radius: 8px; text-align: center; }
+        .meeting-card { background: white; padding: 24px; margin: 20px 0; border-radius: 8px; border-left: 4px solid ${isExpert ? '#059669' : '#1A2A44'}; }
+        .button { display: inline-block; background: ${isExpert ? '#059669' : '#1A2A44'}; color: white; padding: 16px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; }
+        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⏰ Meeting Starting Soon!</h1>
+            <p>30 minutes until your consultation</p>
+        </div>
+        <div class="content">
+            <div class="alert-box">
+                <strong>🔔 Your meeting starts in 30 minutes!</strong>
+            </div>
+            
+            <p>Hi ${recipientName},</p>
+            
+            <p>This is a friendly reminder that your ${isExpert ? 'consultation with a customer' : 'free expert consultation'} is starting soon.</p>
+            
+            <div class="meeting-card">
+                <p><strong>📋 Case:</strong> ${caseNumber}</p>
+                <p><strong>📅 Date:</strong> ${meetingDate}</p>
+                <p><strong>🕐 Time:</strong> ${meetingTime}</p>
+                <p><strong>⏱️ Duration:</strong> 30 minutes</p>
+            </div>
+            
+            <center>
+                <a href="${meetingLink}" class="button">
+                    🎥 Join Meeting Now
+                </a>
+            </center>
+            
+            <p style="margin-top: 24px;"><strong>Quick Tips:</strong></p>
+            <ul>
+                <li>Join 2-3 minutes early to test your audio/video</li>
+                <li>Have relevant documents ready</li>
+                <li>Find a quiet place with stable internet</li>
+            </ul>
+            
+            <p>Best regards,<br>
+            <strong>LAWethic Team</strong></p>
+        </div>
+        <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} LAWethic. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
+    `.trim();
+
+    return sendEmail({
+        to: recipientEmail,
+        subject: `⏰ Meeting in 30 mins - ${caseNumber}`,
+        html,
+    });
+}
+
+/**
+ * Send meeting scheduled notification to customer
+ */
+export async function sendMeetingScheduledEmail(
+    customerEmail: string,
+    customerName: string,
+    caseNumber: string,
+    meetingDate: string,
+    meetingTime: string,
+    meetingLink: string
+) {
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #059669 0%, #0d9488 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+        .meeting-card { background: white; padding: 25px; margin: 20px 0; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center; }
+        .meeting-date { font-size: 24px; font-weight: bold; color: #059669; margin-bottom: 5px; }
+        .meeting-time { font-size: 18px; color: #6b7280; }
+        .button { display: inline-block; background: #059669; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; font-size: 16px; }
+        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+        .reminder { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Your Consultation is Scheduled!</h1>
+            <p>Case: ${caseNumber}</p>
+        </div>
+        <div class="content">
+            <p>Dear ${customerName},</p>
+            
+            <p>Great news! Your free consultation with our expert has been scheduled.</p>
+            
+            <div class="meeting-card">
+                <div class="meeting-date">${meetingDate}</div>
+                <div class="meeting-time">at ${meetingTime}</div>
+            </div>
+            
+            <center>
+                <a href="${meetingLink}" class="button">
+                    Join Meeting
+                </a>
+            </center>
+            
+            <div class="reminder">
+                <strong>📝 Before your meeting:</strong>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                    <li>Make sure you have a stable internet connection</li>
+                    <li>Keep any relevant documents handy</li>
+                    <li>Prepare your questions in advance</li>
+                </ul>
+            </div>
+            
+            <p>If you need to reschedule, please contact us at least 24 hours before the meeting.</p>
+            
+            <p>We look forward to speaking with you!</p>
+            
+            <p>Best regards,<br>
+            <strong>LAWethic Team</strong></p>
+        </div>
+        <div class="footer">
+            <p>Can't make it? Reply to this email to reschedule.</p>
+            <p>&copy; ${new Date().getFullYear()} LAWethic. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
+    `.trim();
+
+    return sendEmail({
+        to: customerEmail,
+        subject: `📅 Consultation Scheduled - ${meetingDate} at ${meetingTime}`,
+        html,
+    });
+}
+
+/**
+ * Send consultation cancellation email
+ */
+export async function sendConsultationCancelledEmail(
+    customerEmail: string,
+    customerName: string,
+    caseNumber: string
+) {
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #6b7280; color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+        .info-card { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #6b7280; }
+        .button { display: inline-block; background: #1A2A44; color: white; padding: 15px 40px; text-decoration: none; border-radius: 8px; margin: 20px 0; font-weight: bold; }
+        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Consultation Cancelled</h1>
+            <p>Case: ${caseNumber}</p>
+        </div>
+        <div class="content">
+            <p>Dear ${customerName},</p>
+            
+            <p>Your consultation for case <strong>${caseNumber}</strong> has been cancelled as requested.</p>
+            
+            <div class="info-card">
+                <p>If you'd like to schedule a new consultation, you can do so anytime from our website.</p>
+            </div>
+            
+            <p style="text-align: center;">
+                <a href="${process.env.NEXT_PUBLIC_APP_URL}/consult-expert" class="button">
+                    Book New Consultation
+                </a>
+            </p>
+            
+            <p>If you have any questions or need assistance, please don't hesitate to contact us.</p>
+            
+            <p>Best regards,<br>
+            <strong>LAWethic Team</strong></p>
+        </div>
+        <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} LAWethic. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
+    `.trim();
+
+    return sendEmail({
+        to: customerEmail,
+        subject: `Consultation Cancelled - ${caseNumber}`,
+        html,
+    });
+}

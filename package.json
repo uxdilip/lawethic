@@ -14,13 +14,9 @@
         "build:web": "npm run build --workspace=apps/web",
         "lint": "npm run lint --workspaces --if-present",
         "clean": "npm run clean --workspaces --if-present && rm -rf node_modules",
-        "update-permissions": "tsx scripts/update-permissions.ts",
-        "seed": "tsx scripts/seed.ts",
-        "fix-attributes": "tsx scripts/fix-attributes.ts",
-        "check-collections": "tsx scripts/check-collections.ts",
-        "test-document": "tsx scripts/test-document.ts",
-        "test-order": "tsx scripts/test-order.ts",
-        "setup-service-content": "cd scripts && node setup-service-content-collection.js"
+        "make-expert": "node scripts/make-expert-user.js",
+        "make-operations": "node scripts/make-operations-user.js",
+        "manage-roles": "node scripts/manage-user-roles.js"
     },
     "keywords": [
         "compliance",

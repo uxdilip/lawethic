@@ -93,3 +93,7 @@ export function AdminOnly({ children, fallback }: { children: React.ReactNode; f
 export function StaffOnly({ children, fallback }: { children: React.ReactNode; fallback?: React.ReactNode }) {
     return <RoleGuard allowedRoles={['admin', 'operations']} fallback={fallback}>{children}</RoleGuard>;
 }
+
+export function ExpertOnly({ children, fallback }: { children: React.ReactNode; fallback?: React.ReactNode }) {
+    return <RoleGuard allowedRoles={['expert']} fallback={fallback} redirectTo="/expert/login">{children}</RoleGuard>;
+}

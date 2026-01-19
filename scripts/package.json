@@ -3,7 +3,9 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-        "setup-service-content": "node setup-service-content-collection.js"
+        "make-expert": "node make-expert-user.js",
+        "make-operations": "node make-operations-user.js",
+        "manage-roles": "node manage-user-roles.js"
     },
     "dependencies": {
         "dotenv": "^16.6.1",

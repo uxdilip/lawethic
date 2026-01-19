@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Grid3X3, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Grid3X3, FileText, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CustomerSidebarProps {
@@ -30,6 +30,13 @@ const sidebarItems = [
         label: 'My Orders',
         icon: FileText,
         href: '/dashboard/orders',
+        badge: null,
+    },
+    {
+        id: 'consultations',
+        label: 'Consultations',
+        icon: MessageSquare,
+        href: '/dashboard/consultations',
         badge: null,
     },
 ];

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { account, databases, appwriteConfig } from '@lawethic/appwrite';
 import { FileText, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { Query } from 'appwrite';
@@ -17,6 +18,7 @@ interface Order {
 }
 
 export default function DashboardPage() {
+    const router = useRouter();
     const [user, setUser] = useState<any>(null);
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
@@ -34,6 +36,18 @@ export default function DashboardPage() {
     const loadData = async () => {
         try {
             const userData = await account.get();
+
+            // Role-based redirect
+            const role = userData.prefs?.role;
+            if (role === 'expert') {
+                router.replace('/expert/dashboard');
+                return;
+            }
+            if (role === 'admin' || role === 'operations') {
+                router.replace('/admin');
+                return;
+            }
+
             setUser(userData);
             await fetchOrders(userData.$id);
         } catch (error) {

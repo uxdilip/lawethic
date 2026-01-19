@@ -62,6 +62,14 @@ export default function Header({ navigationData }: { navigationData?: Navigation
 
                 {/* Right side actions */}
                 <div className="flex items-center space-x-4">
+                    {/* Consult Expert Button - Always visible */}
+                    <Link
+                        href="/consult-expert"
+                        className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 text-sm font-medium hidden md:block"
+                    >
+                        Consult Expert
+                    </Link>
+
                     {loading ? (
                         <div className="w-20 h-8 bg-gray-200 animate-pulse rounded"></div>
                     ) : user ? (
@@ -81,7 +89,11 @@ export default function Header({ navigationData }: { navigationData?: Navigation
                                 {showUserMenu && (
                                     <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg py-1 z-50">
                                         <Link
-                                            href="/dashboard"
+                                            href={
+                                                user.prefs?.role === 'expert' ? '/expert/dashboard' :
+                                                    user.prefs?.role === 'admin' || user.prefs?.role === 'operations' ? '/admin' :
+                                                        '/dashboard'
+                                            }
                                             className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                                             onClick={() => setShowUserMenu(false)}
                                         >
@@ -105,7 +117,7 @@ export default function Header({ navigationData }: { navigationData?: Navigation
                             </Link>
                             <Link
                                 href="/signup"
-                                className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 hidden md:block"
+                                className="px-4 py-2 border border-brand-600 text-brand-600 rounded-lg hover:bg-brand-50 hidden md:block"
                             >
                                 Sign Up
                             </Link>
