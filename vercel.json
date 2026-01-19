@@ -4,6 +4,11 @@
     "outputDirectory": "apps/web/.next",
     "installCommand": "npm install",
     "framework": "nextjs",
+    "build": {
+        "env": {
+            "NODE_OPTIONS": "--max-old-space-size=4096"
+        }
+    },
     "crons": [
         {
             "path": "/api/consultations/reminders",
