@@ -32,7 +32,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     Landmark: LucideIcons.Landmark,
     Globe: LucideIcons.Globe,
     Store: LucideIcons.Store,
-    Handshake: LucideIcons.Handshake,
+    Handshake: LucideIcons.HeartHandshake,
     Package: LucideIcons.Package,
     Briefcase: LucideIcons.Briefcase,
     BadgeCheck: LucideIcons.BadgeCheck,
@@ -58,7 +58,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     UserPlus: LucideIcons.UserPlus,
     Infinity: LucideIcons.Infinity,
     DollarSign: LucideIcons.DollarSign,
-    Hospital: LucideIcons.Hospital,
+    Building2: LucideIcons.Building2,
     Ticket: LucideIcons.Ticket,
 }
 
