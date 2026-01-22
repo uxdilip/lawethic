@@ -58,7 +58,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     UserPlus: LucideIcons.UserPlus,
     Infinity: LucideIcons.Infinity,
     DollarSign: LucideIcons.DollarSign,
-    Building2: LucideIcons.Building2,
+    Hospital: LucideIcons.Building,
     Ticket: LucideIcons.Ticket,
 }
 
