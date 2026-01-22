@@ -54,18 +54,18 @@ export default function Header({ navigationData }: { navigationData?: Navigation
 
                     {/* Desktop Navigation with Mega Menu */}
                     {navigationData && (
-                        <div className="hidden md:block">
+                        <div className="hidden lg:block">
                             <MegaMenu parentCategories={navigationData} />
                         </div>
                     )}
                 </div>
 
                 {/* Right side actions */}
-                <div className="flex items-center space-x-4">
-                    {/* Consult Expert Button - Always visible */}
+                <div className="flex items-center space-x-2 sm:space-x-4">
+                    {/* Consult Expert Button - Visible on larger screens */}
                     <Link
                         href="/consult-expert"
-                        className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 text-sm font-medium hidden md:block"
+                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 text-xs sm:text-sm font-medium hidden lg:block"
                     >
                         Consult Expert
                     </Link>
@@ -112,21 +112,21 @@ export default function Header({ navigationData }: { navigationData?: Navigation
                         </>
                     ) : (
                         <>
-                            <Link href="/login" className="px-4 py-2 text-neutral-600 hover:text-brand-600 hidden md:block">
+                            <Link href="/login" className="px-4 py-2 text-neutral-600 hover:text-brand-600 hidden lg:block">
                                 Login
                             </Link>
                             <Link
                                 href="/signup"
-                                className="px-4 py-2 border border-brand-600 text-brand-600 rounded-lg hover:bg-brand-50 hidden md:block"
+                                className="px-4 py-2 border border-brand-600 text-brand-600 rounded-lg hover:bg-brand-50 hidden lg:block"
                             >
                                 Sign Up
                             </Link>
                         </>
                     )}
 
-                    {/* Mobile Menu Trigger */}
+                    {/* Mobile Menu Trigger - Show on screens smaller than lg */}
                     {navigationData && (
-                        <MobileNavTrigger onClick={() => setMobileNavOpen(true)} />
+                        <MobileNavTrigger onClick={() => setMobileNavOpen(true)} className="lg:hidden" />
                     )}
                 </div>
             </div>

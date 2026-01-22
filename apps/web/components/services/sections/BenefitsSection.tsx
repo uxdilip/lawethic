@@ -1,22 +1,71 @@
 import { BenefitsSection as BenefitsType } from '@/data/services'
-import {
-    Shield, Clock, Users, Award, HeadphonesIcon, FileCheck,
-    Zap, CheckCircle, Star, TrendingUp, Lock, Sparkles
-} from 'lucide-react'
+import * as LucideIcons from 'lucide-react'
 
+// Dynamic icon lookup from lucide-react
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-    Shield,
-    Clock,
-    Users,
-    Award,
-    HeadphonesIcon,
-    FileCheck,
-    Zap,
-    CheckCircle,
-    Star,
-    TrendingUp,
-    Lock,
-    Sparkles
+    // Common icons
+    Shield: LucideIcons.Shield,
+    Clock: LucideIcons.Clock,
+    Users: LucideIcons.Users,
+    User: LucideIcons.User,
+    Award: LucideIcons.Award,
+    HeadphonesIcon: LucideIcons.HeadphonesIcon,
+    FileCheck: LucideIcons.FileCheck,
+    Zap: LucideIcons.Zap,
+    CheckCircle: LucideIcons.CheckCircle,
+    Star: LucideIcons.Star,
+    TrendingUp: LucideIcons.TrendingUp,
+    Lock: LucideIcons.Lock,
+    Sparkles: LucideIcons.Sparkles,
+    // Additional icons used in services
+    Search: LucideIcons.Search,
+    FileText: LucideIcons.FileText,
+    ClipboardCheck: LucideIcons.ClipboardCheck,
+    Scale: LucideIcons.Scale,
+    Newspaper: LucideIcons.Newspaper,
+    GraduationCap: LucideIcons.GraduationCap,
+    Bell: LucideIcons.Bell,
+    HeartHandshake: LucideIcons.HeartHandshake,
+    Heart: LucideIcons.Heart,
+    Building: LucideIcons.Building,
+    Building2: LucideIcons.Building2,
+    Landmark: LucideIcons.Landmark,
+    Globe: LucideIcons.Globe,
+    Store: LucideIcons.Store,
+    Handshake: LucideIcons.Handshake,
+    Package: LucideIcons.Package,
+    Briefcase: LucideIcons.Briefcase,
+    BadgeCheck: LucideIcons.BadgeCheck,
+    Box: LucideIcons.Box,
+    Palette: LucideIcons.Palette,
+    Volume2: LucideIcons.Volume2,
+    Paintbrush: LucideIcons.Paintbrush,
+    Factory: LucideIcons.Factory,
+    Layers: LucideIcons.Layers,
+    ShieldCheck: LucideIcons.ShieldCheck,
+    Send: LucideIcons.Send,
+    Gift: LucideIcons.Gift,
+    Banknote: LucideIcons.Banknote,
+    BadgePercent: LucideIcons.BadgePercent,
+    UtensilsCrossed: LucideIcons.UtensilsCrossed,
+    ChefHat: LucideIcons.ChefHat,
+    Truck: LucideIcons.Truck,
+    Warehouse: LucideIcons.Warehouse,
+    Milk: LucideIcons.Milk,
+    Upload: LucideIcons.Upload,
+    CreditCard: LucideIcons.CreditCard,
+    ShoppingCart: LucideIcons.ShoppingCart,
+    UserPlus: LucideIcons.UserPlus,
+    Infinity: LucideIcons.Infinity,
+    DollarSign: LucideIcons.DollarSign,
+    Hospital: LucideIcons.Hospital,
+    Ticket: LucideIcons.Ticket,
+}
+
+// Fallback function to get icon from lucide-react dynamically
+function getIcon(iconName?: string): React.ComponentType<{ className?: string }> {
+    if (!iconName) return LucideIcons.CheckCircle
+    return iconMap[iconName] || (LucideIcons as any)[iconName] || LucideIcons.CheckCircle
 }
 
 interface BenefitsSectionProps {
@@ -34,7 +83,7 @@ export function BenefitsSection({ data }: BenefitsSectionProps) {
 
             <div className="grid sm:grid-cols-2 gap-4">
                 {data.items.map((item, i) => {
-                    const IconComponent = item.icon ? iconMap[item.icon] : CheckCircle
+                    const IconComponent = getIcon(item.icon)
 
                     return (
                         <div
@@ -58,15 +107,15 @@ export function BenefitsSection({ data }: BenefitsSectionProps) {
             {/* Trust indicators */}
             <div className="mt-8 flex flex-wrap items-center justify-center gap-6 py-6 bg-neutral-50 rounded-xl">
                 <div className="flex items-center gap-2 text-sm text-neutral-600">
-                    <Shield className="h-5 w-5 text-green-600" />
+                    <LucideIcons.Shield className="h-5 w-5 text-green-600" />
                     <span>100% Secure</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-neutral-600">
-                    <Award className="h-5 w-5 text-amber-500" />
+                    <LucideIcons.Award className="h-5 w-5 text-amber-500" />
                     <span>Expert Support</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-neutral-600">
-                    <Clock className="h-5 w-5 text-brand-600" />
+                    <LucideIcons.Clock className="h-5 w-5 text-brand-600" />
                     <span>Quick Processing</span>
                 </div>
             </div>

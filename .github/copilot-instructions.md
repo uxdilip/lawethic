@@ -1,7 +1,7 @@
 # Copilot Instructions for LawEthic
 
 ## Architecture Overview
-- **Monorepo** via npm workspaces: Next.js 14 App Router at `apps/web`, shared Appwrite SDK at `packages/appwrite`
+- **Monorepo** via npm workspaces: Next.js 14 App Router at `apps/web`, shared Appwrite SDK at `packages/appwrite`, Astro case study at `case-study/`
 - **Single app, two flows**: Customer portal (`/services`, `/checkout`, `/dashboard`) and Admin panel (`/admin/*`)
 - **Backend stack**: Appwrite Cloud (auth/database/storage), Razorpay (payments), Resend (emails)
 - **Path aliases**: `@/*` maps to `apps/web/*` (see [apps/web/tsconfig.json](apps/web/tsconfig.json))

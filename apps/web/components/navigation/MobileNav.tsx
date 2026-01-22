@@ -85,14 +85,20 @@ export function MobileNav({ parentCategories, isOpen, onClose }: MobileNavProps)
                     </Accordion>
 
                     {/* CTA Buttons */}
-                    <div className="mt-6 space-y-2 pb-6 border-t pt-4">
+                    <div className="mt-6 space-y-3 pb-6 border-t pt-4">
+                        {/* Consult Expert - Prominent CTA for mobile */}
+                        <Link href="/consult-expert" onClick={onClose}>
+                            <Button className="w-full bg-brand-600 hover:bg-brand-700">
+                                Consult Expert
+                            </Button>
+                        </Link>
                         <Link href="/login" onClick={onClose}>
                             <Button variant="outline" className="w-full">
                                 Login
                             </Button>
                         </Link>
                         <Link href="/signup" onClick={onClose}>
-                            <Button className="w-full">Get Started</Button>
+                            <Button variant="secondary" className="w-full">Get Started</Button>
                         </Link>
                     </div>
                 </div>
@@ -101,9 +107,9 @@ export function MobileNav({ parentCategories, isOpen, onClose }: MobileNavProps)
     )
 }
 
-export function MobileNavTrigger({ onClick }: { onClick: () => void }) {
+export function MobileNavTrigger({ onClick, className }: { onClick: () => void; className?: string }) {
     return (
-        <Button variant="ghost" size="icon" onClick={onClick} className="md:hidden">
+        <Button variant="ghost" size="icon" onClick={onClick} className={className}>
             <Menu className="h-6 w-6" />
             <span className="sr-only">Toggle menu</span>
         </Button>
