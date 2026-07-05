@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useState, useEffect, useRef } from 'react';
 import Footer from '@/components/Footer';
+import SpotlightCard from '@/components/reactbits/SpotlightCard';
 import {
     ArrowRight,
     CheckCircle,
@@ -30,6 +32,9 @@ import {
     ArrowUpRight,
     Receipt
 } from 'lucide-react';
+
+// Silk relies on WebGL (@react-three/fiber) which must never render on the server
+const Silk = dynamic(() => import('@/components/reactbits/Silk'), { ssr: false });
 
 // ============================================
 // INTERACTIVE COMPONENTS
@@ -423,19 +428,14 @@ export default function HomePage() {
             {/* ============================================ */}
             {/* HERO SECTION - Interactive & Vibrant */}
             {/* ============================================ */}
-            <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-                {/* Animated background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-600 via-brand-700 to-brand-800" />
+            <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-brand-800">
+                {/* Silk shader background */}
+                <div className="absolute inset-0">
+                    <Silk speed={4} scale={1.1} color="#1A2A44" noiseIntensity={1.2} rotation={0.15} />
+                </div>
 
-                {/* Animated blobs */}
-                <div className="absolute top-20 left-10 w-72 h-72 bg-brand-200/30 rounded-full blur-3xl animate-blob" />
-                <div className="absolute bottom-20 right-10 w-96 h-96 bg-brand-300/20 rounded-full blur-3xl animate-blob" style={{ animationDelay: '2s' }} />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-400/10 rounded-full blur-3xl animate-blob" style={{ animationDelay: '4s' }} />
-
-                {/* Grid pattern overlay */}
-                <div className="absolute inset-0 opacity-10" style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                }} />
+                {/* Soft dark overlay for text contrast */}
+                <div className="absolute inset-0 bg-gradient-to-b from-brand-800/40 via-brand-800/20 to-brand-800/60" />
 
                 <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
                     <div className="max-w-3xl mx-auto text-center">
@@ -606,10 +606,11 @@ export default function HomePage() {
                     </div>
 
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {features.map((feature, index) => (
-                            <div
+                        {features.map((feature) => (
+                            <SpotlightCard
                                 key={feature.title}
-                                className="group p-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 hover:-translate-y-1"
+                                spotlightColor="rgba(174, 200, 255, 0.25)"
+                                className="group p-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 transition-all duration-300 hover:-translate-y-1 hover:border-white/30"
                             >
                                 <div className="w-14 h-14 bg-brand-200/20 rounded-xl flex items-center justify-center mb-4 group-hover:bg-brand-200/30 transition-colors">
                                     <feature.icon className="h-7 w-7 text-brand-200" />
@@ -618,7 +619,7 @@ export default function HomePage() {
                                 <p className="text-brand-200/80 text-sm leading-relaxed">
                                     {feature.description}
                                 </p>
-                            </div>
+                            </SpotlightCard>
                         ))}
                     </div>
                 </div>
